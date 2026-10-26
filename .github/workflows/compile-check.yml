@@ -37,8 +37,10 @@ jobs:
       run: |
         cp -a .github/scripts/. .
         sudo mdutil -a -i off
-        brew install coreutils quilt zstd sccache --overwrite
+        brew install coreutils quilt zstd --overwrite
         python3 -m pip install requests Pillow
+    - name: Set up sccache with the GitHub Actions cache
+      uses: mozilla-actions/sccache-action@v0.0.9
     - name: Cache Chromium source
       uses: actions/cache@v5
       with:
@@ -64,4 +66,5 @@ jobs:
       env:
         SCCACHE_GHA_ENABLED: "on"
         SCCACHE_GHA_VERSION: compile-check
+        SCCACHE_IGNORE_SERVER_IO_ERROR: "1"
       run: ./compile-check.sh '${{ inputs.files }}'

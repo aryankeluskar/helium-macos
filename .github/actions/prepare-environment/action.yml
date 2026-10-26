@@ -6,6 +6,8 @@ runs:
       uses: actions/setup-python@v6
       with:
         python-version: '3.13'
+    - name: Set up sccache with the GitHub Actions cache
+      uses: mozilla-actions/sccache-action@v0.0.9
     - name: Copy GitHub specific scripts to git-root folder
       run: cp -va ./.github/scripts/ ./ ; date +%s > ./epoch_job_start.txt
       shell: bash
