@@ -24,3 +24,6 @@ helium/macos/lockdown-mode-imageio.patch
 helium/macos/disable-chromium-immersive-fullscreen.patch
 helium/macos/helium-immersive-fullscreen.patch
 helium/macos/fix-history-swiper-lifetime.patch
+
+dream/fast-vertical-tabs-hover-expand.patch
+dream/tab-group-spaces-by-default.patch

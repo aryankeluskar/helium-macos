@@ -1,0 +1,61 @@
+--- a/chrome/browser/ui/tabs/features.cc
++++ b/chrome/browser/ui/tabs/features.cc
+@@ -39,7 +39,7 @@ BASE_FEATURE_PARAM(bool,
+                    kVerticalTabsExpandOnHoverDefaultEnabled,
+                    &kVerticalTabsExpandOnHover,
+                    "expand_on_hover_default_enabled",
+-                   false);
++                   true);
+ 
+ BASE_FEATURE_PARAM(base::TimeDelta,
+                    kVerticalTabsExpandOnHoverDelay,
+--- a/chrome/browser/ui/views/animations/tab_strip_animations.cc
++++ b/chrome/browser/ui/views/animations/tab_strip_animations.cc
+@@ -62,6 +62,10 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
+   // these changes happen.
+   constexpr double kFirstCheckpoint = 0.25;
+   constexpr double kSecondCheckpoint = 0.75;
++  constexpr int kHoverExpandMs = 120;
++  constexpr int kHoverCollapseMs = 100;
++  constexpr int kHoverFadeMs = 60;
++  constexpr gfx::Tween::Type kHoverTween = gfx::Tween::EASE_OUT;
+ 
+   return Groups(Group(
+       kVerticalTabStrip,
+@@ -102,27 +106,22 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
+       // the animation and so shares the same animation parameters across all
+       // the supported platforms.
+       Motion(
+-          kExpandOnHover, TotalDurationMs(browser_animations::kFlyoutShowMs),
+-          browser_animations::kFlyoutTween,
++          kExpandOnHover, TotalDurationMs(kHoverExpandMs), kHoverTween,
+           Animate(kTabStripHoverWidth, FromValue(0.0), ToValue(1.0)),
+           Animate(kTopCorner, FromValue(DefaultValue()), ToValue(-1.0)),
+           Animate(kBottomCorner, FromValue(1.0), ToValue(-1.0)),
+           Sequence(
+               kTabStripHoverOpacity, StartingValue(0.0),
+               Transition::kStartAtOldValue,
+-              Segment(StartMs(0), EndMs(browser_animations::kFlyoutFadeMs),
+-                      ToValue(1.0), browser_animations::kFlyoutFadeInTween))),
+-      Motion(kCollapseOnHover,
+-             TotalDurationMs(browser_animations::kFlyoutHideMs),
+-             browser_animations::kFlyoutTween,
++              Segment(StartMs(0), EndMs(kHoverFadeMs), ToValue(1.0),
++                      browser_animations::kFlyoutFadeInTween))),
++      Motion(kCollapseOnHover, TotalDurationMs(kHoverCollapseMs), kHoverTween,
+              Animate(kTabStripHoverWidth, FromValue(1.0), ToValue(0.0)),
+              Animate(kTopCorner, FromValue(-1.0), ToValue(DefaultValue())),
+              Animate(kBottomCorner, FromValue(-1.0), ToValue(1.0)),
+-             Sequence(
+-                 kTabStripHoverOpacity, StartingValue(1.0),
+-                 Transition::kStartAtOldValue,
+-                 Segment(StartMs(browser_animations::kFlyoutHideMs -
+-                                 browser_animations::kFlyoutFadeMs),
+-                         EndMs(browser_animations::kFlyoutHideMs), ToValue(0.0),
+-                         browser_animations::kFlyoutFadeOutTween)))));
++             Sequence(kTabStripHoverOpacity, StartingValue(1.0),
++                      Transition::kStartAtOldValue,
++                      Segment(StartMs(kHoverCollapseMs - kHoverFadeMs),
++                              EndMs(kHoverCollapseMs), ToValue(0.0),
++                              browser_animations::kFlyoutFadeOutTween)))));
+ }
