@@ -6,6 +6,10 @@ on:
         required: false
         description: "Runner image name"
         default: "macos-latest"
+      arches:
+        required: false
+        description: "Architectures to build, as a JSON list"
+        default: '["arm64"]'
       do-release:
         required: false
         type: boolean
@@ -20,7 +24,7 @@ jobs:
     name: Build macOS binaries of Helium
     strategy:
       matrix:
-        arch: [arm64, x86_64]
+        arch: ${{ fromJSON(inputs.arches) }}
       fail-fast: true
       max-parallel: 2
     uses: ./.github/workflows/building.yml
