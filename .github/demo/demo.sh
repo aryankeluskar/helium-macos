@@ -17,7 +17,7 @@ JSON
   --user-data-dir="$profile" --no-first-run --no-default-browser-check \
   --load-extension="$demo_dir/spaces-extension" \
   --enable-features=TabGroupsFocusing \
-  --window-position=0,30 --window-size=1280,800 \
+  --window-position=0,25 --window-size=1024,710 \
   about:blank > "$out/helium.log" 2>&1 &
 helium_pid=$!
 
@@ -32,13 +32,21 @@ read -r win_x win_y win_w win_h <<< "$bounds"
 strip_x=$((win_x + 70))
 strip_y=$((win_y + win_h / 2))
 
-sleep 12
+sleep 35
 "$swipe" move "$strip_x" "$strip_y"
 sleep 1
 screencapture -x "$out/before.png" || true
 
-screencapture -x -v -V 28 "$out/screen.mov" &
+ffmpeg -y -loglevel error -f avfoundation -framerate 30 -capture_cursor 1 \
+  -i "Capture screen 0:none" -t 28 -c:v libx264 -preset ultrafast -crf 20 \
+  "$out/screen.mov" > "$out/ffmpeg.log" 2>&1 &
 recording=$!
+sleep 3
+if ! kill -0 "$recording" 2>/dev/null; then
+  cat "$out/ffmpeg.log" || true
+  screencapture -x -v -V 26 "$out/screen.mov" &
+  recording=$!
+fi
 sleep 2
 
 for distance in -420 -420 -420 -420; do
@@ -58,7 +66,7 @@ kill "$helium_pid" || true
 
 if [ -s "$out/screen.mov" ]; then
   ffmpeg -y -loglevel error -i "$out/screen.mov" \
-    -vf "scale=1280:-2,format=yuv420p" -c:v libx264 -crf 26 -movflags +faststart \
+    -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p" -c:v libx264 -crf 26 -movflags +faststart \
     "$out/spaces-demo.mp4"
   rm -f "$out/screen.mov"
 fi

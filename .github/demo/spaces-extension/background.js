@@ -1,6 +1,6 @@
 const spaces = [
-  {title: 'Work', color: 'blue', urls: ['https://github.com/imputnet/helium', 'https://news.ycombinator.com', 'https://developer.apple.com']},
-  {title: 'Personal', color: 'pink', urls: ['https://www.youtube.com', 'https://www.reddit.com', 'https://open.spotify.com']},
+  {title: 'Work', color: 'blue', urls: ['https://github.com/imputnet/helium', 'https://news.ycombinator.com', 'https://lobste.rs']},
+  {title: 'Personal', color: 'pink', urls: ['https://www.wikipedia.org', 'https://old.reddit.com', 'https://example.com']},
   {title: 'Research', color: 'green', urls: ['https://arxiv.org', 'https://en.wikipedia.org/wiki/Arc_(web_browser)', 'https://www.chromium.org']},
 ];
 
