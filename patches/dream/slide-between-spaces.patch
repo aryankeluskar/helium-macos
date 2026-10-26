@@ -1,0 +1,150 @@
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
+@@ -5,14 +5,27 @@
+ #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h"
+ 
+ #include <cmath>
++#include <optional>
+ 
+ #include "base/feature_list.h"
++#include "base/functional/bind.h"
+ #include "base/i18n/rtl.h"
++#include "base/location.h"
++#include "base/task/sequenced_task_runner.h"
+ #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+ #include "chrome/browser/ui/tabs/tab_strip_model.h"
+ #include "chrome/browser/ui/ui_features.h"
+ #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
++#include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
++#include "components/tab_groups/tab_group_id.h"
++#include "ui/compositor/layer.h"
++#include "ui/compositor/layer_animator.h"
+ #include "ui/events/event.h"
++#include "ui/gfx/animation/animation.h"
++#include "ui/gfx/animation/tween.h"
++#include "ui/gfx/geometry/transform.h"
++#include "ui/views/animation/animation_builder.h"
++#include "ui/views/controls/scroll_view.h"
+ 
+ VerticalTabStripFocusSwipeController::VerticalTabStripFocusSwipeController(
+     VerticalTabStripRegionView* region_view)
+@@ -151,5 +164,67 @@ void VerticalTabStripFocusSwipeController::RotateTabGroupFocus(bool forward) {
+     return;
+   }
+ 
+-  region_view_->tab_strip_model()->RotateFocusedGroup(forward);
++  TabStripModel* const model = region_view_->tab_strip_model();
++  const std::optional<tab_groups::TabGroupId> old_focused_group =
++      model->GetFocusedGroup();
++  model->RotateFocusedGroup(forward);
++  if (model->GetFocusedGroup() != old_focused_group) {
++    SlideInTabs(forward);
++  }
++}
++
++views::View* VerticalTabStripFocusSwipeController::GetSlideTarget() const {
++  TabStripView* const tab_strip_view = region_view_->tab_strip_view();
++  return tab_strip_view ? tab_strip_view->unpinned_tabs_scroll_view()
++                        : nullptr;
++}
++
++void VerticalTabStripFocusSwipeController::SlideInTabs(bool forward) {
++  views::View* const target = GetSlideTarget();
++  if (!target || !gfx::Animation::ShouldRenderRichAnimation()) {
++    return;
++  }
++
++  if (!target->layer()) {
++    target->SetPaintToLayer();
++    target->layer()->SetFillsBoundsOpaquely(false);
++    owns_slide_layer_ = true;
++  }
++
++  gfx::Transform offset;
++  offset.Translate(
++      forward != base::i18n::IsRTL() ? kSlideOffset : -kSlideOffset, 0.0f);
++
++  views::AnimationBuilder()
++      .SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET)
++      .OnEnded(
++          base::BindOnce(&VerticalTabStripFocusSwipeController::OnSlideEnded,
++                         weak_factory_.GetWeakPtr()))
++      .Once()
++      .SetTransform(target, offset)
++      .SetOpacity(target, 0.0f)
++      .Then()
++      .SetDuration(kSlideDuration)
++      .SetTransform(target, gfx::Transform(), gfx::Tween::EASE_OUT)
++      .SetOpacity(target, 1.0f, gfx::Tween::EASE_OUT);
++}
++
++void VerticalTabStripFocusSwipeController::OnSlideEnded() {
++  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
++      FROM_HERE,
++      base::BindOnce(&VerticalTabStripFocusSwipeController::DestroySlideLayer,
++                     weak_factory_.GetWeakPtr()));
++}
++
++void VerticalTabStripFocusSwipeController::DestroySlideLayer() {
++  if (!owns_slide_layer_) {
++    return;
++  }
++  views::View* const target = GetSlideTarget();
++  if (!target || !target->layer() ||
++      target->layer()->GetAnimator()->is_animating()) {
++    return;
++  }
++  owns_slide_layer_ = false;
++  target->DestroyLayer();
+ }
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
+@@ -6,12 +6,17 @@
+ #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FOCUS_SWIPE_CONTROLLER_H_
+ 
+ #include "base/memory/raw_ptr.h"
++#include "base/memory/weak_ptr.h"
+ #include "base/time/time.h"
+ #include "build/build_config.h"
+ #include "ui/events/event_handler.h"
+ 
+ class VerticalTabStripRegionView;
+ 
++namespace views {
++class View;
++}  // namespace views
++
+ // Handles two-finger swipe gestures across the vertical tab strip to cycle
+ // between the normal (unfocused) tab strip and focused tab groups.
+ // Installed as a pre-target handler on VerticalTabStripRegionView.
+@@ -21,6 +26,8 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
+   static constexpr float kSwipeThreshold = 75.0f;
+   static constexpr base::TimeDelta kGestureResetTimeout =
+       base::Milliseconds(300);
++  static constexpr float kSlideOffset = 48.0f;
++  static constexpr base::TimeDelta kSlideDuration = base::Milliseconds(180);
+ 
+   explicit VerticalTabStripFocusSwipeController(
+       VerticalTabStripRegionView* region_view);
+@@ -51,6 +58,10 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
+   void ProcessSwipeOffset(float x_offset, float y_offset, ui::Event* event);
+   void ResetGesture();
+   void RotateTabGroupFocus(bool forward);
++  views::View* GetSlideTarget() const;
++  void SlideInTabs(bool forward);
++  void OnSlideEnded();
++  void DestroySlideLayer();
+ 
+   const raw_ptr<VerticalTabStripRegionView> region_view_;
+ 
+@@ -59,6 +70,10 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
+   float cumulative_y_ = 0.0f;
+   bool has_triggered_in_current_gesture_ = false;
+   base::TimeTicks last_event_time_;
++  bool owns_slide_layer_ = false;
++
++  base::WeakPtrFactory<VerticalTabStripFocusSwipeController> weak_factory_{
++      this};
+ };
+ 
+ #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FOCUS_SWIPE_CONTROLLER_H_
