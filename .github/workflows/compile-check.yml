@@ -1,0 +1,67 @@
+name: Compile check
+
+on:
+  push:
+    paths:
+      - 'patches/dream/**'
+      - '.github/scripts/compile-check.sh'
+      - '.github/workflows/compile-check.yml'
+  workflow_dispatch:
+    inputs:
+      files:
+        required: false
+        description: "Chromium source files to compile, space separated; empty means every .cc and .mm the dream patches touch"
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compile-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  compile:
+    name: Compile the files the dream patches touch
+    runs-on: macos-latest
+    timeout-minutes: 350
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        persist-credentials: false
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.14'
+    - name: Prepare check environment
+      run: |
+        cp -a .github/scripts/. .
+        sudo mdutil -a -i off
+        brew install coreutils quilt zstd sccache --overwrite
+        python3 -m pip install requests Pillow
+    - name: Cache Chromium source
+      uses: actions/cache@v5
+      with:
+        path: build/chromium-source.tar
+        key: >-
+          chromium-source-v1-${{ runner.os }}-${{ runner.arch }}-${{
+            hashFiles(
+              'helium-chromium/chromium_version.txt',
+              'helium-chromium/*.ini',
+              'helium-chromium/pruning.list',
+              'helium-chromium/utils/**',
+              'downloads*.ini',
+              'devutils/shared.sh',
+              '.github/scripts/sanity-check.sh'
+            )
+          }}
+    - name: Prepare build tools
+      run: |
+        ./github_prepare_xcode.sh
+        brew install llvm@20 --overwrite
+        brew link llvm@20 --force
+    - name: Compile
+      env:
+        SCCACHE_GHA_ENABLED: "on"
+        SCCACHE_GHA_VERSION: compile-check
+      run: ./compile-check.sh '${{ inputs.files }}'
