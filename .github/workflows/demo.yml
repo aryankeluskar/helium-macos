@@ -1,0 +1,59 @@
+name: Record a spaces demo
+
+on:
+  push:
+    paths:
+      - '.github/demo/**'
+      - '.github/workflows/demo.yml'
+  workflow_dispatch:
+    inputs:
+      build_run:
+        required: false
+        description: "Run ID of a Build macOS binaries of Helium run to record; empty records the official Helium release"
+        default: ""
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: demo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  record:
+    name: Record two-finger swipes between spaces
+    runs-on: macos-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install ffmpeg
+        run: brew install ffmpeg
+      - name: Get Helium
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RUN: ${{ inputs.build_run }}
+        run: .github/demo/get-helium.sh
+      - name: Record
+        run: .github/demo/demo.sh
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: spaces-demo
+          path: demo-out/
+      - name: Publish to the demo-videos branch
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd demo-out
+          rm -f helium.log.gz && gzip -k helium.log || true
+          rm -f helium.log
+          git init -q -b demo-videos
+          git add -A
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -qm "Spaces demo from ${GITHUB_SHA::7}, build run ${{ inputs.build_run || 'official release' }}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" demo-videos

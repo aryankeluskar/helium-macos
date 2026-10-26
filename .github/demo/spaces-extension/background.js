@@ -1,0 +1,20 @@
+const spaces = [
+  {title: 'Work', color: 'blue', urls: ['https://github.com/imputnet/helium', 'https://news.ycombinator.com', 'https://developer.apple.com']},
+  {title: 'Personal', color: 'pink', urls: ['https://www.youtube.com', 'https://www.reddit.com', 'https://open.spotify.com']},
+  {title: 'Research', color: 'green', urls: ['https://arxiv.org', 'https://en.wikipedia.org/wiki/Arc_(web_browser)', 'https://www.chromium.org']},
+];
+
+async function createSpaces() {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  for (const space of spaces) {
+    const tabIds = [];
+    for (const url of space.urls) {
+      const tab = await chrome.tabs.create({url, active: false});
+      tabIds.push(tab.id);
+    }
+    const groupId = await chrome.tabs.group({tabIds});
+    await chrome.tabGroups.update(groupId, {title: space.title, color: space.color});
+  }
+}
+
+chrome.runtime.onInstalled.addListener(createSpaces);

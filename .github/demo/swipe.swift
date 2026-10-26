@@ -1,0 +1,62 @@
+import CoreGraphics
+import Foundation
+
+func post(_ event: CGEvent?) {
+  event?.post(tap: .cghidEventTap)
+}
+
+func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint) {
+  let event = CGEvent(
+    scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: 0,
+    wheel2: deltaX, wheel3: 0)
+  event?.location = point
+  event?.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
+  event?.setIntegerValueField(.scrollWheelEventScrollPhase, value: phase)
+  post(event)
+}
+
+func moveMouse(to point: CGPoint) {
+  post(
+    CGEvent(
+      mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: point,
+      mouseButton: .left))
+}
+
+let arguments = CommandLine.arguments
+switch arguments[1] {
+case "bounds":
+  let windows =
+    CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)
+    as? [[String: Any]] ?? []
+  for window in windows {
+    guard (window[kCGWindowOwnerName as String] as? String) == arguments[2],
+      (window[kCGWindowLayer as String] as? Int) == 0,
+      let dictionary = window[kCGWindowBounds as String] as? NSDictionary,
+      let rect = CGRect(dictionaryRepresentation: dictionary as CFDictionary),
+      rect.width > 400
+    else { continue }
+    print(Int(rect.minX), Int(rect.minY), Int(rect.width), Int(rect.height))
+    exit(0)
+  }
+  exit(1)
+case "move":
+  moveMouse(to: CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!))
+case "swipe":
+  let point = CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!)
+  let distance = Int(arguments[4])!
+  let seconds = arguments.count > 5 ? Double(arguments[5])! : 0.35
+  moveMouse(to: point)
+  usleep(150_000)
+  let steps = max(1, Int(seconds * 60))
+  scroll(0, phase: 1, at: point)
+  var sent = 0
+  for step in 1...steps {
+    let target = distance * step / steps
+    scroll(Int32(target - sent), phase: 2, at: point)
+    sent = target
+    usleep(16_666)
+  }
+  scroll(0, phase: 4, at: point)
+default:
+  exit(2)
+}
