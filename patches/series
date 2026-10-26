@@ -27,4 +27,4 @@ helium/macos/fix-history-swiper-lifetime.patch
 
 dream/fast-vertical-tabs-hover-expand.patch
 dream/tab-group-spaces-by-default.patch
-dream/slide-between-spaces.patch
+dream/scrollable-spaces.patch

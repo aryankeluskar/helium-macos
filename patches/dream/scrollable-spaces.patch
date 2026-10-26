@@ -1,0 +1,635 @@
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
+@@ -4,15 +4,189 @@
+ 
+ #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h"
+ 
++#include <algorithm>
+ #include <cmath>
++#include <memory>
++#include <optional>
++#include <string>
++#include <utility>
++#include <vector>
+ 
+ #include "base/feature_list.h"
++#include "base/functional/bind.h"
+ #include "base/i18n/rtl.h"
++#include "base/location.h"
++#include "base/task/sequenced_task_runner.h"
++#include "cc/paint/paint_flags.h"
+ #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
++#include "chrome/browser/ui/color/chrome_color_id.h"
++#include "chrome/browser/ui/layout_constants.h"
++#include "chrome/browser/ui/tab_ui_helper.h"
++#include "chrome/browser/ui/tabs/tab_group_model.h"
++#include "chrome/browser/ui/tabs/tab_group_theme.h"
+ #include "chrome/browser/ui/tabs/tab_strip_model.h"
+ #include "chrome/browser/ui/ui_features.h"
+ #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
++#include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
++#include "components/tab_groups/tab_group_color.h"
++#include "components/tab_groups/tab_group_id.h"
++#include "components/tab_groups/tab_group_visual_data.h"
++#include "components/tabs/public/tab_group.h"
++#include "components/tabs/public/tab_interface.h"
++#include "ui/base/metadata/metadata_header_macros.h"
++#include "ui/base/metadata/metadata_impl_macros.h"
++#include "ui/base/models/image_model.h"
++#include "ui/color/color_provider.h"
++#include "ui/compositor/layer.h"
++#include "ui/compositor/layer_animator.h"
+ #include "ui/events/event.h"
++#include "ui/gfx/animation/animation.h"
++#include "ui/gfx/animation/tween.h"
++#include "ui/gfx/canvas.h"
++#include "ui/gfx/font.h"
++#include "ui/gfx/font_list.h"
++#include "ui/gfx/geometry/point_f.h"
++#include "ui/gfx/geometry/rect.h"
++#include "ui/gfx/geometry/transform.h"
++#include "ui/gfx/image/image_skia.h"
++#include "ui/gfx/range/range.h"
++#include "ui/views/animation/animation_builder.h"
++#include "ui/views/controls/scroll_view.h"
++#include "ui/views/view.h"
++#include "ui/views/view_class_properties.h"
++
++namespace {
++
++constexpr int kPeekIconInset = 7;
++constexpr int kPeekIconSize = 16;
++constexpr int kPeekTitleGap = 8;
++constexpr float kPeekGroupDotRadius = 4.0f;
++
++void SetTranslation(views::View* view, float x) {
++  gfx::Transform transform;
++  transform.Translate(x, 0.0f);
++  view->layer()->SetTransform(transform);
++}
++
++gfx::Transform Translation(float x) {
++  gfx::Transform transform;
++  transform.Translate(x, 0.0f);
++  return transform;
++}
++
++class SpacePeekView : public views::View {
++  METADATA_HEADER(SpacePeekView, views::View)
++
++ public:
++  SpacePeekView(TabStripModel* model,
++                std::optional<tab_groups::TabGroupId> group) {
++    SetCanProcessEventsWithinSubtree(false);
++    SetPaintToLayer();
++    layer()->SetFillsBoundsOpaquely(false);
++
++    if (!group.has_value()) {
++      for (int index = model->IndexOfFirstNonPinnedTab();
++           index < model->count(); ++index) {
++        AddRow(model, index);
++      }
++      return;
++    }
++
++    if (!model->group_model()) {
++      return;
++    }
++    const auto* const tab_group = model->group_model()->GetTabGroup(*group);
++    if (!tab_group) {
++      return;
++    }
++    header_title_ = tab_group->visual_data()->title();
++    header_color_ = tab_group->visual_data()->color();
++    const gfx::Range range = tab_group->ListTabs();
++    for (uint32_t index = range.start(); index < range.end(); ++index) {
++      AddRow(model, static_cast<int>(index));
++    }
++  }
++  SpacePeekView(const SpacePeekView&) = delete;
++  SpacePeekView& operator=(const SpacePeekView&) = delete;
++  ~SpacePeekView() override = default;
++
++  void OnPaint(gfx::Canvas* canvas) override {
++    views::View::OnPaint(canvas);
++    const ui::ColorProvider* const color_provider = GetColorProvider();
++    if (!color_provider) {
++      return;
++    }
++
++    const gfx::FontList font_list;
++    const int row_height =
++        GetLayoutConstant(LayoutConstant::kVerticalTabHeight);
++    const int icon_x =
++        GetLayoutConstant(LayoutConstant::kTabHorizontalPadding) +
++        kPeekIconInset;
++    const int title_x = icon_x + kPeekIconSize + kPeekTitleGap;
++    const int title_width = std::max(0, width() - title_x - icon_x);
++    int y = 0;
++
++    if (header_color_.has_value()) {
++      const SkColor group_color = color_provider->GetColor(
++          GetTabGroupTabStripColorId(*header_color_, /*active_frame=*/true));
++      cc::PaintFlags flags;
++      flags.setAntiAlias(true);
++      flags.setColor(group_color);
++      canvas->DrawCircle(
++          gfx::PointF(icon_x + kPeekIconSize / 2.0f, y + row_height / 2.0f),
++          kPeekGroupDotRadius, flags);
++      canvas->DrawStringRect(
++          header_title_,
++          font_list.DeriveWithWeight(gfx::Font::Weight::SEMIBOLD), group_color,
++          gfx::Rect(title_x, y, title_width, row_height));
++      y += row_height;
++    }
++
++    const SkColor title_color =
++        color_provider->GetColor(kColorTabForegroundInactiveFrameActive);
++    for (const Row& row : rows_) {
++      if (y >= height()) {
++        break;
++      }
++      if (!row.favicon.IsEmpty()) {
++        const gfx::ImageSkia icon = row.favicon.Rasterize(color_provider);
++        if (!icon.isNull()) {
++          canvas->DrawImageInt(icon, 0, 0, icon.width(), icon.height(), icon_x,
++                               y + (row_height - kPeekIconSize) / 2,
++                               kPeekIconSize, kPeekIconSize, true);
++        }
++      }
++      canvas->DrawStringRect(row.title, font_list, title_color,
++                             gfx::Rect(title_x, y, title_width, row_height));
++      y += row_height;
++    }
++  }
++
++ private:
++  struct Row {
++    ui::ImageModel favicon;
++    std::u16string title;
++  };
++
++  void AddRow(TabStripModel* model, int index) {
++    tabs::TabInterface* const tab = model->GetTabAtIndex(index);
++    TabUIHelper* const helper = tab ? TabUIHelper::From(tab) : nullptr;
++    if (!helper) {
++      return;
++    }
++    rows_.push_back(Row{helper->GetFavicon(), helper->GetTitle()});
++  }
++
++  std::u16string header_title_;
++  std::optional<tab_groups::TabGroupColorId> header_color_;
++  std::vector<Row> rows_;
++};
++
++BEGIN_METADATA(SpacePeekView)
++END_METADATA
++
++}  // namespace
+ 
+ VerticalTabStripFocusSwipeController::VerticalTabStripFocusSwipeController(
+     VerticalTabStripRegionView* region_view)
+@@ -41,7 +215,12 @@ void VerticalTabStripFocusSwipeController::OnMouseEvent(ui::MouseEvent* event) {
+ void VerticalTabStripFocusSwipeController::OnScrollEvent(
+     ui::ScrollEvent* event) {
+   if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+-      !region_view_ || region_view_->IsDragging()) {
++      !region_view_) {
++    return;
++  }
++
++  if (region_view_->IsDragging()) {
++    EndTracking();
+     return;
+   }
+ 
+@@ -52,6 +231,7 @@ void VerticalTabStripFocusSwipeController::OnScrollEvent(
+       event->SetHandled();
+       event->StopPropagation();
+     }
++    EndTracking();
+     ResetGesture();
+     return;
+   }
+@@ -60,10 +240,11 @@ void VerticalTabStripFocusSwipeController::OnScrollEvent(
+   // mode rotations. If locked into a horizontal swipe, consume momentum events
+   // until the momentum stream ends.
+   if (event->momentum_phase() != ui::EventMomentumPhase::NONE) {
+-    if (gesture_state_ == GestureState::kHorizontalSwipe) {
++    if (gesture_state_ == GestureState::kHorizontalSwipe || tracking_) {
+       event->SetHandled();
+       event->StopPropagation();
+     }
++    EndTracking();
+     if (event->momentum_phase() == ui::EventMomentumPhase::END) {
+       ResetGesture();
+     }
+@@ -71,6 +252,7 @@ void VerticalTabStripFocusSwipeController::OnScrollEvent(
+   }
+ 
+   if (event->scroll_event_phase() == ui::ScrollEventPhase::kBegan) {
++    EndTracking();
+     ResetGesture();
+   }
+ 
+@@ -79,6 +261,7 @@ void VerticalTabStripFocusSwipeController::OnScrollEvent(
+       event->SetHandled();
+       event->StopPropagation();
+     }
++    EndTracking();
+     ResetGesture();
+     return;
+   }
+@@ -94,6 +277,7 @@ void VerticalTabStripFocusSwipeController::ProcessSwipeOffset(
+   base::TimeTicks now = base::TimeTicks::Now();
+   if (!last_event_time_.is_null() &&
+       (now - last_event_time_) > kGestureResetTimeout) {
++    EndTracking();
+     ResetGesture();
+   }
+   last_event_time_ = now;
+@@ -125,16 +309,22 @@ void VerticalTabStripFocusSwipeController::ProcessSwipeOffset(
+     event->SetHandled();
+     event->StopPropagation();
+ 
++#if BUILDFLAG(IS_MAC)
++    if (!tracking_ && !has_triggered_in_current_gesture_) {
++      BeginTracking();
++    }
++    if (tracking_) {
++      UpdateTracking(cumulative_x_);
++      return;
++    }
++#endif
++
+     // Trigger exactly once per physical swipe gesture. Subsequent events in
+     // the same touch are consumed until fingers lift or gesture times out.
+     if (!has_triggered_in_current_gesture_ &&
+         std::abs(cumulative_x_) >= kSwipeThreshold) {
+-      bool forward = cumulative_x_ < 0;
+-      if (base::i18n::IsRTL()) {
+-        forward = !forward;
+-      }
+       has_triggered_in_current_gesture_ = true;
+-      RotateTabGroupFocus(forward);
++      RotateTabGroupFocus(IsForward(cumulative_x_));
+     }
+   }
+ }
+@@ -151,5 +341,267 @@ void VerticalTabStripFocusSwipeController::RotateTabGroupFocus(bool forward) {
+     return;
+   }
+ 
+-  region_view_->tab_strip_model()->RotateFocusedGroup(forward);
++  TabStripModel* const model = region_view_->tab_strip_model();
++  const std::optional<tab_groups::TabGroupId> old_focused_group =
++      model->GetFocusedGroup();
++  model->RotateFocusedGroup(forward);
++  if (model->GetFocusedGroup() != old_focused_group) {
++    SlideInTabs(forward);
++  }
++}
++
++views::View* VerticalTabStripFocusSwipeController::GetSlideTarget() const {
++  TabStripView* const tab_strip_view = region_view_->tab_strip_view();
++  return tab_strip_view ? tab_strip_view->unpinned_tabs_scroll_view() : nullptr;
++}
++
++void VerticalTabStripFocusSwipeController::SlideInTabs(bool forward) {
++  views::View* const target = GetSlideTarget();
++  if (!target || !gfx::Animation::ShouldRenderRichAnimation()) {
++    return;
++  }
++
++  if (!target->layer()) {
++    target->SetPaintToLayer();
++    target->layer()->SetFillsBoundsOpaquely(false);
++  }
++
++  gfx::Transform offset;
++  offset.Translate(
++      forward != base::i18n::IsRTL() ? kSlideOffset : -kSlideOffset, 0.0f);
++
++  views::AnimationBuilder()
++      .SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET)
++      .Once()
++      .SetTransform(target, offset)
++      .SetOpacity(target, 0.0f)
++      .Then()
++      .SetDuration(kSlideDuration)
++      .SetTransform(target, gfx::Transform(), gfx::Tween::EASE_OUT)
++      .SetOpacity(target, 1.0f, gfx::Tween::EASE_OUT);
++}
++
++std::optional<VerticalTabStripFocusSwipeController::SpaceTarget>
++VerticalTabStripFocusSwipeController::PeekRotation(bool forward) const {
++  TabStripModel* const model = region_view_->tab_strip_model();
++  if (!model || !model->group_model()) {
++    return std::nullopt;
++  }
++
++  const std::optional<tab_groups::TabGroupId> current =
++      model->GetFocusedGroup();
++  if (current.has_value() && model->IsEphemeralTabGroup(*current)) {
++    return std::nullopt;
++  }
++
++  std::vector<tab_groups::TabGroupId> groups =
++      model->group_model()->ListTabGroups();
++  if (groups.empty()) {
++    return std::nullopt;
++  }
++  std::ranges::sort(groups, {}, [model](const tab_groups::TabGroupId& id) {
++    return model->group_model()->GetTabGroup(id)->ListTabs().start();
++  });
++
++  if (!current.has_value()) {
++    return SpaceTarget{forward ? groups.front() : groups.back()};
++  }
++
++  const auto it = std::ranges::find(groups, *current);
++  if (it == groups.end()) {
++    return SpaceTarget{std::nullopt};
++  }
++  if (forward) {
++    const auto next = std::next(it);
++    return next != groups.end() ? SpaceTarget{*next}
++                                : SpaceTarget{std::nullopt};
++  }
++  return it != groups.begin() ? SpaceTarget{*std::prev(it)}
++                              : SpaceTarget{std::nullopt};
++}
++
++bool VerticalTabStripFocusSwipeController::IsForward(float x) const {
++  return (x < 0) != base::i18n::IsRTL();
++}
++
++void VerticalTabStripFocusSwipeController::BeginTracking() {
++  views::View* const target = GetSlideTarget();
++  if (!target || !region_view_->tab_strip_model() ||
++      !gfx::Animation::ShouldRenderRichAnimation()) {
++    return;
++  }
++
++  FinishSettling();
++  if (!target->layer()) {
++    target->SetPaintToLayer();
++    target->layer()->SetFillsBoundsOpaquely(false);
++  }
++  target->layer()->SetOpacity(1.0f);
++
++  tracking_ = true;
++  track_x_ = 0.0f;
++  shown_x_ = 0.0f;
++  velocity_ = 0.0f;
++  last_track_time_ = base::TimeTicks::Now();
++  peek_forward_.reset();
++}
++
++void VerticalTabStripFocusSwipeController::UpdateTracking(float x) {
++  views::View* const target = GetSlideTarget();
++  if (!target || !target->layer()) {
++    EndTracking();
++    return;
++  }
++
++  const base::TimeTicks now = base::TimeTicks::Now();
++  const double elapsed_ms = (now - last_track_time_).InMillisecondsF();
++  if (elapsed_ms > 0) {
++    const float instant_velocity =
++        static_cast<float>((x - track_x_) / elapsed_ms);
++    velocity_ = 0.6f * instant_velocity + 0.4f * velocity_;
++  }
++  last_track_time_ = now;
++  track_x_ = x;
++
++  const bool forward = IsForward(x);
++  const std::optional<SpaceTarget> neighbor =
++      x == 0.0f ? std::optional<SpaceTarget>() : PeekRotation(forward);
++  const float width = static_cast<float>(std::max(1, target->width()));
++  shown_x_ =
++      neighbor.has_value() ? std::clamp(x, -width, width) : x * kEdgeResistance;
++
++  if (!neighbor.has_value() || peek_forward_ != forward) {
++    if (views::View* const peek = incoming_peek_.view()) {
++      incoming_peek_.SetView(nullptr);
++      std::unique_ptr<views::View> removed =
++          peek->parent()->RemoveChildViewT(peek);
++    }
++    peek_forward_.reset();
++  }
++  if (neighbor.has_value() && !incoming_peek_.view()) {
++    incoming_peek_.SetView(AddPeekView(*neighbor));
++    peek_forward_ = forward;
++  }
++
++  SetTranslation(target, shown_x_);
++  if (views::View* const peek = incoming_peek_.view()) {
++    SetTranslation(peek, shown_x_ + (shown_x_ < 0 ? width : -width));
++  }
++
++  end_timer_.Start(
++      FROM_HERE, kGestureResetTimeout,
++      base::BindOnce(&VerticalTabStripFocusSwipeController::EndTracking,
++                     base::Unretained(this)));
++}
++
++void VerticalTabStripFocusSwipeController::EndTracking() {
++  if (!tracking_) {
++    return;
++  }
++  tracking_ = false;
++  has_triggered_in_current_gesture_ = true;
++  end_timer_.Stop();
++  ++settle_id_;
++
++  views::View* const target = GetSlideTarget();
++  TabStripModel* const model = region_view_->tab_strip_model();
++  if (!target || !target->layer() || !model) {
++    RemovePeekViews();
++    return;
++  }
++
++  const float width = static_cast<float>(std::max(1, target->width()));
++  const bool forward = IsForward(track_x_);
++  const bool flung = std::abs(velocity_) >= kCommitVelocity &&
++                     (velocity_ < 0) == (track_x_ < 0);
++  const bool commit = incoming_peek_.view() && peek_forward_ == forward &&
++                      (std::abs(shown_x_) >= width * kCommitFraction || flung);
++  const float exit_x = shown_x_ < 0 ? -width : width;
++
++  views::AnimationBuilder builder;
++  builder.SetPreemptionStrategy(ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET)
++      .OnEnded(base::BindOnce(
++          &VerticalTabStripFocusSwipeController::OnSettleAnimationDone,
++          weak_factory_.GetWeakPtr(), settle_id_))
++      .OnAborted(base::BindOnce(
++          &VerticalTabStripFocusSwipeController::OnSettleAnimationDone,
++          weak_factory_.GetWeakPtr(), settle_id_));
++
++  if (commit) {
++    views::View* const outgoing =
++        AddPeekView(SpaceTarget{model->GetFocusedGroup()});
++    outgoing_peek_.SetView(outgoing);
++    SetTranslation(outgoing, shown_x_);
++
++    views::View* const incoming = incoming_peek_.view();
++    incoming_peek_.SetView(nullptr);
++    std::unique_ptr<views::View> removed =
++        incoming->parent()->RemoveChildViewT(incoming);
++
++    model->RotateFocusedGroup(forward);
++    SetTranslation(target, shown_x_ - exit_x);
++
++    builder.Once()
++        .SetDuration(kSettleDuration)
++        .SetTransform(target, gfx::Transform(), gfx::Tween::EASE_OUT)
++        .SetTransform(outgoing, Translation(exit_x), gfx::Tween::EASE_OUT);
++  } else if (views::View* const incoming = incoming_peek_.view()) {
++    builder.Once()
++        .SetDuration(kSettleDuration)
++        .SetTransform(target, gfx::Transform(), gfx::Tween::EASE_OUT)
++        .SetTransform(incoming, Translation(-exit_x), gfx::Tween::EASE_OUT);
++  } else {
++    builder.Once()
++        .SetDuration(kSettleDuration)
++        .SetTransform(target, gfx::Transform(), gfx::Tween::EASE_OUT);
++  }
++
++  track_x_ = 0.0f;
++  shown_x_ = 0.0f;
++  velocity_ = 0.0f;
++  peek_forward_.reset();
++}
++
++void VerticalTabStripFocusSwipeController::FinishSettling() {
++  ++settle_id_;
++  if (views::View* const target = GetSlideTarget(); target && target->layer()) {
++    target->layer()->GetAnimator()->StopAnimating();
++  }
++  RemovePeekViews();
++}
++
++void VerticalTabStripFocusSwipeController::OnSettleAnimationDone(
++    int settle_id) {
++  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
++      FROM_HERE,
++      base::BindOnce(&VerticalTabStripFocusSwipeController::OnSettled,
++                     weak_factory_.GetWeakPtr(), settle_id));
++}
++
++void VerticalTabStripFocusSwipeController::OnSettled(int settle_id) {
++  if (settle_id != settle_id_ || tracking_) {
++    return;
++  }
++  RemovePeekViews();
++}
++
++views::View* VerticalTabStripFocusSwipeController::AddPeekView(
++    const SpaceTarget& space) {
++  views::View* const target = GetSlideTarget();
++  TabStripView* const tab_strip_view = region_view_->tab_strip_view();
++  auto peek = std::make_unique<SpacePeekView>(region_view_->tab_strip_model(),
++                                              space.group);
++  peek->SetProperty(views::kViewIgnoredByLayoutKey, true);
++  peek->SetBoundsRect(target->bounds());
++  return tab_strip_view->AddChildView(std::move(peek));
++}
++
++void VerticalTabStripFocusSwipeController::RemovePeekViews() {
++  for (views::ViewTracker* const tracker : {&incoming_peek_, &outgoing_peek_}) {
++    if (views::View* const peek = tracker->view()) {
++      tracker->SetView(nullptr);
++      std::unique_ptr<views::View> removed =
++          peek->parent()->RemoveChildViewT(peek);
++    }
++  }
+ }
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
+@@ -5,13 +5,23 @@
+ #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FOCUS_SWIPE_CONTROLLER_H_
+ #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FOCUS_SWIPE_CONTROLLER_H_
+ 
++#include <optional>
++
+ #include "base/memory/raw_ptr.h"
++#include "base/memory/weak_ptr.h"
+ #include "base/time/time.h"
++#include "base/timer/timer.h"
+ #include "build/build_config.h"
++#include "components/tab_groups/tab_group_id.h"
+ #include "ui/events/event_handler.h"
++#include "ui/views/view_tracker.h"
+ 
+ class VerticalTabStripRegionView;
+ 
++namespace views {
++class View;
++}  // namespace views
++
+ // Handles two-finger swipe gestures across the vertical tab strip to cycle
+ // between the normal (unfocused) tab strip and focused tab groups.
+ // Installed as a pre-target handler on VerticalTabStripRegionView.
+@@ -21,6 +31,12 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
+   static constexpr float kSwipeThreshold = 75.0f;
+   static constexpr base::TimeDelta kGestureResetTimeout =
+       base::Milliseconds(300);
++  static constexpr float kSlideOffset = 48.0f;
++  static constexpr base::TimeDelta kSlideDuration = base::Milliseconds(180);
++  static constexpr float kCommitFraction = 0.3f;
++  static constexpr float kCommitVelocity = 0.5f;
++  static constexpr float kEdgeResistance = 0.3f;
++  static constexpr base::TimeDelta kSettleDuration = base::Milliseconds(220);
+ 
+   explicit VerticalTabStripFocusSwipeController(
+       VerticalTabStripRegionView* region_view);
+@@ -48,9 +64,26 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
+     kVerticalPassthrough,
+   };
+ 
++  struct SpaceTarget {
++    std::optional<tab_groups::TabGroupId> group;
++  };
++
+   void ProcessSwipeOffset(float x_offset, float y_offset, ui::Event* event);
+   void ResetGesture();
+   void RotateTabGroupFocus(bool forward);
++  views::View* GetSlideTarget() const;
++  void SlideInTabs(bool forward);
++
++  std::optional<SpaceTarget> PeekRotation(bool forward) const;
++  bool IsForward(float x) const;
++  void BeginTracking();
++  void UpdateTracking(float x);
++  void EndTracking();
++  void FinishSettling();
++  void OnSettleAnimationDone(int settle_id);
++  void OnSettled(int settle_id);
++  views::View* AddPeekView(const SpaceTarget& space);
++  void RemovePeekViews();
+ 
+   const raw_ptr<VerticalTabStripRegionView> region_view_;
+ 
+@@ -59,6 +92,20 @@ class VerticalTabStripFocusSwipeController : public ui::EventHandler {
+   float cumulative_y_ = 0.0f;
+   bool has_triggered_in_current_gesture_ = false;
+   base::TimeTicks last_event_time_;
++
++  bool tracking_ = false;
++  float track_x_ = 0.0f;
++  float shown_x_ = 0.0f;
++  float velocity_ = 0.0f;
++  base::TimeTicks last_track_time_;
++  std::optional<bool> peek_forward_;
++  int settle_id_ = 0;
++  views::ViewTracker incoming_peek_;
++  views::ViewTracker outgoing_peek_;
++  base::OneShotTimer end_timer_;
++
++  base::WeakPtrFactory<VerticalTabStripFocusSwipeController> weak_factory_{
++      this};
+ };
+ 
+ #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FOCUS_SWIPE_CONTROLLER_H_
