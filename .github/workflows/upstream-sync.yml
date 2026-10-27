@@ -35,6 +35,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          report() {
+            if [ -z "$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$1\"" --json number --jq '.[0].number // empty')" ]; then
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$1" --body "$2"
+            fi
+          }
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git remote add upstream "$UPSTREAM"
@@ -45,17 +50,19 @@ jobs:
             exit 0
           fi
 
+          upstream_head=$(git rev-parse --short upstream/main)
           if ! git merge --no-edit upstream/main; then
             git merge --abort
-            title="Upstream Helium doesn't merge into $DREAM_BRANCH"
-            body="Upstream main is at $(git rev-parse --short upstream/main) and merging it into \`$DREAM_BRANCH\` conflicts. Merge it by hand so the fork keeps getting Chromium security fixes."
-            if [ -z "$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')" ]; then
-              gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
-            fi
+            report "Upstream Helium doesn't merge into $DREAM_BRANCH" \
+              "Upstream main is at $upstream_head and merging it into \`$DREAM_BRANCH\` conflicts. Merge it by hand so the fork keeps getting Chromium security fixes."
             exit 1
           fi
 
-          git push origin "HEAD:$DREAM_BRANCH"
+          if ! git push origin "HEAD:$DREAM_BRANCH"; then
+            report "Upstream Helium merged but couldn't be pushed to $DREAM_BRANCH" \
+              "Upstream main is at $upstream_head. The merge succeeded but the push was refused, most likely because upstream changed files under .github/workflows, which the Actions token may not push. Merge upstream main into \`$DREAM_BRANCH\` by hand so the fork keeps getting Chromium security fixes."
+            exit 1
+          fi
           echo "merged=true" >> "$GITHUB_OUTPUT"
 
       - name: Build the merged branch

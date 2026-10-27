@@ -1,0 +1,32 @@
+name: Report failed builds
+
+on:
+  workflow_run:
+    workflows: ["Build macOS binaries of Helium"]
+    types: [completed]
+
+permissions:
+  issues: write
+
+jobs:
+  report:
+    name: Open an issue for a failed build
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          title="Helium build failed on $RUN_BRANCH"
+          body="The build at ${RUN_SHA::7} failed: $RUN_URL. If it failed while applying patches, a Chromium update changed code under a dream patch and that patch needs a refresh; until then the fork isn't getting new security fixes."
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
+          fi

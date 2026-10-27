@@ -21,6 +21,6 @@ The DMG isn't notarized. After dragging Helium to Applications, allow it once in
 
 ## Staying safe
 
-- **Chromium security fixes:** "Follow upstream Helium" merges imputnet/helium-macos into this branch every six hours and starts a build when anything new arrives. GitHub only runs the schedule when this branch is the fork's default branch.
+- **Chromium security fixes:** "Follow upstream Helium" merges imputnet/helium-macos into this branch every six hours and starts a build when anything new arrives. A merge that conflicts or can't be pushed, and any failed build, opens an issue in the fork ("Report failed builds"). GitHub only runs the schedule and the failure report when this branch is the fork's default branch.
 - **From Helium itself:** uBlock Origin is built in, HTTPS-First mode is on, and nothing is sent to Google.
 - **No auto-update:** each new build has to be installed by hand.
