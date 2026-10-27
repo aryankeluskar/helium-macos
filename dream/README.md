@@ -9,8 +9,9 @@ Helium with Arc-style spaces and Brave-style vertical tabs, built for Apple Sili
 | `patches/dream/fast-vertical-tabs-hover-expand.patch` | The collapsed vertical tab strip opens over the page in 120 ms with a fast-start curve and closes in 100 ms, like Brave. Stock Chromium takes 250 ms on a slow-start curve. Expand on hover is on by default. |
 | `patches/dream/tab-group-spaces-by-default.patch` | Chromium's Tab Groups Focusing is on: a focused tab group shows only its own tabs, so groups work as spaces. Freezing the other spaces' tabs is off, so chat apps and music keep running. |
 | `patches/dream/scrollable-spaces.patch` | Two-finger horizontal scrolling on the sidebar moves between spaces like Arc. The tab list follows your fingers, the next space slides in beside it, and on release it settles on the nearer space (past 30% of the width or a quick flick). Reduce Motion falls back to an instant switch. |
+| `patches/dream/arc-spaces.patch` | Spaces look and work like Arc's: no group headers or chips, a header naming the current space (an emoji at the start of its name becomes its icon), a space bar at the foot of the sidebar with `+` for a new space, the sidebar's colour blending between spaces as you swipe, ARCUI's paging physics with haptic detents, new tabs staying in the current space, each space remembering its tab, and Ctrl+1…9. See `dream/arc-spaces.md`. |
 
-Make a space with Cmd+Ctrl+P (new tab group), or right-click a tab and add it to a new group. Once you're in a space, Cmd+Ctrl+X and Cmd+Ctrl+Z step to the next and previous one.
+Make a space with the `+` in the space bar at the foot of the sidebar; your existing tabs become the first space. Right-click a space's item, or click its header, to rename or recolour it; start the name with an emoji to give it an icon. Switch with two fingers on the sidebar, a click in the space bar, Ctrl+1…9, or Cmd+Ctrl+X and Cmd+Ctrl+Z.
 
 ## Getting a build
 

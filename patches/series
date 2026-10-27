@@ -28,3 +28,4 @@ helium/macos/fix-history-swiper-lifetime.patch
 dream/fast-vertical-tabs-hover-expand.patch
 dream/tab-group-spaces-by-default.patch
 dream/scrollable-spaces.patch
+dream/arc-spaces.patch
