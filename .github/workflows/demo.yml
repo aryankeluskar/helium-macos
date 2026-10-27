@@ -11,6 +11,12 @@ on:
         required: false
         description: "Run ID of a Build macOS binaries of Helium run to record; empty records the official Helium release"
         default: ""
+  workflow_call:
+    inputs:
+      build_run:
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write

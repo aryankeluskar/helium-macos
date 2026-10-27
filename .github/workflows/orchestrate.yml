@@ -1,0 +1,166 @@
+name: Finish the dream build
+
+# Runs the hand-offs between build stages on free Linux runners, so a DMG
+# arrives without anyone watching: wait for the parallel compile shards and
+# the compile check, start the safe build and the Arc spaces build, wait for
+# them, record a demo of the result, and open an issue linking both.
+
+on:
+  push:
+    paths:
+      - '.github/orchestrate/plan.env'
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  REF: ${{ github.ref_name }}
+
+jobs:
+  start-builds:
+    name: Start the builds once the shards are done
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    outputs:
+      safe_run: ${{ steps.dispatch.outputs.safe_run }}
+      arc_run: ${{ steps.dispatch.outputs.arc_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/orchestrate
+      - id: dispatch
+        run: |
+          set -euo pipefail
+          source .github/orchestrate/plan.env
+          repo="$GITHUB_REPOSITORY"
+
+          wait_for() {
+            until [ "$(gh run view "$1" --repo "$repo" --json status --jq .status)" = completed ]; do
+              sleep 60
+            done
+          }
+          dispatch() {
+            local before
+            before=$(gh run list --repo "$repo" --workflow build.yml --branch "$REF" --limit 1 --json databaseId --jq '.[0].databaseId // 0')
+            gh workflow run build.yml --repo "$repo" --ref "$REF" "$@"
+            for _ in $(seq 1 30); do
+              sleep 10
+              id=$(gh run list --repo "$repo" --workflow build.yml --branch "$REF" --limit 1 --json databaseId --jq '.[0].databaseId // 0')
+              if [ "$id" != "$before" ]; then
+                echo "$id"
+                return
+              fi
+            done
+            echo "build.yml didn't start" >&2
+            exit 1
+          }
+
+          wait_for "$SHARD_RUN"
+          caches=$(gh api "repos/$repo/actions/runs/$SHARD_RUN/artifacts" \
+            --jq '[.artifacts[] | select(.name | startswith("sccache-shard-"))] | length')
+          cache_args=()
+          if [ "$caches" -gt 0 ]; then
+            cache_args=(-f cache_run="$SHARD_RUN")
+          fi
+          echo "$caches shard caches"
+
+          common=(-f arches='["arm64"]' -f resume_run="$TREE_RUN" -f build_tool=ninja "${cache_args[@]}")
+          safe_run=$(dispatch "${common[@]}")
+          echo "safe_run=$safe_run" >> "$GITHUB_OUTPUT"
+
+          wait_for "$COMPILE_CHECK_RUN"
+          if [ "$(gh run view "$COMPILE_CHECK_RUN" --repo "$repo" --json conclusion --jq .conclusion)" = success ]; then
+            arc_run=$(dispatch "${common[@]}" -f resume_patch="$ARC_PATCHES")
+            echo "arc_run=$arc_run" >> "$GITHUB_OUTPUT"
+          else
+            echo "The compile check failed, so only the safe build runs."
+          fi
+
+  wait-builds:
+    name: Wait for a DMG
+    needs: start-builds
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    outputs:
+      dmg_run: ${{ steps.wait.outputs.dmg_run }}
+      dmg_name: ${{ steps.wait.outputs.dmg_name }}
+    steps:
+      - id: wait
+        env:
+          SAFE_RUN: ${{ needs.start-builds.outputs.safe_run }}
+          ARC_RUN: ${{ needs.start-builds.outputs.arc_run }}
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          dmg_of() {
+            gh api "repos/$repo/actions/runs/$1/artifacts" --jq '[.artifacts[].name | select(endswith(".dmg"))][0] // empty'
+          }
+          done_run() {
+            [ -z "$1" ] || [ "$(gh run view "$1" --repo "$repo" --json status --jq .status)" = completed ]
+          }
+          until done_run "$ARC_RUN" && done_run "$SAFE_RUN"; do
+            if [ -n "$ARC_RUN" ] && [ -n "$(dmg_of "$ARC_RUN")" ]; then
+              break
+            fi
+            if [ "$SECONDS" -gt $((335 * 60)) ]; then
+              echo "Still building; taking whichever DMG exists now."
+              break
+            fi
+            sleep 120
+          done
+          for run in $ARC_RUN $SAFE_RUN; do
+            name=$(dmg_of "$run")
+            if [ -n "$name" ]; then
+              echo "dmg_run=$run" >> "$GITHUB_OUTPUT"
+              echo "dmg_name=$name" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "Neither build produced a DMG." >&2
+          exit 1
+
+  demo:
+    name: Record the demo
+    needs: wait-builds
+    uses: ./.github/workflows/demo.yml
+    with:
+      build_run: ${{ needs.wait-builds.outputs.dmg_run }}
+
+  notify:
+    name: Tell the owner
+    needs: [start-builds, wait-builds, demo]
+    if: ${{ always() && needs.wait-builds.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - env:
+          DMG_RUN: ${{ needs.wait-builds.outputs.dmg_run }}
+          DMG_NAME: ${{ needs.wait-builds.outputs.dmg_name }}
+          ARC_RUN: ${{ needs.start-builds.outputs.arc_run }}
+          DEMO_RESULT: ${{ needs.demo.result }}
+        run: |
+          set -euo pipefail
+          server="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+          if [ "$DMG_RUN" = "$ARC_RUN" ]; then
+            kind="with Arc spaces"
+          else
+            kind="without the Arc spaces patch (its build didn't produce a DMG)"
+          fi
+          demo="The demo didn't record ($DEMO_RESULT)."
+          if [ "$DEMO_RESULT" = success ]; then
+            demo="Demo video: $server/blob/demo-videos/spaces-demo.mp4"
+          fi
+          body=$(printf '%s\n\n%s\n\n%s\n\n%s\n' \
+            "Your dream browser DMG ($kind) is ready: download \`$DMG_NAME\` from $server/actions/runs/$DMG_RUN" \
+            "$demo" \
+            "Install: open the DMG, drag Helium to Applications, then allow it once in System Settings > Privacy & Security, since it isn't notarized." \
+            "Agents: turn on chrome://inspect/#remote-debugging, run \`ln -sf /Applications/Helium.app/Contents/Resources/helium-agent/helium /opt/homebrew/bin/helium\`, then \`claude mcp add helium -- helium mcp\`.")
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Dream browser DMG ready" --body "$body"
