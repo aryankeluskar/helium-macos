@@ -63,7 +63,9 @@ A full Chromium build takes about a day on one free 3-core runner, so this one i
    `.github/orchestrate/plan.env`; find its run with `gh run list --workflow orchestrate.yml`) waits for
    2 and 3, dispatches the safe build (resume of 1 with the shard caches) and, if 3 passed, the Arc build (same, plus
    `resume_patch` = both new patches), waits for a DMG (preferring Arc's), records the demo via `demo.yml`, and opens an
-   issue "Dream browser DMG ready" with the links. **Don't dispatch builds by hand while it runs.**
+   issue "Dream browser DMG ready" with the links, including `verify.md` from `.github/demo/verify.sh` (arm64,
+   ad blocking, extensions and the agent CLI, checked on a GitHub Apple Silicon Mac). **Don't dispatch builds by hand
+   while it runs.**
 
 The DMG is an artifact of the build run (log in to GitHub to download). It isn't notarized: allow it once in System
 Settings › Privacy & Security. The demo video lands on the `demo-videos` branch (`spaces-demo.mp4`).
