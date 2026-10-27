@@ -1,0 +1,46 @@
+name: Excerpt a build log
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        required: true
+        description: "Run ID of a Build macOS binaries of Helium run"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  excerpt:
+    name: Publish the start of each build phase
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download the build logs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --pattern 'github_build_logs_*' --dir logs
+      - name: Excerpt and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -euo pipefail
+          mkdir out
+          log=$(find logs -name 'github_actions_build_*.log' | head -1)
+          wc -l "$log" > "out/$RUN_ID.txt"
+          grep -n -E 'timeout -k|Regenerat|gn gen|build\.ninja|args\.gn|xcode|Xcode|siso|ninja: |\[1/|\[2/|\[100/|\[1000/|Build Failure|build finished|_error_code' "$log" | head -300 >> "$RUN_ID.matches" || true
+          cat "$RUN_ID.matches" >> "out/$RUN_ID.txt"
+          for start in $(grep -n 'timeout -k' "$log" | cut -d: -f1); do
+            echo "==== phase starting at line $start" >> "out/$RUN_ID.txt"
+            sed -n "${start},$((start + 80))p" "$log" >> "out/$RUN_ID.txt"
+          done
+          find logs -type f | sort > "out/$RUN_ID.files"
+          cd out
+          git init -q -b diagnostics
+          git add -A
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -qm "Build log excerpt for run $RUN_ID"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" diagnostics
