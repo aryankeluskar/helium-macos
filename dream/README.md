@@ -23,5 +23,6 @@ The DMG isn't notarized. After dragging Helium to Applications, allow it once in
 ## Staying safe
 
 - **Chromium security fixes:** "Follow upstream Helium" merges imputnet/helium-macos into this branch every six hours and starts a build when anything new arrives. A merge that conflicts or can't be pushed, and any failed build, opens an issue in the fork ("Report failed builds"). GitHub only runs the schedule and the failure report when this branch is the fork's default branch.
+- **No cookie theft through the debugging port:** like Chrome, `--remote-debugging-port` no longer opens on the profile you browse with (`patches/dream/block-debug-port-on-default-profile.patch`), so malware can't relaunch the browser to read your cookies. Agents connect through `chrome://inspect/#remote-debugging` instead, where you approve each connection.
 - **From Helium itself:** uBlock Origin is built in as a component (always on, updated by Helium, with DNS uncloaking like Brave's), HTTPS-First mode is on, and nothing is sent to Google. Chrome Web Store extensions install natively.
 - **No auto-update:** each new build has to be installed by hand.
