@@ -50,7 +50,7 @@ jobs:
           dispatch() {
             local before
             before=$(gh run list --repo "$repo" --workflow build.yml --branch "$REF" --limit 1 --json databaseId --jq '.[0].databaseId // 0')
-            gh workflow run build.yml --repo "$repo" --ref "$REF" "$@"
+            gh workflow run build.yml --repo "$repo" --ref "$REF" "$@" >&2
             for _ in $(seq 1 30); do
               sleep 10
               id=$(gh run list --repo "$repo" --workflow build.yml --branch "$REF" --limit 1 --json databaseId --jq '.[0].databaseId // 0')
@@ -62,6 +62,13 @@ jobs:
             echo "build.yml didn't start" >&2
             exit 1
           }
+
+          if [ -n "${SAFE_RUN:-}" ]; then
+            echo "safe_run=$SAFE_RUN" >> "$GITHUB_OUTPUT"
+            echo "arc_run=${ARC_RUN:-}" >> "$GITHUB_OUTPUT"
+            echo "Builds already started: safe $SAFE_RUN, Arc ${ARC_RUN:-none}"
+            exit 0
+          fi
 
           wait_for "$SHARD_RUN"
           caches=$(gh api "repos/$repo/actions/runs/$SHARD_RUN/artifacts" \
