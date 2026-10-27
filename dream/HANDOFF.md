@@ -3,6 +3,9 @@
 Written 2026-10-27 19:00 UTC by the cloud Claude Code session that built this branch, for whoever picks it up next
 (the owner's local Claude Code). Repo: `aryankeluskar/helium-macos`, branch `claude/arc-spaces`.
 
+The whole conversation is in `dream/transcript/2026-10-26-cloud-session.md` (about 1 MB; grep it rather than reading it
+end to end).
+
 ## The goal, in the owner's words
 
 > A browser whose UI and UX is like Arc, mainly the touchpad scroll to shift spaces, optimized for Apple Silicon (an
