@@ -1,0 +1,24 @@
+cache: -rw-r--r--  1 runner  staff  12234617856 Oct 26 17:50 build/chromium-source.tar
+== build tools in the source archive
+drwxr-xr-x  0 runner staff         0 Oct 26 17:45 ./third_party/siso/
+drwxr-xr-x  0 runner staff         0 Oct 26 17:45 ./third_party/ninja/
+drwxr-xr-x  0 runner staff         0 Oct 26 17:45 ./third_party/dawn/third_party/ninja/
+-rwxr-xr-x  0 runner staff     27413 Oct 19 20:07 ./third_party/depot_tools/autoninja.py
+-rw-r--r--  0 runner staff       404 Oct 19 20:07 ./third_party/depot_tools/ninja.bat
+-rwxr-xr-x  0 runner staff      5011 Oct 19 20:07 ./third_party/depot_tools/ninja.py
+-rwxr-xr-x  0 runner staff      1181 Oct 19 20:07 ./third_party/depot_tools/autoninja
+-rwxr-xr-x  0 runner staff       265 Oct 19 20:07 ./third_party/depot_tools/ninja
+-rwxr-xr-x  0 runner staff     10339 Oct 19 20:07 ./third_party/depot_tools/ninjalog_uploader.py
+-rwxr-xr-x  0 runner staff      1288 Oct 19 20:07 ./third_party/depot_tools/autoninja.bat
+-rw-r--r--  0 runner staff       429 Oct 19 20:07 ./third_party/ninja/README.chromium
+-rwxr-xr-x  0 runner staff    328194 Oct 19 20:07 ./third_party/ninja/ninja
+-rw-r--r--  0 runner staff     11358 Oct 19 20:07 ./third_party/ninja/COPYING
+drwxr-xr-x  0 runner staff         0 Oct 26 17:45 ./third_party/openscreen/src/third_party/ninja/
+-rw-r--r--  0 runner staff      1560 Oct 19 20:07 ./third_party/siso/LICENSE
+drwxr-xr-x  0 runner staff         0 Oct 26 17:45 ./third_party/siso/cipd/
+-rw-r--r--  0 runner staff       395 Oct 19 20:07 ./third_party/siso/README.chromium
+-rw-r--r--  0 runner staff        72 Oct 19 20:07 ./third_party/siso/OWNERS
+-rwxr-xr-x  0 runner staff  64166834 Oct 19 20:07 ./third_party/siso/cipd/siso
+drwxr-xr-x  0 runner staff         0 Oct 26 17:43 ./third_party/crashpad/crashpad/third_party/ninja/
+-rwxr-xr-x  0 runner staff      1342 Oct 19 20:07 ./third_party/crashpad/crashpad/third_party/ninja/ninja
+-rw-r--r--  0 runner staff       507 Oct 19 20:07 ./third_party/crashpad/crashpad/third_party/ninja/README.crashpad
