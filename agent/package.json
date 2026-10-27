@@ -1,0 +1,25 @@
+{
+  "name": "helium-agent",
+  "version": "0.1.0",
+  "description": "Let coding agents drive your logged-in Helium browser over the Chrome DevTools Protocol: a CLI, an MCP server and a JS REPL.",
+  "type": "module",
+  "bin": {
+    "helium": "bin/helium.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/*.test.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "ws": "^8.22.0"
+  },
+  "license": "GPL-3.0-only"
+}
