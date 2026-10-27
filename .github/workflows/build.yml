@@ -16,7 +16,7 @@ on:
         default: ""
       resume_patch:
         required: false
-        description: "Patch file in this repo to apply to the resumed source tree before building"
+        description: "Patch files in this repo, space separated, to apply to the resumed source tree before building"
         default: ""
       build_tool:
         required: false

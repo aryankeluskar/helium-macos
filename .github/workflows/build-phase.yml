@@ -117,7 +117,10 @@ jobs:
         if: ${{ inputs.resume && inputs.resume_patch != '' }}
         env:
           RESUME_PATCH: ${{ inputs.resume_patch }}
-        run: patch -d build/src -p1 --forward < "$GITHUB_WORKSPACE/$RESUME_PATCH"
+        run: |
+          for resume_patch in $RESUME_PATCH; do
+            patch -d build/src -p1 --forward < "$GITHUB_WORKSPACE/$resume_patch"
+          done
       - name: Download compile caches from parallel shards
         if: ${{ inputs.resume && inputs.cache_run != '' }}
         uses: actions/download-artifact@v4
