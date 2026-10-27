@@ -74,7 +74,7 @@ export async function runDaemon(env = process.env) {
     try {
       if (fs.statSync(sock).ino === ino) fs.unlinkSync(sock);
     } catch {}
-    browser?.close();
+    browser?.disconnect();
     setTimeout(() => process.exit(0), 100);
   }
 

@@ -5,10 +5,11 @@ Let Claude Code and other coding agents drive your real, signed-in Helium from o
 ## Setup
 
 1. In Helium, open `chrome://inspect/#remote-debugging` and turn remote debugging on.
-2. Install the CLI (Node 20 or newer):
+2. Put the CLI on your PATH. The dream browser's Helium.app ships it (it runs on your Node.js 20.10 or newer):
    ```sh
-   npm i -g ./agent        # from this checkout; or run it without installing: npx ./agent tabs
+   ln -sf /Applications/Helium.app/Contents/Resources/helium-agent/helium /opt/homebrew/bin/helium
    ```
+   With any other Helium, install it from this checkout instead: `npm i -g ./agent`.
 3. Add the MCP server to Claude Code:
    ```sh
    claude mcp add helium -- helium mcp

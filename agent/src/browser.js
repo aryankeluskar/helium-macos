@@ -70,7 +70,7 @@ export class Browser {
     } catch {}
   }
 
-  close() {
+  disconnect() {
     this.cdp.close();
   }
 

@@ -1,0 +1,23 @@
+#!/bin/bash
+# Runs the helium agent CLI bundled inside Helium.app with this Mac's Node.js.
+set -euo pipefail
+
+here="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+
+node="$(command -v node || true)"
+for candidate in /opt/homebrew/bin/node /usr/local/bin/node "$HOME"/.volta/bin/node; do
+  [ -n "$node" ] && break
+  [ -x "$candidate" ] && node="$candidate"
+done
+if [ -z "$node" ]; then
+  for candidate in "$HOME"/.nvm/versions/node/*/bin/node; do
+    [ -x "$candidate" ] && node="$candidate"
+  done
+fi
+if [ -z "$node" ]; then
+  echo "helium needs Node.js 20.10 or newer: brew install node" >&2
+  exit 1
+fi
+
+export HELIUM_AGENT_ENTRY="$here/helium.mjs"
+exec "$node" "$here/helium.mjs" "$@"

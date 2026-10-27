@@ -20,6 +20,10 @@ Make a space with the `+` in the space bar at the foot of the sidebar; your exis
 
 The DMG isn't notarized. After dragging Helium to Applications, allow it once in System Settings › Privacy & Security.
 
+## Agents
+
+Helium.app ships `helium`, a CLI, MCP server and JS REPL that let Claude Code drive your signed-in browser from outside it, with your approval each session. Setup is two commands; see `agent/README.md`.
+
 ## Staying safe
 
 - **Chromium security fixes:** "Follow upstream Helium" merges imputnet/helium-macos into this branch every six hours and starts a build when anything new arrives. A merge that conflicts or can't be pushed, and any failed build, opens an issue in the fork ("Report failed builds"). GitHub only runs the schedule and the failure report when this branch is the fork's default branch.

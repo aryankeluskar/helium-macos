@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { findEndpoint } from './endpoint.js';
 import { HeliumError, ensureAgentHome, logPath, sleep, socketPath } from './util.js';
 
-const BIN = fileURLToPath(new URL('../bin/helium.js', import.meta.url));
+const BIN = process.env.HELIUM_AGENT_ENTRY || fileURLToPath(new URL('../bin/helium.js', import.meta.url));
 
 export async function request(command, args = {}, { env = process.env, onNotice = () => {}, autostart = true } = {}) {
   const sock = socketPath(env);

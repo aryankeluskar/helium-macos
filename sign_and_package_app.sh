@@ -4,6 +4,14 @@ _root_dir="$(dirname "$(greadlink -f "$0")")"
 _app="out/Default/Helium.app"
 _packaging="out/Default/Helium Packaging"
 
+# Ship the agent CLI inside the app, so coding agents can drive this browser
+# (agent/README.md).
+if command -v npm >/dev/null; then
+  "$_root_dir/agent/scripts/install-into-app.sh" "$_app"
+else
+  echo "warn: npm is missing; Helium.app ships without the agent CLI" >&2
+fi
+
 if [ -n "${MACOS_CERTIFICATE_NAME:-}" ]; then
   if [ -n "${PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_PATH:-}" ]; then
     # Chromium embeds this profile from its packaging inputs during signing.

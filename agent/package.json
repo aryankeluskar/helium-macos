@@ -12,14 +12,18 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=20.10"
   },
   "scripts": {
-    "test": "node --test --test-concurrency=1 test/*.test.js"
+    "test": "node --test --test-concurrency=1 test/*.test.js",
+    "bundle": "esbuild bin/helium.js --bundle --platform=node --format=esm --target=node20 --outfile=dist/helium.mjs --external:bufferutil --external:utf-8-validate --log-level=warning \"--banner:js=import { createRequire as createRequireForBundle } from 'node:module'; const require = createRequireForBundle(import.meta.url);\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
     "ws": "^8.22.0"
   },
-  "license": "GPL-3.0-only"
+  "license": "GPL-3.0-only",
+  "devDependencies": {
+    "esbuild": "^0.25.12"
+  }
 }

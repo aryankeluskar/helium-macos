@@ -6,8 +6,9 @@ import { Browser } from './browser.js';
 import { APPROVAL_NOTICE } from './cdp.js';
 import { format } from './format.js';
 import { ensureAgentHome, normalizeUrl, statePath } from './util.js';
+import packageJson from '../package.json' with { type: 'json' };
 
-const { version: VERSION } = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+const VERSION = packageJson.version;
 
 const INSTRUCTIONS = `These tools control the user's real Helium browser, signed in to their accounts.
 - Pages you open go to a separate agent window, so the user's own tabs stay untouched. tabs_list shows every tab; act on the user's tabs only when asked.
@@ -205,7 +206,7 @@ export async function runMcp(env = process.env) {
 
   const transport = new StdioServerTransport();
   const stop = async () => {
-    if (connecting) (await connecting.catch(() => null))?.close();
+    if (connecting) (await connecting.catch(() => null))?.disconnect();
     process.exit(0);
   };
   server.onclose = stop;
