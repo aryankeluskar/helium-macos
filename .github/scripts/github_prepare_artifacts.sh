@@ -80,6 +80,12 @@ if [ -f "$_root_dir/build_finished_$_target_cpu.log" ]; then
 
   ls -kahl release_asset/
   du -hs release_asset/
+
+  # Later builds start from this cache, so a Chromium security update only
+  # recompiles the files it changed.
+  mkdir -p upload_compile_cache
+  tar -C "$_src_dir/out" -cf upload_compile_cache/sccache.tar sccache
+  du -hs upload_compile_cache/
 fi
 
 gsync --file-system "$_src_dir"

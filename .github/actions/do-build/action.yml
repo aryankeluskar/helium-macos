@@ -80,3 +80,11 @@ runs:
           ${{ steps.bake.outputs.deltas }}
           ./release_asset/${{ steps.bake.outputs.file_name }}
           ./${{ steps.bake.outputs.file_name }}.hashes.md
+    - name: Upload compile cache for later builds
+      if: ${{ steps.build.outputs.status == 'finished' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: compile_cache_${{ inputs.arch }}
+        path: upload_compile_cache/
+        retention-days: 90
+        compression-level: 0

@@ -32,7 +32,7 @@ on:
       build_tool:
         required: false
         type: string
-        default: "siso"
+        default: "ninja"
       cache_run:
         required: false
         type: string
@@ -72,6 +72,30 @@ jobs:
           PROD_MACOS_SPARKLE_ED_PUB_KEY: ${{ secrets.PROD_MACOS_SPARKLE_ED_PUB_KEY }}
           PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_B64: ${{ secrets.PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_B64 }}
           HELIUM_BUILD_TOOL: ${{ inputs.build_tool }}
+      - name: Find the last finished build's compile cache
+        id: seed
+        if: ${{ !inputs.resume }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CACHE_NAME: compile_cache_${{ inputs.arch }}
+        run: |
+          run_id=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=$CACHE_NAME&per_page=20" \
+            --jq '[.artifacts[] | select(.expired | not)] | sort_by(.created_at) | last | .workflow_run.id // empty')
+          echo "run=$run_id" >> "$GITHUB_OUTPUT"
+      - name: Download the last finished build's compile cache
+        if: ${{ !inputs.resume && steps.seed.outputs.run != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: compile_cache_${{ inputs.arch }}
+          path: seed-cache
+          run-id: ${{ steps.seed.outputs.run }}
+          github-token: ${{ github.token }}
+      - name: Start from the last finished build's compile cache
+        if: ${{ !inputs.resume && steps.seed.outputs.run != '' }}
+        run: |
+          tar -C build/src/out -xf seed-cache/sccache.tar
+          rm -rf seed-cache
+          du -sh build/src/out/sccache
       - name: Get previous logs
         if: ${{ inputs.resume }}
         uses: actions/download-artifact@v4

@@ -20,8 +20,8 @@ on:
         default: ""
       build_tool:
         required: false
-        description: "siso, or ninja to resume exactly where a phase stopped"
-        default: "siso"
+        description: "ninja, which resumes exactly where a phase stopped, or siso"
+        default: "ninja"
       cache_run:
         required: false
         description: "Run ID of a Compile a partial build in parallel shards run whose compile caches to use"

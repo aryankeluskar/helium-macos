@@ -28,7 +28,7 @@ on:
       build_tool:
         required: false
         type: string
-        default: "siso"
+        default: "ninja"
       cache_run:
         required: false
         type: string
