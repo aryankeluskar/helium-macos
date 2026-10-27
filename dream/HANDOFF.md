@@ -54,9 +54,10 @@ A full Chromium build takes about a day on one free 3-core runner, so this one i
    `github_build_artifact_arm64` (the phase-2 build tree) is the base every resume uses.
 2. Run `40540351808` ("Compile a partial build in parallel shards") has four runners compiling the rest into
    `sccache-shard-0..3` caches; due around 21:00–21:50 UTC.
-3. Run `40553369007` is the compile check of `arc-spaces.patch` and the hardening patch (attempt 2; attempt 1 lost
-   its source download).
-4. Run `40563856840` ("Finish the dream build", `.github/workflows/orchestrate.yml`, on free Linux runners) waits for
+3. Run `40565603171` is the compile check of `arc-spaces.patch` and the hardening patch, after fixing the three
+   compile errors the previous check (`40553369007`) found.
+4. "Finish the dream build" (`.github/workflows/orchestrate.yml`, on free Linux runners, started by pushing
+   `.github/orchestrate/plan.env`; find its run with `gh run list --workflow orchestrate.yml`) waits for
    2 and 3, dispatches the safe build (resume of 1 with the shard caches) and, if 3 passed, the Arc build (same, plus
    `resume_patch` = both new patches), waits for a DMG (preferring Arc's), records the demo via `demo.yml`, and opens an
    issue "Dream browser DMG ready" with the links. **Don't dispatch builds by hand while it runs.**
