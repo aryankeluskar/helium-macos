@@ -29,6 +29,10 @@ on:
         required: false
         type: string
         default: ""
+      build_tool:
+        required: false
+        type: string
+        default: "siso"
     outputs:
       status:
         value: ${{ jobs.build_job.outputs.status }}
@@ -63,6 +67,7 @@ jobs:
         env:
           PROD_MACOS_SPARKLE_ED_PUB_KEY: ${{ secrets.PROD_MACOS_SPARKLE_ED_PUB_KEY }}
           PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_B64: ${{ secrets.PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_B64 }}
+          HELIUM_BUILD_TOOL: ${{ inputs.build_tool }}
       - name: Get previous logs
         if: ${{ inputs.resume }}
         uses: actions/download-artifact@v4

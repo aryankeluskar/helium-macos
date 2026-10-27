@@ -82,6 +82,9 @@ write_gn_args() {
       printf 'sparkle_ed_key="%s"\n' "$PROD_MACOS_SPARKLE_ED_PUB_KEY" >> "$args"
     fi
     echo 'symbol_level=1' >> "$args"
+    if [ "${HELIUM_BUILD_TOOL:-siso}" = ninja ]; then
+      echo 'use_siso=false' >> "$args"
+    fi
   else
     if [ "$mode" = dev ] && [ -n "${SISO_REAPI_ADDRESS:-}" ]; then
       echo 'use_remoteexec = true' >> "$args"

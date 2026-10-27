@@ -18,6 +18,10 @@ on:
         required: false
         description: "Patch file in this repo to apply to the resumed source tree before building"
         default: ""
+      build_tool:
+        required: false
+        description: "siso, or ninja to resume exactly where a phase stopped"
+        default: "siso"
       do-release:
         required: false
         type: boolean
@@ -43,6 +47,7 @@ jobs:
       os: ${{ inputs.runner }}
       resume_run: ${{ inputs.resume_run }}
       resume_patch: ${{ inputs.resume_patch }}
+      build_tool: ${{ inputs.build_tool }}
 
   release:
     needs: build
