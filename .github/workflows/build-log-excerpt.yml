@@ -1,6 +1,9 @@
 name: Excerpt a build log
 
 on:
+  push:
+    paths:
+      - '.github/diagnostics/run-id'
   workflow_dispatch:
     inputs:
       run_id:
@@ -17,15 +20,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/diagnostics
       - name: Download the build logs
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ inputs.run_id }}
-        run: gh run download "$RUN_ID" --repo "$GITHUB_REPOSITORY" --pattern 'github_build_logs_*' --dir logs
+          INPUT_RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -euo pipefail
+          run_id="${INPUT_RUN_ID:-$(tr -d '[:space:]' < .github/diagnostics/run-id)}"
+          echo "RUN_ID=$run_id" >> "$GITHUB_ENV"
+          gh run download "$run_id" --repo "$GITHUB_REPOSITORY" --pattern 'github_build_logs_*' --dir logs
       - name: Excerpt and publish
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: ${{ inputs.run_id }}
         run: |
           set -euo pipefail
           mkdir out
@@ -33,7 +43,7 @@ jobs:
           wc -l "$log" > "out/$RUN_ID.txt"
           grep -n -E 'timeout -k|Regenerat|gn gen|build\.ninja|args\.gn|xcode|Xcode|siso|ninja: |\[1/|\[2/|\[100/|\[1000/|Build Failure|build finished|_error_code' "$log" | head -300 >> "$RUN_ID.matches" || true
           cat "$RUN_ID.matches" >> "out/$RUN_ID.txt"
-          for start in $(grep -n 'timeout -k' "$log" | cut -d: -f1); do
+          grep -n 'timeout -k' "$log" | cut -d: -f1 | while read -r start; do
             echo "==== phase starting at line $start" >> "out/$RUN_ID.txt"
             sed -n "${start},$((start + 80))p" "$log" >> "out/$RUN_ID.txt"
           done
