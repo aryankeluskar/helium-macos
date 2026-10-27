@@ -9,7 +9,8 @@ export QUILT_SERIES="series.merged"
 _source_archive="$_root_dir/build/chromium-source.tar"
 _files="${1:-}"
 if [ -z "$_files" ]; then
-    _files=$(sed -n 's|^+++ b/||p' "$_root_dir"/patches/dream/*.patch | grep -E '\.(cc|mm)$' | sort -u)
+    _files=$(sed -n 's|^+++ b/||p' "$_root_dir"/patches/dream/*.patch | grep -E '\.(cc|mm)$' \
+        | grep -vE '_(unittest|browsertest|uitest)\.(cc|mm)$' | sort -u)
 fi
 
 mkdir -p "$_src_dir"
