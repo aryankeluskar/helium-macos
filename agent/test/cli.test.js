@@ -147,6 +147,8 @@ describe('helium CLI against headless Chromium', () => {
     assert.equal(await evaluate('1 + 2'), 3);
     assert.deepEqual(await evaluate('({ a: [1, 2], b: document.title })'), { a: [1, 2], b: 'Helium test page' });
     assert.equal(await evaluate('await new Promise((r) => setTimeout(() => r("later"), 50))'), 'later');
+    assert.equal(await evaluate('new Promise((r) => setTimeout(() => r("returned"), 50))'), 'returned');
+    assert.equal(await evaluate("fetch('http://127.0.0.1:9/').then(() => 'loaded', () => 'blocked')"), 'blocked');
     assert.equal((await ok('eval', 'location.pathname')).trim(), '/');
     const failed = await run('eval', 'throw new Error("boom")');
     assert.equal(failed.code, 1);

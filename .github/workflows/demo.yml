@@ -44,6 +44,11 @@ jobs:
         run: .github/demo/get-helium.sh
       - name: Record
         run: .github/demo/demo.sh
+      - name: Verify the build
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        timeout-minutes: 10
+        run: .github/demo/verify.sh
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

@@ -477,7 +477,10 @@ export class Browser {
   async eval(expression, { tab } = {}) {
     return this.withTab(tab, async (id) => {
       const params = { expression, awaitPromise: true, userGesture: true, replMode: true, objectGroup: WORLD };
-      const { result, exceptionDetails } = await this.send(id, 'Runtime.evaluate', params, 60_000);
+      let { result, exceptionDetails } = await this.send(id, 'Runtime.evaluate', params, 60_000);
+      if (!exceptionDetails && result.subtype === 'promise' && result.objectId) {
+        ({ result, exceptionDetails } = await this.send(id, 'Runtime.awaitPromise', { promiseObjectId: result.objectId }, 60_000));
+      }
       if (exceptionDetails) throw new HeliumError(`JavaScript error: ${describeException(exceptionDetails)}`);
       if (result.type === 'undefined') return { value: undefined };
       if (!result.objectId) return { value: result.value ?? result.unserializableValue ?? result.description };

@@ -156,7 +156,7 @@ jobs:
           fi
           demo="The demo didn't record ($DEMO_RESULT)."
           if [ "$DEMO_RESULT" = success ]; then
-            demo="Demo video: $server/blob/demo-videos/spaces-demo.mp4"
+            demo="Demo video: $server/blob/demo-videos/spaces-demo.mp4 · checks on an Apple Silicon Mac (arm64, ad blocking, extensions, agent CLI): $server/blob/demo-videos/verify.md"
           fi
           body=$(printf '%s\n\n%s\n\n%s\n\n%s\n' \
             "Your dream browser DMG ($kind) is ready: download \`$DMG_NAME\` from $server/actions/runs/$DMG_RUN" \
