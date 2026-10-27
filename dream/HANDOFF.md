@@ -51,6 +51,10 @@ daemon on a 0600 Unix socket. 33 tests (`cd agent && npm test`) run against head
 
 ## Where the builds are right now
 
+**Update 21:55 UTC:** the shards finished (all four caches uploaded). Build runs `40590165704` (safe) and
+`40590194934` (Arc spaces + hardening) are running; orchestrator run `40590363960` waits for their DMG, then records the
+demo, runs `verify.sh` and opens the "Dream browser DMG ready" issue.
+
 A full Chromium build takes about a day on one free 3-core runner, so this one is split:
 
 1. Run `40457940101` (build.yml, ninja) compiled phases 1–2, then was cancelled to free a runner. Its artifact
