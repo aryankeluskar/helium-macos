@@ -1,0 +1,465 @@
+106034 logs/github_build_logs_arm64/github_actions_build_arm64.log
+20:+++ _siso_path=/Users/runner/work/helium-macos/helium-macos/build/src/third_party/siso/cipd/siso
+39:+ _error_code=0
+40:+ timeout -k 7m -s SIGTERM 16734s /Users/runner/work/helium-macos/helium-macos/devutils/shared.sh build chrome/installer/mac
+41:depot_tools/siso.py: Using Siso binary from SISO_PATH: /Users/runner/work/helium-macos/helium-macos/build/src/third_party/siso/cipd/siso.
+43:ninja: Entering directory `/Users/runner/work/helium-macos/helium-macos/build/src/out/Default'
+52:loading build.ninja... done 3.099197958s
+53:load siso config done 1.847555083s
+296:[1/93740] 22.00s S CC obj/third_party/libaom/libaom_intrinsics_neon_dotprod/compound_convolve_neon_dotprod.o
+297:[1/93740] 22.00s S ACTION //third_party/devtools-frontend/src/front_end/models/issues_manager:descriptions_gen(//build/toolchain/mac:clang_arm64)
+298:[1/93740] 22.00s S CXX obj/third_party/abseil-cpp/absl/debugging/examine_stack/examine_stack.o
+299:[1/93740] 22.00s S CXX obj/third_party/abseil-cpp/absl/debugging/failure_signal_handler/failure_signal_handler.o
+300:[1/93739] 22.00s S ACTION //third_party/devtools-frontend/src/front_end/core/platform/api:api-dts(//build/toolchain/mac:clang_arm64)
+301:[1/93739] 22.01s S CXX obj/third_party/abseil-cpp/absl/container/raw_hash_set/raw_hash_set.o
+302:[1/93738] 22.01s S CXX obj/third_party/abseil-cpp/absl/container/hashtablez_sampler/hashtablez_sampler.o
+303:[1/93737] 22.01s S CXX obj/third_party/abseil-cpp/absl/container/hashtablez_sampler/hashtablez_sampler_force_weak_definition.o
+304:[1/93736] 22.01s S CXX obj/third_party/abseil-cpp/absl/debugging/symbolize/symbolize.o
+305:[1/93736] 22.01s S CXX obj/third_party/abseil-cpp/absl/base/tracing_internal/tracing.o
+306:[1/93735] 22.01s S CXX obj/third_party/abseil-cpp/absl/debugging/debugging_internal/address_is_readable.o
+307:[1/93735] 22.02s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/civil_time/civil_time_detail.o
+308:[1/93734] 22.02s S CXX obj/third_party/abseil-cpp/absl/debugging/debugging_internal/elf_mem_image.o
+309:[1/93734] 22.02s S CXX obj/third_party/abseil-cpp/absl/synchronization/kernel_timeout_internal/kernel_timeout.o
+310:[1/93734] 22.02s S CXX obj/third_party/abseil-cpp/absl/base/malloc_internal/low_level_alloc.o
+311:[1/93734] 22.02s S CXX obj/third_party/abseil-cpp/absl/synchronization/graphcycles_internal/graphcycles.o
+312:[1/93733] 22.02s S CXX obj/third_party/abseil-cpp/absl/debugging/debugging_internal/vdso_support.o
+313:[1/93733] 22.02s S CXX obj/third_party/abseil-cpp/absl/strings/cordz_handle/cordz_handle.o
+314:[1/93733] 22.02s S CXX obj/third_party/abseil-cpp/absl/profiling/exponential_biased/exponential_biased.o
+315:[1/93733] 22.02s S CXX obj/third_party/abseil-cpp/absl/strings/cordz_functions/cordz_functions.o
+316:[1/93733] 22.02s S CXX obj/third_party/abseil-cpp/absl/base/log_severity/log_severity.o
+317:[1/93733] 22.02s S CXX obj/third_party/abseil-cpp/absl/strings/cordz_info/cordz_info.o
+318:[1/93733] 22.02s S CXX obj/third_party/abseil-cpp/absl/debugging/utf8_for_code_point/utf8_for_code_point.o
+319:[1/93733] 22.03s S CXX obj/third_party/abseil-cpp/absl/debugging/decode_rust_punycode/decode_rust_punycode.o
+320:[1/93733] 22.03s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/parser.o
+321:[1/93733] 22.03s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/output.o
+322:[1/93733] 22.03s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/float_conversion.o
+323:[1/93732] 22.03s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/extension.o
+324:[1/93732] 22.03s S CXX obj/third_party/abseil-cpp/absl/debugging/stacktrace/stacktrace.o
+325:[1/93731] 22.03s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/bind.o
+326:[1/93731] 22.03s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/notification.o
+327:[1/93730] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_fixed.o
+328:[1/93729] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_format.o
+329:[1/93729] 22.03s S CXX obj/third_party/abseil-cpp/absl/debugging/demangle_rust/demangle_rust.o
+330:[1/93725] 22.03s S CXX obj/third_party/abseil-cpp/absl/debugging/demangle_internal/demangle.o
+331:[1/93725] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_info.o
+332:[1/93725] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_if.o
+333:[1/93725] 22.03s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/stdcpp_waiter.o
+334:[1/93725] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_impl.o
+335:[1/93724] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_libc.o
+336:[1/93723] 22.03s S CXX obj/third_party/protobuf/protobuf_lite_library/zero_copy_stream_impl_lite.o
+337:[1/93723] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_lookup.o
+338:[1/93721] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/zone_info_source.o
+339:[1/93720] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/time/civil_time.o
+340:[1/93719] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/time/clock.o
+341:[1/93719] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_posix.o
+342:[1/93718] 22.03s S CXX obj/third_party/abseil-cpp/absl/hash/city/city.o
+343:[1/93718] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/time/duration.o
+344:[1/93717] 22.03s S CXX obj/third_party/protobuf/protobuf_lite_library/any_lite.o
+345:[1/93717] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/time/format.o
+346:[1/93715] 22.03s S CXX obj/third_party/abseil-cpp/absl/time/time/time.o
+347:[1/93715] 22.03s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/barrier.o
+348:[1/93714] 22.03s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/blocking_counter.o
+349:[1/93714] 22.03s S CXX obj/third_party/abseil-cpp/absl/base/throw_delegate/throw_delegate.o
+350:[1/93714] 22.03s S ACTION //base:plist_size_buildflags(//build/toolchain/mac:clang_arm64)
+351:[1/93713] 22.03s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/create_thread_identity.o
+352:[1/93712] 22.03s S CXX obj/third_party/protobuf/protobuf_lite_library/arena.o
+353:[1/93712] 22.04s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/futex_waiter.o
+354:[1/93711] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/arena_align.o
+355:[1/93711] 22.04s S CXX obj/third_party/abseil-cpp/absl/numeric/int128/int128.o
+356:[1/93710] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/coded_stream.o
+357:[1/93710] 22.04s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/per_thread_sem.o
+358:[1/93708] 22.04s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/pthread_waiter.o
+359:[1/93707] 22.04s S CXX obj/third_party/abseil-cpp/absl/hash/hash/hash.o
+360:[1/93707] 22.04s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/sem_waiter.o
+361:[1/93706] 22.04s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/waiter_base.o
+362:[1/93706] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/arena_allocation_policy.o
+363:[1/93703] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/generated_message_tctable_lite.o
+364:[1/93703] 22.04s S CXX obj/third_party/abseil-cpp/absl/base/spinlock_wait/spinlock_wait.o
+365:[1/93703] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/generated_message_util.o
+366:[1/93703] 22.04s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/mutex.o
+367:[1/93703] 22.04s S CXX obj/third_party/abseil-cpp/absl/base/raw_logging_internal/raw_logging.o
+368:[1/93703] 22.04s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/win32_waiter.o
+369:[1/93703] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/arenaz_sampler.o
+370:[1/93703] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/implicit_weak_message.o
+371:[1/93703] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/extension_set.o
+372:[1/93703] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/inlined_string_field.o
+373:[1/93703] 22.04s S CXX obj/third_party/protobuf/protobuf_lite_library/generated_enum_util.o
+374:[1/93702] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/io_win32.o
+375:[1/93702] 22.05s S CXX obj/third_party/abseil-cpp/absl/base/base/casts.o
+376:[1/93701] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/printer.o
+377:[1/93701] 22.05s S CXX obj/third_party/abseil-cpp/absl/base/base/cycleclock.o
+378:[1/93701] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/strtod.o
+379:[1/93701] 22.05s S ACTION //third_party/rust/proc_macro2/v1:proc_macro2_lib_v1_build_script_write_rustflags(//build/toolchain/mac:clang_arm64_for_rust_host_build_tools)
+380:[1/93701] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/tokenizer.o
+381:[1/93701] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/zero_copy_sink.o
+382:[1/93701] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/zero_copy_stream.o
+383:[1/93701] 22.05s S ACTION //build/rust/std/rules:test_test_vunknown_build_script_write_rustflags(//build/toolchain/mac:clang_arm64)
+384:[1/93701] 22.05s S ACTION //third_party/rust/quote/v1:quote_lib_v1_build_script_write_rustflags(//build/toolchain/mac:clang_arm64_for_rust_host_build_tools)
+385:[1/93700] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/zero_copy_stream_impl.o
+386:[1/93700] 22.05s S CC obj/third_party/protobuf/utf8_range/utf8_range.o
+387:[1/93700] 22.05s S CXX obj/third_party/abseil-cpp/absl/base/base/spinlock.o
+388:[1/93699] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/map.o
+389:[1/93699] 22.05s S CXX obj/third_party/abseil-cpp/absl/base/base/sysinfo.o
+390:[1/93699] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/message_lite.o
+391:[1/93698] 22.05s S CXX obj/third_party/abseil-cpp/absl/base/base/thread_identity.o
+392:[1/93698] 22.05s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/arg.o
+393:[1/93697] 22.05s S CXX obj/third_party/abseil-cpp/absl/base/base/unscaledcycleclock.o
+394:[1/93696] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/micro_string.o
+395:[1/93696] 22.05s S CXX obj/build/rust/allocator/alloc_error_handler_impl/alias.o
+396:[1/93695] 22.05s S CXX obj/build/rust/allocator/alloc_error_handler_impl/alloc_error_handler_impl.o
+397:[1/93695] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/raw_ptr.o
+398:[1/93695] 22.05s S CXX obj/third_party/protobuf/protobuf_lite_library/port.o
+399:[1/93694] 22.06s S CXX obj/third_party/protobuf/protobuf_lite_library/repeated_field.o
+400:[1/93694] 22.06s S ACTION //third_party/devtools-frontend/src/front_end/core/platform/browser:browser-dts(//build/toolchain/mac:clang_arm64)
+401:[1/93694] 22.06s S CXX obj/third_party/protobuf/protobuf_lite_library/common.o
+402:[1/93694] 22.06s S CXX obj/third_party/protobuf/protobuf_lite_library/type_id.o
+403:[1/93693] 22.06s S ACTION //third_party/devtools-frontend/src/front_end/core/platform/node:node-dts(//build/toolchain/mac:clang_arm64)
+404:[1/93693] 22.06s S CXX obj/third_party/protobuf/protobuf_lite_library/unknown_field_set_lite.o
+405:[1/93692] 22.06s S CXX obj/third_party/protobuf/protobuf_lite_library/wire_format_lite.o
+406:[1/93691] 22.06s S ACTION //third_party/devtools-frontend/src/front_end/core/platform/node:bundle_typescript-dts(//build/toolchain/mac:clang_arm64)
+407:[1/93691] 22.06s S ACTION //third_party/devtools-frontend/src/front_end/core/platform/browser:bundle_typescript-dts(//build/toolchain/mac:clang_arm64)
+408:[1/93689] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/any.o
+409:[1/93689] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/importer.o
+410:[1/93687] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/cpp_features.pb.o
+411:[1/93686] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/cpp_file_options.pb.o
+412:[1/93686] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/parser.o
+413:[1/93684] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/descriptor.o
+414:[1/93682] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/dynamic_message.o
+415:[1/93681] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/descriptor.pb.o
+416:[1/93681] 22.06s S CXX obj/third_party/protobuf/protobuf_full_library/extension_set_heavy.o
+417:[1/93680] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/feature_resolver.o
+418:[1/93679] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/generated_message_bases.o
+419:[1/93679] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/descriptor_database.o
+420:[1/93678] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/generated_message_reflection.o
+421:[1/93678] 22.07s S ACTION //third_party/perfetto/gn:gen_buildflags(//build/toolchain/mac:clang_arm64)
+422:[1/93676] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/generated_message_tctable_gen.o
+423:[1/93676] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/generated_message_tctable_full.o
+424:[1/93675] 22.07s S CXX obj/third_party/protobuf/protoc/main.o
+425:[1/93675] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/internal_feature_helper.o
+426:[1/93674] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/json_enumvalue_options.pb.o
+427:[1/93673] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/map_field.o
+428:[1/93672] 22.07s S ACTION //build/rust/std/rules:compiler_builtins_compiler_builtins_vunknown_build_script_write_rustflags(//build/toolchain/mac:clang_arm64)
+429:[1/93672] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/message.o
+430:[1/93670] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/naming_style.o
+431:[1/93669] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/reflection_mode.o
+432:[1/93665] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/symbol.o
+433:[1/93665] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/text_format.o
+434:[1/93665] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/symbol_checker.o
+435:[1/93664] 22.07s S ACTION //build/rust/std/rules:libc_libc_vunknown_build_script_write_rustflags(//build/toolchain/mac:clang_arm64)
+436:[1/93664] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/unknown_field_set.o
+437:[1/93661] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/delimited_message_util.o
+438:[1/93661] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/message_differencer.o
+439:[1/93660] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/field_comparator.o
+440:[1/93659] 22.07s S CXX obj/third_party/protobuf/protobuf_full_library/wire_format.o
+441:[1/93658] 22.07s S CXX obj/buildtools/third_party/libc++abi/libc++abi/abort_message.o
+442:[1/93658] 22.07s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_aux_runtime.o
+443:[1/93657] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_default_handlers.o
+444:[1/93657] 22.08s S ACTION //build/rust/std/rules:object_object_vunknown_build_script_write_rustflags(//build/toolchain/mac:clang_arm64)
+445:[1/93656] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_exception.o
+446:[1/93655] 22.08s S ACTION //base/allocator/partition_allocator/src/partition_alloc:buildflags(//build/toolchain/mac:clang_arm64)
+447:[1/93655] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_exception_storage.o
+448:[1/93655] 22.08s S ACTION //base:protected_memory_buildflags(//build/toolchain/mac:clang_arm64)
+449:[1/93654] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_handlers.o
+450:[1/93654] 22.08s S ACTION //build/rust/std/rules:std_std_vunknown_build_script_write_rustflags(//build/toolchain/mac:clang_arm64)
+451:[1/93654] 22.08s S ACTION //build:android_buildflags(//build/toolchain/mac:clang_arm64)
+452:[1/93652] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_vector.o
+453:[1/93652] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_personality.o
+454:[1/93651] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_virtual.o
+455:[1/93650] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/fallback_malloc.o
+456:[1/93647] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/stdlib_stdexcept.o
+457:[1/93647] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/private_typeinfo.o
+458:[1/93647] 22.08s S CC obj/third_party/libaom/libaom_intrinsics_neon_dotprod/sse_neon_dotprod.o
+459:[1/93647] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/stdlib_exception.o
+460:[1/93646] 22.08s S ACTION //base:power_monitor_buildflags(//build/toolchain/mac:clang_arm64)
+461:[1/93646] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/stdlib_typeinfo.o
+462:[1/93645] 22.08s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_guard.o
+463:[1/93645] 22.08s S ACTION //base:sanitizer_buildflags(//build/toolchain/mac:clang_arm64)
+464:[1/93644] 22.09s S CXX obj/buildtools/third_party/libc++abi/libc++abi/cxa_demangle.o
+465:[1/93643] 22.09s S ACTION //base:orderfile_buildflags(//build/toolchain/mac:clang_arm64)
+466:[1/93643] 22.09s S CXX obj/third_party/protobuf/protoc_python/pyi_generator.o
+467:[1/93642] 22.09s S CXX obj/third_party/protobuf/protoc_cpp/helpers.o
+468:[1/93642] 22.09s S ACTION //base:ios_cronet_buildflags(//build/toolchain/mac:clang_arm64)
+469:[1/93641] 22.09s S CXX obj/third_party/protobuf/protoc_cpp/string_view_field.o
+470:[1/93641] 22.09s S ACTION //base:fuzzing_buildflags(//build/toolchain/mac:clang_arm64)
+471:[1/93640] 22.09s S CXX obj/third_party/protobuf/protoc_cpp/map_field.o
+472:[1/93638] 22.09s S CXX obj/third_party/protobuf/protobuf_full_library/reflection_ops.o
+473:[1/93638] 22.09s S ACTION //base:feature_buildflags(//build/toolchain/mac:clang_arm64)
+474:[1/93638] 22.09s S ACTION //base:clang_profiling_buildflags(//build/toolchain/mac:clang_arm64)
+475:[1/93637] 22.09s S ACTION //third_party/rust/serde/v1:serde_lib_v1_build_script_write_rustflags(//build/toolchain/mac:clang_arm64)
+476:[1/93637] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/atomic.o
+477:[1/93636] 22.09s S ACTION //base:debugging_buildflags(//build/toolchain/mac:clang_arm64)
+478:[1/93636] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/barrier.o
+479:[1/93635] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/bind.o
+480:[1/93634] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/call_once.o
+481:[1/93632] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/charconv.o
+482:[1/93632] 22.09s S ACTION //base:check_version_internal_action(//build/toolchain/mac:clang_arm64)
+483:[1/93631] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/condition_variable.o
+484:[1/93631] 22.09s S ACTION //base:cfi_buildflags(//build/toolchain/mac:clang_arm64)
+485:[1/93631] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/chrono.o
+486:[1/93630] 22.09s S CXX obj/buildtools/third_party/libc++/libc++/condition_variable_destructor.o
+487:[1/93629] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/error_category.o
+488:[1/93627] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/directory_iterator.o
+489:[1/93625] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/filesystem_error.o
+490:[1/93624] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/operations.o
+491:[1/93623] 22.10s S ACTION //base/allocator:buildflags(//build/toolchain/mac:clang_arm64)
+492:[1/93623] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/path.o
+493:[1/93623] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/exception.o
+494:[1/93621] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/future.o
+495:[1/93620] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/hash.o
+496:[1/93620] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/functional.o
+497:[1/93618] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/ios.o
+498:[1/93618] 22.10s S ACTION //third_party/ffmpeg:ffmpeg_features(//build/toolchain/mac:clang_arm64)
+499:[1/93617] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/iostream.o
+500:[1/93617] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/ios.instantiations.o
+501:[1/93614] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/locale.o
+502:[1/93614] 22.10s S ACTION //third_party/tflite:buildflags_header(//build/toolchain/mac:clang_arm64)
+503:[1/93614] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/mutex.o
+504:[1/93614] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/memory.o
+505:[1/93613] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/mutex_destructor.o
+506:[1/93610] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/new_handler.o
+507:[1/93609] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/random.o
+508:[1/93609] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/optional.o
+509:[1/93608] 22.10s S CXX obj/buildtools/third_party/libc++/libc++/new_helpers.o
+510:[1/93607] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/random_shuffle.o
+511:[1/93604] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/regex.o
+512:[1/93602] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/f2s.o
+513:[1/93602] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/stdexcept.o
+514:[1/93601] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/d2s.o
+515:[1/93601] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/shared_mutex.o
+516:[1/93600] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/string.o
+517:[1/93600] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/strstream.o
+518:[1/93599] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/system_error.o
+519:[1/93595] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/valarray.o
+520:[1/93595] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/thread.o
+521:[1/93595] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/typeinfo.o
+522:[1/93595] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/variant.o
+523:[1/93593] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/vector.o
+524:[1/93593] 22.11s S ACTION //third_party/rust/serde_json_lenient/v0_2:serde_json_lenient_lib_v0_2_build_script_write_rustflags(//build/toolchain/mac:clang_arm64)
+525:[1/93591] 22.11s S CXX obj/third_party/protobuf/protoc_lib/code_generator.o
+526:[1/93591] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/new.o
+527:[1/93591] 22.11s S CXX obj/buildtools/third_party/libc++/libc++/verbose_abort.o
+528:[1/93588] 22.11s S CXX obj/third_party/protobuf/protoc_lib/code_generator_lite.o
+529:[1/93588] 22.11s S CXX obj/third_party/protobuf/protoc_lib/plugin.o
+530:[1/93585] 22.11s S CXX obj/third_party/protobuf/protoc_lib/command_line_interface.o
+531:[1/93585] 22.11s S CXX obj/third_party/protobuf/protoc_lib/subprocess.o
+532:[1/93585] 22.11s S CXX obj/third_party/protobuf/protoc_lib/plugin.pb.o
+533:[1/93584] 22.11s S ACTION //base:tracing_buildflags(//build/toolchain/mac:clang_arm64)
+534:[1/93584] 22.12s S CXX obj/third_party/protobuf/protoc_lib/versions.o
+535:[1/93583] 22.12s S ACTION //build:chromeos_buildflags(//build/toolchain/mac:clang_arm64)
+536:[1/93583] 22.12s S CXX obj/third_party/protobuf/protoc_lib/zip_writer.o
+537:[1/93582] 22.12s S ACTION //third_party/devtools-frontend/src/front_end/core/i18n:generate_locales_js(//build/toolchain/mac:clang_arm64)
+538:[1/93582] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/enum.o
+539:[1/93580] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/enum_field.o
+540:[1/93579] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/extension.o
+541:[1/93579] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/generator_factory.o
+542:[1/93577] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/make_field_gens.o
+543:[1/93576] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/map_field.o
+544:[1/93576] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/message.o
+545:[1/93575] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/message_builder.o
+546:[1/93573] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/message_field.o
+547:[1/93572] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/primitive_field.o
+548:[1/93572] 22.12s S CXX obj/third_party/protobuf/protoc_python/generator.o
+549:[1/93571] 22.12s S CXX obj/third_party/abseil-cpp/absl/strings/internal/escaping.o
+550:[1/93571] 22.12s S CXX obj/third_party/protobuf/protoc_java_lite/string_field.o
+551:[1/93571] 22.12s S CXX obj/third_party/abseil-cpp/absl/strings/internal/ostringstream.o
+552:[1/93570] 22.12s S CXX obj/third_party/protobuf/protoc_python/helpers.o
+553:[1/93569] 22.12s S CXX obj/third_party/abseil-cpp/absl/strings/internal/utf8.o
+554:[1/93567] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/enum.o
+555:[1/93567] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/enum_field.o
+556:[1/93566] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/extension.o
+557:[1/93565] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/make_field_gens.o
+558:[1/93564] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/generator_factory.o
+559:[1/93563] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/message.o
+560:[1/93562] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/map_field.o
+561:[1/93562] 22.12s S CXX obj/third_party/protobuf/protoc_java_full/message_builder.o
+562:[1/93560] 22.13s S CXX obj/third_party/protobuf/protoc_java_full/message_field.o
+563:[1/93558] 22.13s S CXX obj/third_party/protobuf/protoc_java_full/service.o
+564:[1/93557] 22.13s S CXX obj/third_party/protobuf/protoc_java_full/string_field.o
+565:[1/93556] 22.13s S CXX obj/third_party/protobuf/protoc_java/doc_comment.o
+566:[1/93556] 22.13s S CXX obj/third_party/protobuf/protoc_java/context.o
+567:[1/93556] 22.13s S CXX obj/third_party/protobuf/protoc_java_full/primitive_field.o
+568:[1/93552] 22.13s S CXX obj/third_party/protobuf/protoc_java/generator.o
+569:[1/93552] 22.13s S CXX obj/third_party/protobuf/protoc_java/helpers.o
+570:[1/93550] 22.13s S CXX obj/third_party/protobuf/protoc_java/internal_helpers.o
+571:[1/93550] 22.13s S CXX obj/third_party/protobuf/protoc_java/java_features.pb.o
+572:[1/93548] 22.13s S CXX obj/third_party/protobuf/protoc_java/name_resolver.o
+573:[1/93548] 22.13s S ACTION //third_party/devtools-frontend/src/front_end/models/ai_assistance/skills:_generate_skills(//build/toolchain/mac:clang_arm64)
+574:[1/93546] 22.13s S CXX obj/third_party/protobuf/protoc_java/names.o
+575:[1/93546] 22.13s S CXX obj/third_party/protobuf/protoc_java/shared_code_generator.o
+576:[1/93545] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/enum.o
+577:[1/93544] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/extension.o
+578:[1/93542] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/field_chunk.o
+579:[1/93541] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/cord_field.o
+580:[1/93538] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/primitive_field.o
+581:[1/93538] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/enum_field.o
+582:[1/93537] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/string_field.o
+583:[1/93537] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/message_field.o
+584:[1/93536] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/field_layout.o
+585:[1/93535] 22.13s S CXX obj/third_party/simdutf/simdutf/simdutf.o
+586:[1/93535] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/file.o
+587:[1/93535] 22.13s S CXX obj/base/simdutf_shim/simdutf_shim.o
+588:[1/93534] 22.13s S CXX obj/third_party/protobuf/protoc_cpp/generator.o
+==== phase starting at line 40
++ timeout -k 7m -s SIGTERM 16734s /Users/runner/work/helium-macos/helium-macos/devutils/shared.sh build chrome/installer/mac
+depot_tools/siso.py: Using Siso binary from SISO_PATH: /Users/runner/work/helium-macos/helium-macos/build/src/third_party/siso/cipd/siso.
+offline mode
+ninja: Entering directory `/Users/runner/work/helium-macos/helium-macos/build/src/out/Default'
+
+
+disable fast local for non-interactive: fastlocal=1->0
+ use `--fast_local` to enable fast local with non-interactive mode
+schedule pending:1+ready:0 (node:84589 edge:2)
+build start: Ready 1 Pending 1
+rebuild manifest finished
+
+loading build.ninja... done 3.099197958s
+load siso config done 1.847555083s
+schedule pending:1+ready:0 (node:424239 edge:2)
+build start: Ready 1 Pending 1
+rebuild manifest finished
+schedule pending:1+ready:0 (node:424239 edge:9)
+schedule pending:3752+ready:0 (node:424239 edge:3758)
+schedule pending:6242+ready:0 (node:424239 edge:6254)
+schedule pending:8106+ready:0 (node:424239 edge:8114)
+schedule pending:9103+ready:0 (node:424239 edge:9114)
+schedule pending:10896+ready:0 (node:424239 edge:10936)
+schedule pending:16918+ready:0 (node:424239 edge:16946)
+schedule pending:25996+ready:0 (node:424239 edge:26019)
+schedule pending:37627+ready:0 (node:424239 edge:37647)
+schedule pending:49804+ready:0 (node:424239 edge:49814)
+schedule pending:58148+ready:0 (node:424239 edge:58159)
+schedule pending:65451+ready:0 (node:424239 edge:65478)
+schedule pending:76632+ready:0 (node:424239 edge:76644)
+schedule pending:86608+ready:0 (node:424239 edge:86622)
+13.56s schedule pending:85855+ready:8346 (node:424239 edge:94201)
+
+build start: Ready 8346 Pending 85855
+[0/94198] 21.85s S CXX obj/third_party/abseil-cpp/absl/time/clock_interface/clock_interface.o
+[0/94198] 21.85s S CXX obj/third_party/abseil-cpp/absl/base/cpu_detect/cpu_detect.o
+[0/94196] 21.86s S CXX obj/third_party/abseil-cpp/absl/crc/crc_cord_state/crc_cord_state.o
+[0/94196] 21.86s S CXX obj/third_party/protobuf/protobuf_lite_library/parse_context.o
+[0/94196] 21.86s S CXX obj/third_party/abseil-cpp/absl/status/status_builder/status_builder.o
+[0/94196] 21.86s S CXX obj/third_party/protobuf/protobuf_lite_library/repeated_ptr_field.o
+[0/94196] 21.86s S CXX obj/third_party/abseil-cpp/absl/types/source_location/source_location.o
+[0/94178] 21.87s S ACTION //ui/webui/resources/cr_components/managed_footnote:preprocess_ts_files(//build/toolchain/mac:clang_arm64)
+[0/94138] 21.87s S ACTION //ui/webui/resources/cr_components/cr_shortcut_input:preprocess_ts_files(//build/toolchain/mac:clang_arm64)
+[0/94077] 21.87s S CXX obj/third_party/abseil-cpp/absl/random/internal/seed_material/seed_material.o
+[0/93954] 21.88s S ACTION //ui/webui/resources/cr_components/cr_lottie:preprocess_ts_files(//build/toolchain/mac:clang_arm64)
+[0/93954] 21.88s S CXX obj/third_party/tflite/tflite_core_c/common.o
+[0/93954] 21.88s S CXX obj/third_party/abseil-cpp/absl/strings/strings/ascii.o
+[0/93953] 21.89s S CXX obj/third_party/abseil-cpp/absl/crc/crc32c/crc32c.o
+[0/93953] 21.89s S ACTION //ui/webui/resources/cr_components/customize_color_scheme_mode:preprocess_ts_files(//build/toolchain/mac:clang_arm64)
+[0/93952] 21.89s S CXX obj/third_party/abseil-cpp/absl/crc/crc32c/crc_memcpy_fallback.o
+[0/93952] 21.89s S CXX obj/third_party/abseil-cpp/absl/strings/strings/escaping.o
+[0/93952] 21.89s S CXX obj/third_party/abseil-cpp/absl/crc/crc32c/crc_memcpy_x86_arm_combined.o
+[0/93951] 21.90s S CXX obj/third_party/abseil-cpp/absl/strings/strings/charconv_bigint.o
+[0/93951] 21.90s S ACTION //ui/webui/resources/cr_components/commerce:preprocess_ts_files(//build/toolchain/mac:clang_arm64)
+[0/93951] 21.90s S ACTION //gpu/vulkan:buildflags(//build/toolchain/mac:clang_arm64)
+[0/93950] 21.90s S CXX obj/third_party/abseil-cpp/absl/strings/strings/charconv_parse.o
+[0/93950] 21.90s S ACTION //device/vr/buildflags:buildflags(//build/toolchain/mac:clang_arm64)
+[0/93949] 21.90s S CXX obj/third_party/abseil-cpp/absl/strings/strings/damerau_levenshtein_distance.o
+[0/93949] 21.90s S CXX obj/third_party/abseil-cpp/absl/crc/crc32c/crc_non_temporal_memcpy.o
+[0/93948] 21.90s S CXX obj/third_party/abseil-cpp/absl/strings/strings/memutil.o
+[0/93947] 21.90s S CXX obj/third_party/abseil-cpp/absl/strings/strings/stringify_sink.o
+[0/93946] 21.90s S CXX obj/third_party/abseil-cpp/absl/strings/strings/match.o
+[0/93945] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_sve2/highbd_vpx_convolve8_sve2.o
+[0/93945] 21.91s S CXX obj/third_party/abseil-cpp/absl/strings/strings/numbers.o
+[0/93943] 21.91s S CXX obj/third_party/abseil-cpp/absl/strings/strings/str_replace.o
+[0/93943] 21.91s S CXX obj/third_party/abseil-cpp/absl/strings/strings/str_cat.o
+[0/93942] 21.91s S CXX obj/third_party/abseil-cpp/absl/strings/strings/str_split.o
+[0/93940] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon_i8mm/vpx_convolve8_neon_i8mm.o
+[0/93940] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_sve/vp9_error_sve.o
+[0/93938] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_sve/highbd_vpx_convolve8_sve.o
+[0/93938] 21.91s S CXX obj/third_party/abseil-cpp/absl/strings/strings/substitute.o
+[0/93936] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_sve/sum_squares_sve.o
+[0/93934] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon_dotprod/sad4d_neon_dotprod.o
+[0/93933] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon_dotprod/highbd_variance_neon_dotprod.o
+[0/93933] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon_dotprod/sad_neon_dotprod.o
+[0/93931] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon_dotprod/sse_neon_dotprod.o
+[0/93930] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon_dotprod/variance_neon_dotprod.o
+[0/93929] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon_dotprod/subpel_variance_neon_dotprod.o
+[0/93925] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon/vpx_convolve8_neon.o
+[0/93925] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon/dc_only_idct_add_neon.o
+[0/93924] 21.91s S CC obj/third_party/libvpx/libvpx_intrinsics_neon/dequant_idct_neon.o
+==== phase starting at line 53964
++ timeout -k 7m -s SIGTERM 17324s /Users/runner/work/helium-macos/helium-macos/devutils/shared.sh build chrome/installer/mac
+depot_tools/siso.py: Using Siso binary from SISO_PATH: /Users/runner/work/helium-macos/helium-macos/build/src/third_party/siso/cipd/siso.
+offline mode
+ninja: Entering directory `/Users/runner/work/helium-macos/helium-macos/build/src/out/Default'
+
+
+disable fast local for non-interactive: fastlocal=1->0
+ use `--fast_local` to enable fast local with non-interactive mode
+schedule pending:1+ready:0 (node:84589 edge:2)
+build start: Ready 1 Pending 1
+rebuild manifest finished
+
+loading build.ninja... done 3.213687375s
+load siso config done 53.148583ms
+schedule pending:1+ready:0 (node:424239 edge:2)
+build start: Ready 1 Pending 1
+rebuild manifest finished
+schedule pending:1+ready:0 (node:424239 edge:9)
+schedule pending:43083+ready:0 (node:424239 edge:43093)
+ 1.80s schedule pending:85855+ready:8346 (node:424239 edge:94201)
+
+build start: Ready 8346 Pending 85855
+[0/94154] 13.17s S CXX obj/third_party/abseil-cpp/absl/debugging/examine_stack/examine_stack.o
+[0/94154] 13.17s S ACTION //third_party/dawn/src/dawn:proc_gen__json_tarball(//build/toolchain/mac:clang_arm64)
+[0/94154] 13.17s S CXX obj/third_party/abseil-cpp/absl/debugging/failure_signal_handler/failure_signal_handler.o
+[0/94125] 13.17s S CXX obj/third_party/abseil-cpp/absl/container/raw_hash_set/raw_hash_set.o
+[0/94112] 13.17s S CXX obj/third_party/abseil-cpp/absl/debugging/symbolize/symbolize.o
+[0/93987] 13.18s S CXX obj/third_party/abseil-cpp/absl/debugging/debugging_internal/address_is_readable.o
+[0/93986] 13.18s S CXX obj/third_party/abseil-cpp/absl/debugging/debugging_internal/elf_mem_image.o
+[0/93986] 13.18s S CXX obj/third_party/tflite/tflite_core_c/common.o
+[0/93985] 13.18s S CXX obj/third_party/abseil-cpp/absl/debugging/debugging_internal/vdso_support.o
+[0/93984] 13.18s S CXX obj/third_party/abseil-cpp/absl/debugging/stacktrace/stacktrace.o
+[0/93983] 13.18s S CXX obj/third_party/tflite/tflite_kernel_util/kernel_util.o
+[0/93979] 13.18s S CC obj/third_party/fft2d/fft2d/fftsg2d.o
+[0/93978] 13.18s S CXX obj/third_party/ruy/ruy_block_map/block_map.o
+[0/93977] 13.18s S CXX obj/third_party/ruy/ruy_trmul/trmul.o
+[0/93971] 13.18s S CXX obj/third_party/ruy/ruy_pack_avx2_fma/pack_avx2_fma.o
+[0/93970] 13.18s S CXX obj/third_party/ruy/ruy_pack_avx/pack_avx.o
+[0/93969] 13.18s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_fixed.o
+[0/93969] 13.18s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/civil_time/civil_time_detail.o
+[0/93967] 13.18s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_format.o
+[0/93966] 13.18s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_impl.o
+[0/93966] 13.18s S CXX obj/third_party/abseil-cpp/absl/base/malloc_internal/low_level_alloc.o
+[0/93966] 13.18s S CXX obj/third_party/abseil-cpp/absl/synchronization/graphcycles_internal/graphcycles.o
+[0/93965] 13.18s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_info.o
+[0/93964] 13.19s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_libc.o
+[0/93964] 13.19s S CXX obj/third_party/abseil-cpp/absl/strings/cordz_handle/cordz_handle.o
+[0/93963] 13.19s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_lookup.o
+[0/93962] 13.19s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/time_zone_posix.o
+[0/93961] 13.19s S CXX obj/third_party/abseil-cpp/absl/time/internal/cctz/time_zone/zone_info_source.o
+[0/93960] 13.19s S CXX obj/third_party/abseil-cpp/absl/profiling/exponential_biased/exponential_biased.o
+[0/93960] 13.19s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/waiter_base.o
+[0/93960] 13.19s S CXX obj/third_party/abseil-cpp/absl/strings/cordz_functions/cordz_functions.o
+[0/93960] 13.19s S CXX obj/third_party/abseil-cpp/absl/base/log_severity/log_severity.o
+[0/93960] 13.19s S CXX obj/third_party/abseil-cpp/absl/strings/cordz_info/cordz_info.o
+[0/93959] 13.19s S CXX obj/third_party/abseil-cpp/absl/time/time/civil_time.o
+[0/93959] 13.19s S CXX obj/third_party/abseil-cpp/absl/base/cpu_detect/cpu_detect.o
+[0/93958] 13.19s S CXX obj/third_party/abseil-cpp/absl/time/time/clock.o
+[0/93957] 13.19s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/parser.o
+[0/93957] 13.19s S CXX obj/third_party/abseil-cpp/absl/crc/crc_cord_state/crc_cord_state.o
+[0/93956] 13.19s S CXX obj/third_party/abseil-cpp/absl/crc/crc_internal/crc_x86_arm_combined.o
+[0/93955] 13.19s S CXX obj/third_party/abseil-cpp/absl/time/time/duration.o
+[0/93954] 13.20s S CXX obj/third_party/abseil-cpp/absl/time/time/format.o
+[0/93953] 13.20s S CXX obj/third_party/abseil-cpp/absl/time/time/time.o
+[0/93951] 13.20s S CXX obj/third_party/abseil-cpp/absl/strings/cord/cord.o
+[0/93951] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/barrier.o
+[0/93948] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/blocking_counter.o
+[0/93948] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/futex_waiter.o
+[0/93947] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/create_thread_identity.o
+[0/93945] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/per_thread_sem.o
+[0/93945] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/pthread_waiter.o
+[0/93944] 13.20s S CXX obj/third_party/abseil-cpp/absl/debugging/utf8_for_code_point/utf8_for_code_point.o
+[0/93944] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/sem_waiter.o
+[0/93942] 13.20s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/arg.o
+[0/93941] 13.20s S CXX obj/third_party/abseil-cpp/absl/debugging/demangle_rust/demangle_rust.o
+[0/93941] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/stdcpp_waiter.o
+[0/93940] 13.20s S CXX obj/third_party/abseil-cpp/absl/debugging/demangle_internal/demangle.o
+[0/93938] 13.20s S CXX obj/third_party/abseil-cpp/absl/strings/str_format_internal/bind.o
+[0/93937] 13.20s S CXX obj/third_party/abseil-cpp/absl/synchronization/synchronization/win32_waiter.o
+[0/93937] 13.20s S CXX obj/third_party/abseil-cpp/absl/hash/city/city.o
+[0/93936] 13.20s S CXX obj/third_party/abseil-cpp/absl/numeric/int128/int128.o

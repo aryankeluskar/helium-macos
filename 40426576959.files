@@ -1,0 +1,5 @@
+logs/github_build_logs_arm64/build_times_arm64.log
+logs/github_build_logs_arm64/github_actions_build_arm64.log
+logs/github_build_logs_arm64/github_actions_retrieve_resources.log
+logs/github_build_logs_arm64/github_actions_setup_env_toolchain.log
+logs/github_build_logs_arm64/github_actions_upload_arm64.log
