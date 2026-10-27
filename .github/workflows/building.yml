@@ -21,6 +21,10 @@ on:
         required: false
         type: string
         default: ""
+      resume_patch:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   retrieve-resources:
@@ -58,6 +62,7 @@ jobs:
       os: ${{ inputs.os }}
       resume: ${{ inputs.resume_run != '' }}
       resume_run: ${{ inputs.resume_run }}
+      resume_patch: ${{ inputs.resume_patch }}
 
   build_job_02:
     needs: build_job_01

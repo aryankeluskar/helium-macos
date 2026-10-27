@@ -14,6 +14,10 @@ on:
         required: false
         description: "Run ID whose last saved build phase to continue from; empty starts from scratch"
         default: ""
+      resume_patch:
+        required: false
+        description: "Patch file in this repo to apply to the resumed source tree before building"
+        default: ""
       do-release:
         required: false
         type: boolean
@@ -38,6 +42,7 @@ jobs:
       arch: ${{ matrix.arch }}
       os: ${{ inputs.runner }}
       resume_run: ${{ inputs.resume_run }}
+      resume_patch: ${{ inputs.resume_patch }}
 
   release:
     needs: build

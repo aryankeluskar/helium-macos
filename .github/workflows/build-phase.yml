@@ -25,6 +25,10 @@ on:
         required: false
         type: string
         default: ""
+      resume_patch:
+        required: false
+        type: string
+        default: ""
     outputs:
       status:
         value: ${{ jobs.build_job.outputs.status }}
@@ -76,6 +80,11 @@ jobs:
       - name: Unpack archive of build
         if: ${{ inputs.resume }}
         run: ./github_unpack_archive.sh
+      - name: Apply patch to the resumed tree
+        if: ${{ inputs.resume && inputs.resume_patch != '' }}
+        env:
+          RESUME_PATCH: ${{ inputs.resume_patch }}
+        run: patch -d build/src -p1 --forward < "$GITHUB_WORKSPACE/$RESUME_PATCH"
       - uses: ./.github/actions/do-build
         id: build
         with:
