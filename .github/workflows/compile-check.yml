@@ -41,8 +41,9 @@ jobs:
         python3 -m pip install requests Pillow
     - name: Set up sccache with the GitHub Actions cache
       uses: mozilla-actions/sccache-action@v0.0.9
-    - name: Cache Chromium source
-      uses: actions/cache@v5
+    - name: Restore cached Chromium source
+      id: source-cache
+      uses: actions/cache/restore@v5
       with:
         path: build/chromium-source.tar
         key: >-
@@ -68,3 +69,10 @@ jobs:
         SCCACHE_GHA_VERSION: compile-check
         SCCACHE_IGNORE_SERVER_IO_ERROR: "1"
       run: ./compile-check.sh '${{ inputs.files }}'
+    - name: Save the Chromium source for later checks, even when compiling failed
+      if: ${{ always() && steps.source-cache.outputs.cache-hit != 'true' }}
+      continue-on-error: true
+      uses: actions/cache/save@v5
+      with:
+        path: build/chromium-source.tar
+        key: ${{ steps.source-cache.outputs.cache-primary-key }}

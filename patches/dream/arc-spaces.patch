@@ -705,7 +705,7 @@
      "//ui/base",
 --- /dev/null
 +++ b/chrome/browser/ui/views/tabs/common/space_header_view.cc
-@@ -0,0 +1,205 @@
+@@ -0,0 +1,206 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -730,6 +730,7 @@
 +#include "third_party/icu/source/common/unicode/utf16.h"
 +#include "ui/base/metadata/metadata_impl_macros.h"
 +#include "ui/color/color_provider.h"
++#include "ui/compositor/layer.h"
 +#include "ui/events/event.h"
 +#include "ui/gfx/canvas.h"
 +#include "ui/gfx/font.h"
@@ -1925,7 +1926,7 @@
    end_timer_.Start(
        FROM_HERE, kGestureResetTimeout,
        base::BindOnce(&VerticalTabStripFocusSwipeController::EndTracking,
-@@ -501,107 +666,268 @@ void VerticalTabStripFocusSwipeController::EndTracking() {
+@@ -501,107 +666,270 @@ void VerticalTabStripFocusSwipeController::EndTracking() {
    tracking_ = false;
    has_triggered_in_current_gesture_ = true;
    end_timer_.Stop();
@@ -2238,7 +2239,9 @@
 +      page >= 0 && page < static_cast<int>(spaces_.size())) {
 +    if (const TabGroup* const group =
 +            tab_strip_model->group_model()->GetTabGroup(spaces_[page])) {
-+      ui::ColorProviderKey key = widget->GetColorProviderKey();
++      // Widget::GetColorProviderKey() is protected; this public accessor
++      // returns the same virtual key, BrowserWidget's focus-mode theme included.
++      ui::ColorProviderKey key = widget->GetColorProviderKeyForTesting();
 +      key.user_color = current->GetColor(
 +          GetTabGroupDialogColorId(group->visual_data()->color()));
 +      key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
@@ -2702,7 +2705,7 @@
 +  SetHover(std::nullopt, false);
 +}
 +
-+std::u16string VerticalTabStripSpaceSwitcher::GetTooltipText(
++std::u16string VerticalTabStripSpaceSwitcher::GetRenderedTooltipText(
 +    const gfx::Point& point) const {
 +  if (GetAddButtonBounds().Contains(point)) {
 +    return u"New Space";
@@ -2856,7 +2859,7 @@
 +END_METADATA
 --- /dev/null
 +++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_space_switcher.h
-@@ -0,0 +1,103 @@
+@@ -0,0 +1,104 @@
 +// Copyright 2026 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -2917,7 +2920,8 @@
 +  void OnMouseReleased(const ui::MouseEvent& event) override;
 +  void OnMouseMoved(const ui::MouseEvent& event) override;
 +  void OnMouseExited(const ui::MouseEvent& event) override;
-+  std::u16string GetTooltipText(const gfx::Point& point) const override;
++  std::u16string GetRenderedTooltipText(
++      const gfx::Point& point) const override;
 +
 +  // TabStripModelObserver:
 +  void OnTabStripModelChanged(
