@@ -12,6 +12,9 @@ _remaining_time=$(( 360*60 - 60*60 - $(date +%s) + epoch_job_start ))
 
 cd "$_src_dir"
 
+# A resumed finished tree carries the previous run's marker in its logs.
+rm -f "$_root_dir/build_finished_$_target_cpu.log"
+
 echo $(date +%s) | tee -a "$_root_dir/build_times_$_target_cpu.log"
 echo "status=running" >> $GITHUB_OUTPUT
 
