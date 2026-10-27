@@ -29,6 +29,10 @@ on:
         required: false
         type: string
         default: "siso"
+      cache_run:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   retrieve-resources:
@@ -68,6 +72,7 @@ jobs:
       resume_run: ${{ inputs.resume_run }}
       resume_patch: ${{ inputs.resume_patch }}
       build_tool: ${{ inputs.build_tool }}
+      cache_run: ${{ inputs.cache_run }}
 
   build_job_02:
     needs: build_job_01

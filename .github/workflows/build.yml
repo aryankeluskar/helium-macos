@@ -22,6 +22,10 @@ on:
         required: false
         description: "siso, or ninja to resume exactly where a phase stopped"
         default: "siso"
+      cache_run:
+        required: false
+        description: "Run ID of a Compile a partial build in parallel shards run whose compile caches to use"
+        default: ""
       do-release:
         required: false
         type: boolean
@@ -48,6 +52,7 @@ jobs:
       resume_run: ${{ inputs.resume_run }}
       resume_patch: ${{ inputs.resume_patch }}
       build_tool: ${{ inputs.build_tool }}
+      cache_run: ${{ inputs.cache_run }}
 
   release:
     needs: build

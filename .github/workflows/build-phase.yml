@@ -33,6 +33,10 @@ on:
         required: false
         type: string
         default: "siso"
+      cache_run:
+        required: false
+        type: string
+        default: ""
     outputs:
       status:
         value: ${{ jobs.build_job.outputs.status }}
@@ -90,6 +94,23 @@ jobs:
         env:
           RESUME_PATCH: ${{ inputs.resume_patch }}
         run: patch -d build/src -p1 --forward < "$GITHUB_WORKSPACE/$RESUME_PATCH"
+      - name: Download compile caches from parallel shards
+        if: ${{ inputs.resume && inputs.cache_run != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sccache-shard-*
+          path: shard-caches
+          run-id: ${{ inputs.cache_run }}
+          github-token: ${{ github.token }}
+      - name: Merge the shard caches into the tree's cache
+        if: ${{ inputs.resume && inputs.cache_run != '' }}
+        run: |
+          mkdir -p build/src/out/sccache
+          for cache in shard-caches/*/shard-cache.tar; do
+            tar -C build/src/out/sccache -xf "$cache"
+            rm "$cache"
+          done
+          du -sh build/src/out/sccache
       - uses: ./.github/actions/do-build
         id: build
         with:

@@ -1,0 +1,57 @@
+name: Compile a partial build in parallel shards
+
+on:
+  push:
+    paths:
+      - '.github/shards/tree-run'
+  workflow_dispatch:
+    inputs:
+      tree_run:
+        required: true
+        description: "Run ID of a Build macOS binaries of Helium run whose saved tree to continue"
+
+permissions:
+  contents: read
+  actions: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  shard:
+    name: Compile shard ${{ matrix.shard }}
+    runs-on: macos-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-environment
+      - name: Find the tree to continue
+        env:
+          INPUT_TREE_RUN: ${{ inputs.tree_run }}
+        run: echo "TREE_RUN=${INPUT_TREE_RUN:-$(tr -d '[:space:]' < .github/shards/tree-run)}" >> "$GITHUB_ENV"
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: github_build_artifact_arm64
+          run-id: ${{ env.TREE_RUN }}
+          github-token: ${{ github.token }}
+      - name: Unpack archive of build
+        run: ./github_unpack_archive.sh
+      - name: Compile this shard
+        run: ./github_build_shard.sh ${{ matrix.shard }} 4
+      - name: Upload compile cache
+        uses: actions/upload-artifact@v4
+        with:
+          name: sccache-shard-${{ matrix.shard }}
+          path: shard-cache.tar
+          retention-days: 3
+          compression-level: 0
