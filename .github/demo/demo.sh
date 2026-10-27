@@ -49,16 +49,18 @@ if ! kill -0 "$recording" 2>/dev/null; then
 fi
 sleep 2
 
-for distance in -420 -420 -420 -420; do
-  "$swipe" swipe "$strip_x" "$strip_y" "$distance" 0.35
-  sleep 2.2
+for _ in 1 2 3; do
+  "$swipe" swipe "$strip_x" "$strip_y" -420 0.35
+  sleep 2
 done
-"$swipe" swipe "$strip_x" "$strip_y" 420 0.35
-sleep 2.2
-"$swipe" swipe "$strip_x" "$strip_y" -55 1.0
-sleep 2.2
-"$swipe" swipe "$strip_x" "$strip_y" 420 0.35
-sleep 2.5
+"$swipe" swipe "$strip_x" "$strip_y" -50 1.2
+sleep 2
+"$swipe" swipe "$strip_x" "$strip_y" 130 1.5
+sleep 2
+for _ in 1 2; do
+  "$swipe" swipe "$strip_x" "$strip_y" 420 0.35
+  sleep 2
+done
 
 wait "$recording" || true
 screencapture -x "$out/after.png" || true
