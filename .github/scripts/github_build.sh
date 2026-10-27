@@ -15,9 +15,15 @@ cd "$_src_dir"
 echo $(date +%s) | tee -a "$_root_dir/build_times_$_target_cpu.log"
 echo "status=running" >> $GITHUB_OUTPUT
 
-if ! env | grep -q SCCACHE; then
-    export SCCACHE_GHA_ENABLED=on
-    export SCCACHE_GHA_VERSION="$_target_cpu"
+if [ -z "${SCCACHE_WEBDAV_ENDPOINT:-}" ]; then
+    # Keep the compile cache inside the archived tree so the next phase
+    # replays already-compiled objects as cache hits.
+    export SCCACHE_DIR="$_src_dir/out/sccache"
+    export SCCACHE_CACHE_SIZE=20G
+    export SCCACHE_IDLE_TIMEOUT=0
+    unset SCCACHE_GHA_ENABLED SCCACHE_GHA_VERSION
+    sccache --stop-server >/dev/null 2>&1 || true
+    sccache --start-server
 fi
 
 export SCCACHE_WEBDAV_KEY_PREFIX="$_target_cpu"

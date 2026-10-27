@@ -1,0 +1,55 @@
+name: Probe the build toolchain
+
+on:
+  push:
+    paths:
+      - '.github/workflows/toolchain-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    name: List build tools in the cached Chromium source
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          persist-credentials: false
+      - name: Restore cached Chromium source
+        uses: actions/cache/restore@v5
+        with:
+          path: build/chromium-source.tar
+          key: >-
+            chromium-source-v1-${{ runner.os }}-${{ runner.arch }}-${{
+              hashFiles(
+                'helium-chromium/chromium_version.txt',
+                'helium-chromium/*.ini',
+                'helium-chromium/pruning.list',
+                'helium-chromium/utils/**',
+                'downloads*.ini',
+                'devutils/shared.sh',
+                '.github/scripts/sanity-check.sh'
+              )
+            }}
+      - name: Probe and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          {
+            echo "cache: $(ls -la build/chromium-source.tar 2>&1)"
+            echo "== build tools in the source archive"
+            tar -tvf build/chromium-source.tar 2>/dev/null \
+              | grep -E '(third_party/ninja/|third_party/siso/|depot_tools/ninja|depot_tools/autoninja)' | head -40
+          } > out/toolchain.txt 2>&1
+          cd out
+          git init -q -b diagnostics-toolchain
+          git add -A
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -qm "Toolchain probe"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" diagnostics-toolchain
