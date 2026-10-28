@@ -50,10 +50,14 @@ def main(tree, helium_repo):
     fp_map = {}
     changed = 0
     for path in name_substitution.get_substitutable_files(tree, ["grd", "grdp"]):
+        had_declaration = path.read_text(encoding="utf-8").lstrip().startswith("<?xml")
         result = name_substitution.substitute_grit_file((path, tree, False, False))
         if result:
             changed += 1
             fp_map.update(result[1])
+            if not had_declaration:
+                text = path.read_text(encoding="utf-8")
+                path.write_text(re.sub(r"^<\?xml[^>]*\?>\s*", "", text), encoding="utf-8")
     for path in name_substitution.get_substitutable_files(tree, ["xtb"]):
         if rename_xtb(path, util, fp_map):
             changed += 1
