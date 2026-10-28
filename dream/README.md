@@ -19,6 +19,7 @@ Make a space with the `+` in the space bar at the foot of the sidebar; your exis
 - **Any Apple Silicon Mac:** `curl -fsSL https://raw.githubusercontent.com/aryankeluskar/helium-macos/claude/arc-spaces/dream/build-on-a-mac.sh | bash -s -- --full-speed` on an idle or rented Mac (about 3 to 4 hours on an M2 Pro). Use `--background` instead on a Mac you're using: it runs at background priority with fewer jobs and takes much longer.
 
 The DMG isn't notarized. After dragging Helium to Applications, allow it once in System Settings › Privacy & Security.
+On first launch, agree to Helium services in onboarding: Chrome Web Store installs download through Helium's privacy proxy, which stays off until you do.
 
 ## Agents
 

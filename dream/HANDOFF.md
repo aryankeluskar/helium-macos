@@ -63,6 +63,16 @@ daemon on a 0600 Unix socket. 33 tests (`cd agent && npm test`) run against head
   - the demo shows the space header, the dot bar with `+`, no group chips, and a two-finger swipe sliding the whole
     space with the fingers, the colour blending between spaces, and a spring settle;
   - it goes Work → Personal → Research, rubber-bands at the last space, and swipes back to Work without leaving spaces.
+- **Deeper checks** (`.github/demo/deep-checks.sh`, orchestrator run `40623786400`; results in `verify.md`):
+  - **Ad blocking:** 24 of 24 ad and tracker networks (Google ads and analytics, Amazon, AppNexus, Criteo, Taboola,
+    Outbrain, Meta, Hotjar, TikTok, LinkedIn and others) are blocked or answered with uBlock Origin's stub. 5 of 5
+    normal CDN, font and image requests load, and ad slots are hidden. A test extension
+    (`.github/demo/request-observer`) reads each outcome from `chrome.webRequest`; fetch-based probes can't tell.
+  - **Chrome Web Store:** Dark Reader installs from the Web Store and runs. Helium downloads extensions through its
+    privacy proxy, which works only after the user agrees to Helium services in first-run onboarding (pref
+    `helium.services.user_consented`).
+  - **Vertical tabs:** collapsed, the strip shows favicons. Hover expands it over the page in about 3 frames (~100 ms)
+    and it collapses within a frame.
 - **The fixed bug:** on the no-tracking path (Reduce Motion, or no space focused yet), a swipe past the last space used
   to wrap out of spaces into the plain grouped list.
 - **Chromium 156 builds as C++23 and has no `base/containers/contains.h`:** use `std::ranges::contains`, and check
