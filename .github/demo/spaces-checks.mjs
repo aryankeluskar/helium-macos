@@ -3,7 +3,7 @@
 // space bar, `+`, renaming, Ctrl+1…9, new tabs, swipes and relaunch are checked
 // rather than only recorded. Appends to demo-out/verify.md.
 import { execFileSync, spawn } from 'node:child_process';
-import { appendFileSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { setTimeout as sleep } from 'node:timers/promises';
 
 const [app, profile, out, swipeTool, axTool, extension] = process.argv.slice(2);
@@ -161,6 +161,27 @@ class Browser {
   }
 }
 
+function sessionSummary() {
+  try {
+    const dir = `${profile}/Default/Sessions`;
+    const name = readdirSync(dir).filter((f) => f.startsWith('Session_')).sort().pop();
+    const data = readFileSync(`${dir}/${name}`);
+    const selected = [];
+    let focusWrites = 0;
+    for (let at = 8; at + 2 <= data.length; ) {
+      const size = data.readUInt16LE(at);
+      const id = data[at + 2];
+      const payload = data.subarray(at + 3, at + 2 + size);
+      if (id === 8 && payload.length >= 8) selected.push(payload.readInt32LE(4));
+      if (id === 34 && payload.includes('focused_tab_group_id')) focusWrites++;
+      at += 2 + size;
+    }
+    return `${name}: selected-tab writes ${selected.slice(-4).join(', ') || 'none'}, focused-space writes ${focusWrites}`;
+  } catch (error) {
+    return `session file unreadable (${error.message.split('\n')[0]})`;
+  }
+}
+
 const describe = (state) =>
   `space ${state.space + 1} of ${state.spaces.length} (${state.spaces[state.space] ?? 'none'}), tab ${state.url}`;
 
@@ -222,6 +243,7 @@ async function main() {
     session: { restore_on_startup: 1 },
   }));
   appendFileSync(report, '\n### Spaces, driven with synthetic keyboard, mouse and trackpad input\n\n');
+  input('release');
 
   const browser = new Browser();
   await browser.launch();
@@ -411,6 +433,7 @@ async function main() {
     await sleep(4000);
     const before = await browser.state();
     const quitBy = await browser.quit(true);
+    const session = sessionSummary();
     await sleep(2000);
     await browser.launch();
     await browser.attachWorker();
@@ -425,7 +448,7 @@ async function main() {
     const otherSpaces = ['Hacker News', 'Wikipedia'].filter((t) => tree.split('\n').some((l) => !l.startsWith('window ') && l.includes(t)));
     return {
       ok: after.spaces.join() === before.spaces.join() && after.space === before.space,
-      detail: `quit with ${quitBy}; before: ${before.spaces.join(', ')} on space ${before.space + 1}, ${before.tabs} tabs, ${before.url}; after: ${after.spaces.join(', ')} on space ${after.space + 1}, ${after.tabs} tabs, ${after.url}; other spaces' tabs listed after relaunch: ${otherSpaces.join(', ') || 'none'}`,
+      detail: `quit with ${quitBy}; ${session}; before: ${before.spaces.join(', ')} on space ${before.space + 1}, ${before.tabs} tabs, ${before.url}; after: ${after.spaces.join(', ')} on space ${after.space + 1}, ${after.tabs} tabs, ${after.url}; other spaces' tabs listed after relaunch: ${otherSpaces.join(', ') || 'none'}`,
     };
   });
 

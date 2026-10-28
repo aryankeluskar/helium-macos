@@ -2,7 +2,8 @@ import AppKit
 import CoreGraphics
 import Foundation
 
-func post(_ event: CGEvent?) {
+func post(_ event: CGEvent?, flags: CGEventFlags = []) {
+  event?.flags = flags
   event?.post(tap: .cghidEventTap)
 }
 
@@ -36,16 +37,33 @@ func click(at point: CGPoint, right: Bool) {
   }
 }
 
-let modifierFlags: [String: CGEventFlags] = [
-  "ctrl": .maskControl, "cmd": .maskCommand, "shift": .maskShift, "alt": .maskAlternate,
+let modifiers: [String: (flag: CGEventFlags, key: CGKeyCode)] = [
+  "ctrl": (.maskControl, 59), "cmd": (.maskCommand, 55), "shift": (.maskShift, 56),
+  "alt": (.maskAlternate, 58),
 ]
 
-func key(_ code: CGKeyCode, flags: CGEventFlags, hold: Double = 0.03) {
+func setModifier(_ name: String, down: Bool, flags: CGEventFlags) {
+  guard let modifier = modifiers[name],
+    let event = CGEvent(keyboardEventSource: nil, virtualKey: modifier.key, keyDown: down)
+  else { return }
+  event.type = .flagsChanged
+  post(event, flags: flags)
+  usleep(20_000)
+}
+
+func key(_ code: CGKeyCode, holding names: [String], hold: Double = 0.03) {
+  var flags = CGEventFlags()
+  for name in names {
+    flags.insert(modifiers[name]?.flag ?? [])
+    setModifier(name, down: true, flags: flags)
+  }
   for down in [true, false] {
-    let event = CGEvent(keyboardEventSource: nil, virtualKey: code, keyDown: down)
-    event?.flags = flags
-    post(event)
+    post(CGEvent(keyboardEventSource: nil, virtualKey: code, keyDown: down), flags: flags)
     usleep(useconds_t((down ? hold : 0.03) * 1_000_000))
+  }
+  for name in names.reversed() {
+    flags.remove(modifiers[name]?.flag ?? [])
+    setModifier(name, down: false, flags: flags)
   }
 }
 
@@ -85,15 +103,11 @@ case "click":
     at: CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!),
     right: arguments.count > 4 && arguments[4] == "right")
 case "key":
-  let flags = arguments.dropFirst(3).reduce(CGEventFlags()) {
-    $0.union(modifierFlags[$1] ?? [])
-  }
-  key(CGKeyCode(arguments[2])!, flags: flags)
+  key(CGKeyCode(arguments[2])!, holding: Array(arguments.dropFirst(3)))
 case "hold":
-  let flags = arguments.dropFirst(4).reduce(CGEventFlags()) {
-    $0.union(modifierFlags[$1] ?? [])
-  }
-  key(CGKeyCode(arguments[2])!, flags: flags, hold: Double(arguments[3])!)
+  key(CGKeyCode(arguments[2])!, holding: Array(arguments.dropFirst(4)), hold: Double(arguments[3])!)
+case "release":
+  for name in modifiers.keys { setModifier(name, down: false, flags: []) }
 case "type":
   typeText(arguments[2])
 case "activate":

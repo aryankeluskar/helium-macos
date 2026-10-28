@@ -31,4 +31,5 @@ dream/scrollable-spaces.patch
 dream/arc-spaces.patch
 dream/space-swipe-stops-at-the-ends.patch
 dream/space-swipe-rests-under-the-fingers.patch
+dream/spaces-reopen-on-the-current-space.patch
 dream/block-debug-port-on-default-profile.patch
