@@ -105,6 +105,14 @@ jobs:
           github-token: ${{ github.token }}
       - name: Download build
         if: ${{ inputs.resume }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: github_build_artifact_${{ inputs.arch }}
+          run-id: ${{ inputs.resume_run || github.run_id }}
+          github-token: ${{ github.token }}
+      - name: Download build again when the first download came back incomplete
+        if: ${{ inputs.resume && hashFiles('sums.txt') == '' }}
         uses: actions/download-artifact@v4
         with:
           name: github_build_artifact_${{ inputs.arch }}
