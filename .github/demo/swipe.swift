@@ -27,27 +27,25 @@ func click(at point: CGPoint, right: Bool) {
   moveMouse(to: point)
   usleep(80_000)
   let button: CGMouseButton = right ? .right : .left
-  post(
-    CGEvent(
-      mouseEventSource: nil, mouseType: right ? .rightMouseDown : .leftMouseDown,
-      mouseCursorPosition: point, mouseButton: button))
-  usleep(60_000)
-  post(
-    CGEvent(
-      mouseEventSource: nil, mouseType: right ? .rightMouseUp : .leftMouseUp,
-      mouseCursorPosition: point, mouseButton: button))
+  for type in right ? [CGEventType.rightMouseDown, .rightMouseUp] : [.leftMouseDown, .leftMouseUp] {
+    let event = CGEvent(
+      mouseEventSource: nil, mouseType: type, mouseCursorPosition: point, mouseButton: button)
+    event?.setIntegerValueField(.mouseEventClickState, value: 1)
+    post(event)
+    usleep(60_000)
+  }
 }
 
 let modifierFlags: [String: CGEventFlags] = [
   "ctrl": .maskControl, "cmd": .maskCommand, "shift": .maskShift, "alt": .maskAlternate,
 ]
 
-func key(_ code: CGKeyCode, flags: CGEventFlags) {
+func key(_ code: CGKeyCode, flags: CGEventFlags, hold: Double = 0.03) {
   for down in [true, false] {
     let event = CGEvent(keyboardEventSource: nil, virtualKey: code, keyDown: down)
     event?.flags = flags
     post(event)
-    usleep(30_000)
+    usleep(useconds_t((down ? hold : 0.03) * 1_000_000))
   }
 }
 
@@ -91,6 +89,11 @@ case "key":
     $0.union(modifierFlags[$1] ?? [])
   }
   key(CGKeyCode(arguments[2])!, flags: flags)
+case "hold":
+  let flags = arguments.dropFirst(4).reduce(CGEventFlags()) {
+    $0.union(modifierFlags[$1] ?? [])
+  }
+  key(CGKeyCode(arguments[2])!, flags: flags, hold: Double(arguments[3])!)
 case "type":
   typeText(arguments[2])
 case "activate":
@@ -116,7 +119,11 @@ case "swipe":
     sent = target
     usleep(16_666)
   }
-  if hold > 0 { usleep(useconds_t(hold * 1_000_000)) }
+  if hold > 0 {
+    print("holding")
+    fflush(stdout)
+    usleep(useconds_t(hold * 1_000_000))
+  }
   scroll(0, phase: 4, at: point)
 default:
   exit(2)

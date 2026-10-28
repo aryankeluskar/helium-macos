@@ -8,7 +8,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 const [app, profile, out, swipeTool, axTool, extension] = process.argv.slice(2);
 const report = `${out}/verify.md`;
-const keys = { 1: 18, 2: 19, 3: 20, 4: 21, 9: 25, t: 17, w: 13, a: 0, return: 36, escape: 53 };
+const keys = { 1: 18, 2: 19, 3: 20, 4: 21, 9: 25, t: 17, w: 13, a: 0, q: 12, return: 36, escape: 53 };
 const browserArgs = [
   `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0',
   `--load-extension=${extension}`, '--force-prefers-no-reduced-motion', '--window-position=0,25', '--window-size=1024,710',
@@ -27,6 +27,19 @@ const input = (...args) => tool(swipeTool, ...args);
 const press = (name, ...modifiers) => input('key', keys[name], ...modifiers);
 const swipeAsync = (...args) =>
   new Promise((resolve) => spawn(swipeTool, ['swipe', ...args.map(String)]).on('exit', resolve));
+
+function restingSwipe(...args) {
+  const child = spawn(swipeTool, ['swipe', ...args.map(String)]);
+  const resting = new Promise((resolve) => child.stdout.on('data', (data) => String(data).includes('holding') && resolve()));
+  const lifted = new Promise((resolve) => child.on('exit', resolve));
+  return { resting: Promise.race([resting, lifted]), lifted };
+}
+
+function axFrame(tree, pattern) {
+  const line = tree.split('\n').find((l) => pattern.test(l));
+  const match = line?.match(/\[(-?\d+),(-?\d+) (\d+)x(\d+)\]/);
+  return match ? match.slice(1).map(Number) : null;
+}
 
 function capture(name, rect) {
   try {
@@ -72,13 +85,20 @@ class Browser {
     this.worker = null;
   }
 
-  async quit() {
+  async quit(byKeyboard = false) {
     const exited = new Promise((resolve) => this.process.on('exit', resolve));
+    const quitWithin = (ms) => Promise.race([exited.then(() => true), sleep(ms).then(() => false)]);
     this.cdp?.close();
+    if (byKeyboard) {
+      input('activate', 'Hydrogen');
+      input('hold', keys.q, 1.5, 'cmd');
+      if (await quitWithin(20_000)) return 'Cmd+Q';
+    }
     this.process.kill('SIGTERM');
-    if (await Promise.race([exited.then(() => true), sleep(30_000).then(() => false)])) return;
+    if (await quitWithin(30_000)) return 'SIGTERM';
     this.process.kill('SIGKILL');
     await Promise.race([exited, sleep(10_000)]);
+    return 'SIGKILL';
   }
 
   async attachWorker() {
@@ -253,15 +273,33 @@ async function main() {
     };
   });
 
+  await check('A click on a tab in the sidebar selects it (a control for the synthetic clicks)', async () => {
+    await goTo(0);
+    const frame = axFrame(tool(axTool, 'dump', 'Hydrogen'), /AXRadioButton .*Hacker News/);
+    if (!frame) return { ok: false, detail: 'no Hacker News row in the accessibility tree' };
+    input('click', frame[0] + 40, frame[1] + Math.round(frame[3] / 2));
+    await wait();
+    const now = await browser.state();
+    return { ok: now.url.includes('news.ycombinator.com'), detail: `clicked the row at ${frame.join(',')}: ${describe(now)}` };
+  });
+
   await check('Clicking a dot in the space bar switches to that space (`space-bar.png`)', async () => {
     capture('space-bar', geometry.bar());
+    const before = input('bounds', 'Hydrogen');
     const seen = [];
+    const points = [];
     for (const index of [2, 1, 0]) {
-      input('click', ...geometry.dot(index, state.spaces));
+      const point = geometry.dot(index, state.spaces);
+      points.push(point.join(','));
+      input('click', ...point);
       await wait();
       seen.push((await browser.state()).space + 1);
     }
-    return { ok: seen.join() === '3,2,1', detail: `clicks on dots 3, 2, 1 landed on spaces ${seen.join(', ')}` };
+    const after = input('bounds', 'Hydrogen');
+    return {
+      ok: seen.join() === '3,2,1',
+      detail: `clicks at ${points.join(' ')} on dots 3, 2, 1 landed on spaces ${seen.join(', ')}; window ${before} before, ${after} after`,
+    };
   });
 
   await check('Each space reopens on the tab you left it on', async () => {
@@ -318,11 +356,12 @@ async function main() {
 
   await check('Resting the fingers mid-swipe keeps the space under them until they lift', async () => {
     await goTo(0);
-    const gesture = swipeAsync(geometry.stripX, geometry.stripY, -260, 0.5, 1.5);
-    await sleep(1400);
+    const gesture = restingSwipe(geometry.stripX, geometry.stripY, -260, 0.5, 1.8);
+    await gesture.resting;
+    await sleep(900);
     const during = (await browser.state()).space + 1;
     capture('swipe-resting', geometry.sidebar());
-    await gesture;
+    await gesture.lifted;
     await wait();
     const after = (await browser.state()).space + 1;
     return {
@@ -352,6 +391,10 @@ async function main() {
     press('a', 'cmd');
     input('type', '🏠 Home');
     await wait(500);
+    const typed = tool(axTool, 'dump', 'Hydrogen');
+    writeFileSync(`${out}/space-editor-typed-ax.txt`, typed);
+    const field = typed.split('\n').find((l) => l.includes('AXTextField') && !l.includes('Address and search bar')) ?? 'no field';
+    capture('space-editor-typed', geometry.sidebar().map((v, i) => (i === 2 ? v + 300 : v)));
     press('return');
     await wait();
     state = await browser.state();
@@ -359,14 +402,15 @@ async function main() {
     capture('space-icon', geometry.sidebar());
     return {
       ok: state.spaces[0] === '🏠 Home',
-      detail: `the first space is now named "${state.spaces[0]}"; editor windows seen: ${editor.split('\n').filter((l) => l.startsWith('window ')).length}`,
+      detail: `the first space is now named "${state.spaces[0]}"; windows while editing: ${editor.split('\n').filter((l) => l.startsWith('window ')).length}; the editor's field after typing: ${field.trim()}`,
     };
   });
 
   await check('Spaces, their names and the current space come back after quitting and reopening (`spaces-relaunch.png`)', async () => {
     await goTo(2);
+    await sleep(4000);
     const before = await browser.state();
-    await browser.quit();
+    const quitBy = await browser.quit(true);
     await sleep(2000);
     await browser.launch();
     await browser.attachWorker();
@@ -381,7 +425,7 @@ async function main() {
     const otherSpaces = ['Hacker News', 'Wikipedia'].filter((t) => tree.split('\n').some((l) => !l.startsWith('window ') && l.includes(t)));
     return {
       ok: after.spaces.join() === before.spaces.join() && after.space === before.space,
-      detail: `before: ${before.spaces.join(', ')} on space ${before.space + 1}; after: ${after.spaces.join(', ')} on space ${after.space + 1}; other spaces' tabs listed after relaunch: ${otherSpaces.join(', ') || 'none'}`,
+      detail: `quit with ${quitBy}; before: ${before.spaces.join(', ')} on space ${before.space + 1}, ${before.tabs} tabs, ${before.url}; after: ${after.spaces.join(', ')} on space ${after.space + 1}, ${after.tabs} tabs, ${after.url}; other spaces' tabs listed after relaunch: ${otherSpaces.join(', ') || 'none'}`,
     };
   });
 
