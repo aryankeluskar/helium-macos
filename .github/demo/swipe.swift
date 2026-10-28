@@ -7,41 +7,14 @@ func post(_ event: CGEvent?, flags: CGEventFlags = []) {
   event?.post(tap: .cghidEventTap)
 }
 
-func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint, time: CGEventTimestamp?) {
+func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint) {
   let event = CGEvent(
     scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: 0,
     wheel2: deltaX, wheel3: 0)
   event?.location = point
-  if let time { event?.timestamp = time }
   event?.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
   event?.setIntegerValueField(.scrollWheelEventScrollPhase, value: phase)
   post(event)
-}
-
-struct EventClock {
-  let start: CGEventTimestamp
-  let perSecond: Double
-  let description: String
-
-  init() {
-    let stamp = CGEvent(source: nil)?.timestamp ?? 0
-    let ticks = mach_absolute_time()
-    var timebase = mach_timebase_info_data_t()
-    mach_timebase_info(&timebase)
-    if stamp != 0 && stamp > ticks &* 10 {
-      start = clock_gettime_nsec_np(CLOCK_UPTIME_RAW)
-      perSecond = 1e9
-      description = "uptime nanoseconds (a new event's stamp \(stamp))"
-    } else {
-      start = ticks
-      perSecond = 1e9 * Double(timebase.denom) / Double(timebase.numer)
-      description = "mach ticks at \(Int(perSecond)) per second (a new event's stamp \(stamp))"
-    }
-  }
-
-  func at(_ seconds: Double) -> CGEventTimestamp {
-    start + CGEventTimestamp(seconds * perSecond)
-  }
 }
 
 func moveMouse(to point: CGPoint) {
@@ -144,23 +117,19 @@ case "activate":
     })
   else { exit(1) }
   app.activate(options: [.activateAllWindows])
-case "clock":
-  print(EventClock().description)
 case "swipe":
   let point = CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!)
   let distance = Int(arguments[4])!
   let seconds = arguments.count > 5 ? Double(arguments[5])! : 0.35
   let hold = arguments.count > 6 ? Double(arguments[6])! : 0
   moveMouse(to: point)
-  usleep(50_000)
-  let clock = EventClock()
-  let at = { (seconds: Double) -> CGEventTimestamp? in clock.at(seconds) }
+  usleep(150_000)
   let steps = max(1, Int(seconds * 60))
-  scroll(0, phase: 1, at: point, time: at(0))
+  scroll(0, phase: 1, at: point)
   var sent = 0
   for step in 1...steps {
     let target = distance * step / steps
-    scroll(Int32(target - sent), phase: 2, at: point, time: at(Double(step) / 60))
+    scroll(Int32(target - sent), phase: 2, at: point)
     sent = target
     usleep(16_666)
   }
@@ -169,7 +138,7 @@ case "swipe":
     fflush(stdout)
     usleep(useconds_t(hold * 1_000_000))
   }
-  scroll(0, phase: 4, at: point, time: at(Double(steps) / 60 + hold))
+  scroll(0, phase: 4, at: point)
 default:
   exit(2)
 }

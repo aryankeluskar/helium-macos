@@ -370,7 +370,7 @@ async function main() {
     }
     return {
       ok: seen.join() === '2,1,2,1,2,1',
-      detail: `100 pt flicks left and right, three times, landed on spaces ${seen.join(', ')} (expected 2, 1, 2, 1, 2, 1); synthetic events are stamped in ${input('clock')}`,
+      detail: `100 pt flicks left and right, three times, landed on spaces ${seen.join(', ')} (expected 2, 1, 2, 1, 2, 1)`,
     };
   });
 
