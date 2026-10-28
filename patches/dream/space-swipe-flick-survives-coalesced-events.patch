@@ -1,0 +1,73 @@
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
+@@ -6,6 +6,7 @@
+ 
+ #include <algorithm>
+ #include <cmath>
++#include <iterator>
+ #include <memory>
+ #include <numbers>
+ #include <optional>
+@@ -301,6 +302,7 @@
+   if (event->momentum_phase() == ui::EventMomentumPhase::MAY_BEGIN) {
+     EndTracking();
+     ResetGesture();
++    gesture_start_time_ = event_time_;
+     return;
+   }
+ 
+@@ -629,6 +631,13 @@
+   detent_ = std::clamp(static_cast<int>(std::lround(position_)), drag_lo_,
+                        drag_hi_);
+   history_.clear();
++  // Where the fingers started, so a quick flick that arrives as one coalesced
++  // event still has a velocity.
++  history_.emplace_back(
++      gesture_start_time_.is_null() || gesture_start_time_ > event_time_
++          ? event_time_
++          : gesture_start_time_,
++      position_);
+   return true;
+ }
+ 
+@@ -652,7 +661,7 @@
+ 
+   const base::TimeTicks now = event_time_;
+   history_.emplace_back(now, position_);
+-  while (now - history_.front().first > kVelocityWindow) {
++  while (history_.size() > 2 && now - history_[1].first > kVelocityWindow) {
+     history_.pop_front();
+   }
+ 
+@@ -707,7 +716,7 @@
+ // so resting them before lifting lets the space settle on the nearest page.
+ float VerticalTabStripFocusSwipeController::GetReleaseVelocity() const {
+   const base::TimeTicks now = event_time_;
+-  const auto recent = std::find_if(
++  auto recent = std::find_if(
+       history_.begin(), history_.end(),
+       [now](const std::pair<base::TimeTicks, float>& sample) {
+         return now - sample.first <= kVelocityWindow;
+@@ -715,6 +724,11 @@
+   if (recent == history_.end()) {
+     return 0.0f;
+   }
++  // A busy main thread lets AppKit coalesce a quick flick's events, leaving a
++  // single recent sample; measure from the one before it.
++  if (std::next(recent) == history_.end() && recent != history_.begin()) {
++    --recent;
++  }
+   const auto& [first_time, first_position] = *recent;
+   const auto& [last_time, last_position] = history_.back();
+   const double seconds = (last_time - first_time).InSecondsF();
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
+@@ -158,6 +158,8 @@
+   // trackpad's own times, so a busy main thread can't turn a flick into a
+   // rest.
+   base::TimeTicks event_time_;
++  // When the fingers began the current gesture.
++  base::TimeTicks gesture_start_time_;
+ 
+   std::optional<Spring> spring_;
+   gfx::LinearAnimation spring_animation_;
