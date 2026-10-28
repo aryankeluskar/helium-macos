@@ -76,7 +76,18 @@ Helium):
 
 ## Where the builds are right now
 
-**Update 2026-10-28 02:35 UTC: the current DMG is run `40615857553`** (artifact `helium_0.20.1.1_arm64-macos.dmg`):
+**Update 2026-10-28 15:30 UTC: the current DMG is Hydrogen, run `40697436072`** (artifact
+`hydrogen_0.20.1.1_arm64-macos.dmg`):
+- **How it was built:** it resumed `40615857553`'s tree with `resume_patch=dream/hydrogen/rebrand.sh`, in 1 h 36 min.
+- **What the checks confirmed** (on a GitHub Apple Silicon Mac):
+  - the menu bar reads Hydrogen, and the Dock shows the Balmer icon from the compiled `Assets.car`;
+  - the bundle is Hydrogen / `com.aryankeluskar.hydrogen`;
+  - arm64, the agent CLI, uBlock Origin, 24/24 ad networks blocked, Web Store installs, and 93 vs Brave's 80–91 on
+    d3ward's list.
+- **The first attempt** (`40694258624`) failed only because the onboarding page's i18n generator rejects a `.grdp` that
+  starts with an XML declaration; `rename_strings.py` now keeps files' original form.
+
+Earlier, before the rename (run `40615857553`, artifact `helium_0.20.1.1_arm64-macos.dmg`):
 
 - **What it is:** Arc spaces, the hardening patch, and `space-swipe-stops-at-the-ends.patch`. It was rebuilt incrementally
   from run `40590194934`'s finished tree in 52 min; that's the way to ship small spaces fixes.
@@ -189,7 +200,7 @@ priority, only with the owner's OK.
 
 ## Next, in order
 
-1. Owner installs the DMG from run `40615857553`; check on the real M5 trackpad:
+1. Owner installs the Hydrogen DMG from run `40697436072`; check on the real M5 trackpad:
    - swipe feel, rubber band, haptics, colour blend;
    - space header and space bar (`+`, right-click editor, emoji icons);
    - Ctrl+1…9;
