@@ -79,9 +79,10 @@ Helium):
 **Update 2026-10-28 15:30 UTC: the current DMG is Hydrogen, run `40697436072`** (artifact
 `hydrogen_0.20.1.1_arm64-macos.dmg`):
 - **How it was built:** it resumed `40615857553`'s tree with `resume_patch=dream/hydrogen/rebrand.sh`, in 1 h 36 min.
-- **What the checks confirmed** (on a GitHub Apple Silicon Mac):
+- **What the checks confirmed** (on a GitHub Apple Silicon Mac, orchestrator run `40716033864`):
   - the menu bar reads Hydrogen, and the Dock shows the Balmer icon from the compiled `Assets.car`;
   - the bundle is Hydrogen / `com.aryankeluskar.hydrogen`;
+  - the About page reads "About Hydrogen" with the new tile, and onboarding says "Meet Hydrogen" with the spectral glyph;
   - arm64, the agent CLI, uBlock Origin, 24/24 ad networks blocked, Web Store installs, and 93 vs Brave's 80–91 on
     d3ward's list.
 - **The first attempt** (`40694258624`) failed only because the onboarding page's i18n generator rejects a `.grdp` that
