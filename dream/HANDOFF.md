@@ -50,6 +50,30 @@ approval-mode DevTools server (`chrome://inspect/#remote-debugging`; the user cl
 daemon on a 0600 Unix socket. 33 tests (`cd agent && npm test`) run against headless Chromium on Linux.
 `sign_and_package_app.sh` bundles it into `Helium.app/Contents/Resources/helium-agent/` before signing.
 
+## Hydrogen: the fork's name
+
+The fork is branded **Hydrogen** (owner's ask: it isn't fully Helium, and it shouldn't be confused with an installed
+Helium):
+- **Identity:** `Hydrogen.app` with bundle ID `com.aryankeluskar.hydrogen`, its own profile folder
+  (`~/Library/Application Support/com.aryankeluskar.hydrogen`) and keychain item ("Hydrogen Storage Key"), and DMGs
+  named `hydrogen_*_arm64-macos.dmg`.
+- **Brand:** the icon and every logo are the four Balmer lines of hydrogen's spectrum (410, 434, 486 and 656 nm) over a
+  spectrum band, on paper by default and graphite in dark mode, with a layered Icon Composer icon for macOS 26.
+  - The wordmark is set in Sora (OFL, vendored in `dream/hydrogen/fonts/`).
+  - The design system, with tokens, the brand book and the assets, is at
+    https://claude.ai/artifact/74Bcdb9uC9QUEfvAm8nrqm.
+  - `dream/hydrogen/make_icons.py` regenerates every asset into `dream/hydrogen/resources/`.
+- **How it's applied:** `dream/hydrogen/rebrand.sh <src>` runs after Helium's resources step in `prepare_sources` (and as
+  `he hydrogen`).
+  - It rewrites BRANDING, the keychain, profile and crash-product constants, every UI string (via Helium's
+    substitution helpers, with translations re-keyed), the logos, onboarding, the WebUI glyph and `Assets.car` (compiled
+    with Chromium's `compile_car.py` when actool exists).
+  - It runs on resumed trees too: `resume_patch` entries ending in `.sh` run as scripts.
+  - Strings about imput's servers keep "Helium services".
+  - Internal identifiers (`helium://`, `helium.*` prefs, `helium::`) are unchanged.
+  - Nothing in the `helium-chromium` submodule is edited.
+- **Agent CLI:** now `hydrogen`. It reads `HYDROGEN_*` first and falls back to `HELIUM_*` and the old profile folder.
+
 ## Where the builds are right now
 
 **Update 2026-10-28 02:35 UTC: the current DMG is run `40615857553`** (artifact `helium_0.20.1.1_arm64-macos.dmg`):
