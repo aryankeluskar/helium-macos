@@ -1,6 +1,7 @@
 #!/bin/bash
 # Checks the installed build beyond verify.sh: how widely uBlock Origin blocks
-# ad and tracker networks and hides ad slots without breaking normal requests,
+# ad and tracker networks (as seen by the request-observer extension) and hides
+# ad slots without breaking normal requests,
 # installing an extension from the Chrome Web Store, and the collapsed vertical
 # tab strip expanding on hover. Appends to demo-out/verify.md.
 set -uo pipefail
@@ -29,6 +30,7 @@ JSON
 
 "$app/Contents/MacOS/Helium" --user-data-dir="$profile" --no-first-run --no-default-browser-check \
   --remote-debugging-port=0 --window-position=0,25 --window-size=1024,710 --force-prefers-no-reduced-motion \
+  --load-extension="$demo_dir/request-observer" \
   "https://en.wikipedia.org/wiki/Arc_(web_browser)" https://news.ycombinator.com https://github.com/imputnet/helium \
   > "$out/deep-helium.log" 2>&1 &
 browser=$!
@@ -78,19 +80,46 @@ else
   fail "The Helium window wasn't found, so the vertical tab strip wasn't checked"
 fi
 
-probe() {
-  "$helium" eval --tab "$probe_tab" "fetch('$1', {mode: 'no-cors', cache: 'no-store', redirect: 'manual'}).then(r => r.type === 'opaqueredirect' ? 'stubbed' : 'loaded', () => 'blocked')" 2>/dev/null | tr -d '"[:space:]'
+observer=bocpdjonlkcamnhcdfelpabhlkaihjke
+probe_tab=$("$helium" open https://example.com --json 2>/dev/null | jq -r '.tab.id')
+
+request() {
+  local urls
+  urls=$(printf '%s\n' "$@" | jq -R . | jq -sc .)
+  "$helium" eval --tab "$probe_tab" "Promise.all($urls.map(url => new Promise(done => {
+    const element = /\.(png|jpe?g)(\?|$)/.test(url) ? new Image()
+      : /fonts\.googleapis|\.css(\?|$)/.test(url) ? Object.assign(document.createElement('link'), { rel: 'stylesheet' })
+      : document.createElement('script');
+    element.onload = element.onerror = () => done();
+    setTimeout(done, 15000);
+    if (element.tagName === 'LINK') element.href = url; else element.src = url;
+    if (element.tagName !== 'IMG') document.head.append(element);
+  }))).then(() => 'done')" > /dev/null 2>&1
 }
 
-probe_tab=$("$helium" open https://example.com --json 2>/dev/null | jq -r '.tab.id')
-for _ in $(seq 1 12); do
-  case "$(probe https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js)" in blocked|stubbed) break ;; esac
+outcomes() {
+  local tab
+  tab=$("$helium" open "chrome-extension://$observer/outcomes.html" --json 2>/dev/null | jq -r '.tab.id')
+  "$helium" eval --tab "$tab" --json "new Promise(r => setTimeout(r, 500)).then(() => JSON.parse(document.getElementById('outcomes').textContent))" 2>/dev/null | jq -c '.value // {}'
+  "$helium" close "$tab" > /dev/null 2>&1 || true
+}
+
+outcome_of() {
+  jq -r --arg url "$2" '.[$url] // "no request seen"' <<< "$1"
+}
+
+for attempt in $(seq 1 12); do
+  readiness="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?ready=$attempt"
+  request "$readiness"
+  case "$(outcome_of "$(outcomes)" "$readiness")" in blocked|stubbed) break ;; esac
   sleep 5
 done
 
 {
   echo
   echo "## Ad blocking across networks"
+  echo
+  echo "Each URL is loaded on example.com the way a page loads it (script, stylesheet or image); a test extension reads what Chrome did with the request from \`chrome.webRequest\`."
   echo
 } >> "$report"
 
@@ -128,22 +157,25 @@ control_urls=(
   https://www.gstatic.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png
 )
 
+request "${ad_urls[@]}" "${control_urls[@]}"
+sleep 2
+seen=$(outcomes)
+echo "$seen" | jq . > "$out/request-outcomes.json"
+
 blocked=0
 rows=""
 for url in "${ad_urls[@]}"; do
-  result=$(probe "$url")
+  result=$(outcome_of "$seen" "$url")
   case "$result" in blocked|stubbed) blocked=$((blocked + 1)) ;; esac
-  host=$(echo "$url" | cut -d/ -f3)
-  rows+="| \`$host\` | $result |"$'\n'
+  rows+="| \`$(echo "$url" | cut -d/ -f3)\` | $result |"$'\n'
 done
 loaded=0
 for url in "${control_urls[@]}"; do
-  result=$(probe "$url")
-  [ "$result" = loaded ] && loaded=$((loaded + 1))
-  host=$(echo "$url" | cut -d/ -f3)
-  rows+="| \`$host\` (normal) | $result |"$'\n'
+  result=$(outcome_of "$seen" "$url")
+  case "$result" in loaded*) loaded=$((loaded + 1)) ;; esac
+  rows+="| \`$(echo "$url" | cut -d/ -f3)\` (normal) | $result |"$'\n'
 done
-check "$blocked of ${#ad_urls[@]} ad and tracker requests never reach the page" "[ $blocked -ge $(( ${#ad_urls[@]} * 9 / 10 )) ]"
+check "$blocked of ${#ad_urls[@]} ad and tracker requests are blocked, or answered with uBlock Origin's harmless stub" "[ $blocked -ge $(( ${#ad_urls[@]} * 9 / 10 )) ]"
 check "$loaded of ${#control_urls[@]} normal requests (CDNs, fonts, images) load, so blocking doesn't break sites" "[ $loaded -eq ${#control_urls[@]} ]"
 
 cosmetic=$("$helium" eval --tab "$probe_tab" "(async () => { for (const id of ['ad_banner', 'google_ads']) { const slot = document.createElement('div'); slot.id = id; slot.textContent = 'ad'; slot.style.height = '90px'; document.body.append(slot); } await new Promise(r => setTimeout(r, 3000)); return ['ad_banner', 'google_ads'].map(id => getComputedStyle(document.getElementById(id)).display).join(','); })()" 2>/dev/null | tr -d '"[:space:]')
@@ -152,7 +184,7 @@ check "Ad slots added to a page are hidden (cosmetic filtering: $cosmetic)" '[ "
   echo
   echo "<details><summary>Each request</summary>"
   echo
-  echo "| Host | Result |"
+  echo "| Host | What Chrome did |"
   echo "|---|---|"
   printf '%s' "$rows"
   echo

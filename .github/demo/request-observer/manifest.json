@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Request observer",
+  "version": "1",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAx6f9TXpEdmcC5FCDQgSZt7vdOpDuK7Z/f+9fIE0rwE3zMBaT1CQKHfDJQ16lJrYPveGTaxtXVlYLF+Oex037W1BTQVEP6G/iBGTqOI2rRXfZuGQ5GqIk93Y25PY8xnnoHpPZ/C2/ef1qVg4oagj9OlY+/ddbQtYLOLogBOdyd9m02chmbbuSEmFGnt7UZXVY86RzWKtiMWOLaMBUzNq29WiLWQxImhXESQqF+7Y4RngoQZzcjti6ZTAeBUxZetqB0T6N7IKZXayjTHs1rkWpIrr3yb0cAPbD8EZ83UPMmsvVE0SWx472CofPV97n4kRX7yKByqafeKH3SB8vEKaKAQIDAQAB",
+  "permissions": [
+    "webRequest",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
