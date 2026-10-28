@@ -48,6 +48,24 @@ extensions=$("$hydrogen" repl "return (await cdp('Target.getTargets')).targetInf
 check "uBlock Origin runs as a built-in extension" 'grep -qi "ublock" <<< "$extensions"'
 echo "  - Extension pages running: $extensions" >> "$report"
 
+plist="$app/Contents/Info.plist"
+bundle_name=$(defaults read "$plist" CFBundleName 2>/dev/null)
+bundle_id=$(defaults read "$plist" CFBundleIdentifier 2>/dev/null)
+check "The app is Hydrogen, separate from Helium ($bundle_name, $bundle_id)" \
+  '[ "$bundle_name" = Hydrogen ] && [ "$bundle_id" = com.aryankeluskar.hydrogen ]'
+"$hydrogen" open "helium://settings/help" > /dev/null 2>&1
+sleep 3
+"$hydrogen" read > "$out/about.txt" 2>&1
+"$hydrogen" screenshot -o "$out/about.png" > /dev/null 2>&1 || true
+stray=$(grep -o '[^.]*\bHelium\b[^.]*' "$out/about.txt" | grep -v 'Helium services' | head -3 | tr '\n' ' ')
+check "The About page says Hydrogen (\`about.png\`)" 'grep -q "Hydrogen" "$out/about.txt" && [ -z "$stray" ]'
+[ -n "$stray" ] && echo "  - Still says Helium: $stray" >> "$report"
+"$hydrogen" open "helium://setup" > /dev/null 2>&1
+sleep 4
+"$hydrogen" screenshot -o "$out/onboarding.png" > /dev/null 2>&1 || true
+"$hydrogen" read > "$out/onboarding.txt" 2>&1
+check "Onboarding welcomes you to Hydrogen (\`onboarding.png\`)" 'grep -q "Hydrogen" "$out/onboarding.txt"'
+
 "$hydrogen" daemon stop > /dev/null 2>&1 || true
 kill "$browser" 2>/dev/null || true
 echo >> "$report"
