@@ -85,15 +85,14 @@ class Browser {
     this.worker = null;
   }
 
-  async quit(byKeyboard = false) {
+  async quit() {
     const exited = new Promise((resolve) => this.process.on('exit', resolve));
     const quitWithin = (ms) => Promise.race([exited.then(() => true), sleep(ms).then(() => false)]);
+    try {
+      await this.cdp.send('Browser.close');
+    } catch {}
     this.cdp?.close();
-    if (byKeyboard) {
-      input('activate', 'Hydrogen');
-      input('hold', keys.q, 1.5, 'cmd');
-      if (await quitWithin(20_000)) return 'Cmd+Q';
-    }
+    if (await quitWithin(30_000)) return 'a clean quit';
     this.process.kill('SIGTERM');
     if (await quitWithin(30_000)) return 'SIGTERM';
     this.process.kill('SIGKILL');
@@ -432,7 +431,7 @@ async function main() {
     await goTo(2);
     await sleep(4000);
     const before = await browser.state();
-    const quitBy = await browser.quit(true);
+    const quitBy = await browser.quit();
     const session = sessionSummary();
     await sleep(2000);
     await browser.launch();

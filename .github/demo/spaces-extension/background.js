@@ -17,8 +17,11 @@ async function createSpaces() {
   }
 }
 
-chrome.runtime.onInstalled.addListener(({reason}) => {
-  if (reason === 'install') createSpaces();
+chrome.runtime.onInstalled.addListener(async () => {
+  const {created} = await chrome.storage.local.get('created');
+  if (created) return;
+  await chrome.storage.local.set({created: true});
+  createSpaces();
 });
 
 chrome.runtime.onStartup.addListener(() => {});

@@ -2,6 +2,6 @@
   "manifest_version": 3,
   "name": "Demo spaces",
   "version": "1.0",
-  "permissions": ["tabs", "tabGroups"],
+  "permissions": ["tabs", "tabGroups", "storage"],
   "background": {"service_worker": "background.js"}
 }
