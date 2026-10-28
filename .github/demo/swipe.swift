@@ -21,6 +21,36 @@ func scroll(
   post(event)
 }
 
+struct EventClock {
+  let perSecond: Double
+  let description: String
+
+  init() {
+    var timebase = mach_timebase_info_data_t()
+    mach_timebase_info(&timebase)
+    let candidates = [
+      ("nanoseconds", 1e9), ("mach ticks", 1e9 * Double(timebase.denom) / Double(timebase.numer)),
+    ]
+    let probe = CGEvent(
+      scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: 0, wheel2: 0, wheel3: 0)
+    var chosen = candidates[0]
+    var readings: [String] = []
+    for candidate in candidates {
+      let uptime = ProcessInfo.processInfo.systemUptime
+      probe?.timestamp = CGEventTimestamp(uptime * candidate.1)
+      let seen = probe.flatMap { NSEvent(cgEvent: $0)?.timestamp } ?? -1
+      readings.append("\(candidate.0) reads as \(String(format: "%.3f", seen)) s at uptime \(String(format: "%.3f", uptime)) s")
+      if abs(seen - uptime) < 0.05 { chosen = candidate }
+    }
+    perSecond = chosen.1
+    description = "\(chosen.0) (\(readings.joined(separator: "; ")))"
+  }
+
+  func at(_ uptime: Double) -> CGEventTimestamp {
+    CGEventTimestamp(uptime * perSecond)
+  }
+}
+
 func moveMouse(to point: CGPoint) {
   post(
     CGEvent(
@@ -121,6 +151,8 @@ case "activate":
     })
   else { exit(1) }
   app.activate(options: [.activateAllWindows])
+case "clock":
+  print(EventClock().description)
 case "swipe":
   let point = CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!)
   let distance = Int(arguments[4])!
@@ -128,8 +160,9 @@ case "swipe":
   let hold = arguments.count > 6 ? Double(arguments[6])! : 0
   moveMouse(to: point)
   usleep(150_000)
-  let start = clock_gettime_nsec_np(CLOCK_UPTIME_RAW)
-  let at = { (seconds: Double) in start + CGEventTimestamp(seconds * 1e9) }
+  let clock = EventClock()
+  let start = ProcessInfo.processInfo.systemUptime
+  let at = { (seconds: Double) in clock.at(start + seconds) }
   let steps = max(1, Int(seconds * 60))
   scroll(0, phase: 1, at: point, time: at(0))
   var sent = 0
