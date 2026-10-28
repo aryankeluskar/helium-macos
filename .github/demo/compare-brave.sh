@@ -44,10 +44,10 @@ sweep() {
     sleep 4
   done
 
-  "$helium" eval --tab "$tab" "Promise.all($urls.map(url => Promise.race([
-    fetch(url, {mode: 'no-cors', cache: 'no-store'}).catch(() => 0),
-    new Promise(r => setTimeout(r, 15000)),
-  ]))).then(() => 'done')" > /dev/null 2>&1
+  "$helium" eval --tab "$tab" --json "Promise.all($urls.map(url => Promise.race([
+    fetch(url, {mode: 'no-cors', cache: 'no-store'}).then(() => 'answered', () => 'failed'),
+    new Promise(r => setTimeout(() => r('no answer'), 15000)),
+  ]).then(result => [url, result]))).then(Object.fromEntries)" 2>/dev/null | jq '.value // {}' > "$out/sweep-$label-page.json"
   sleep 3
   observer_tab=$("$helium" open "chrome-extension://$observer/outcomes.html" --json 2>/dev/null | jq -r '.tab.id')
   "$helium" eval --tab "$observer_tab" --json "new Promise(r => setTimeout(r, 500)).then(() => JSON.parse(document.getElementById('outcomes').textContent))" 2>/dev/null \
@@ -69,15 +69,20 @@ if brew install --cask brave-browser > "$out/brave-install.log" 2>&1; then
   brave_version=$(defaults read "/Applications/Brave Browser.app/Contents/Info.plist" CFBundleShortVersionString 2>/dev/null)
 else
   echo '{}' > "$out/sweep-brave.json"
+  echo '{}' > "$out/sweep-brave-page.json"
   brave_version="not installed (see brave-install.log)"
 fi
 
 filtered() {
-  jq -r --arg url "https://$2/" '.[$url] // "no request seen"' "$out/sweep-$1.json"
+  jq -rn --arg url "https://$2/" --slurpfile seen "$out/sweep-$1.json" --slurpfile page "$out/sweep-$1-page.json" '
+    ($seen[0][$url] // null) as $observed | ($page[0][$url] // "not requested") as $result
+    | if $observed then $observed
+      elif $result == "failed" then "blocked before extensions"
+      else $result end'
 }
 
 {
-  echo "d3ward's [ad block test](https://d3ward.github.io/toolz/adblock) hosts, requested from example.com in each browser with a fresh profile and default settings; Brave $brave_version with standard Shields. A host counts as blocked when the browser refused the request or answered it with a stub."
+  echo "d3ward's [ad block test](https://d3ward.github.io/toolz/adblock) hosts, requested from example.com in each browser with a fresh profile and default settings; Brave $brave_version with standard Shields. A host counts as blocked when the browser refused the request (seen by the request-observer extension, or, for Brave's Shields, which act before extensions, by the page's request failing) or answered it with a stub."
   echo
   echo "| Category | Hosts | Helium blocked | Brave blocked |"
   echo "|---|---|---|---|"
@@ -91,8 +96,8 @@ while IFS= read -r category; do
     count=$((count + 1))
     helium_result=$(filtered helium "$host")
     brave_result=$(filtered brave "$host")
-    case "$helium_result" in blocked|stubbed) helium_blocked=$((helium_blocked + 1)) ;; esac
-    case "$brave_result" in blocked|stubbed) brave_blocked=$((brave_blocked + 1)) ;; esac
+    case "$helium_result" in blocked*|stubbed) helium_blocked=$((helium_blocked + 1)) ;; esac
+    case "$brave_result" in blocked*|stubbed) brave_blocked=$((brave_blocked + 1)) ;; esac
     rows+="| $category | \`$host\` | $helium_result | $brave_result |"$'\n'
   done < <(awk -F'\t' -v c="$category" '$1 == c' "$RUNNER_TEMP/hosts.tsv")
   total_helium=$((total_helium + helium_blocked))
