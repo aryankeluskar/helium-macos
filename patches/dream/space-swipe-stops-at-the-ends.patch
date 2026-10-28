@@ -16,15 +16,7 @@
    TabStripModel* model() const;
 --- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
 +++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
-@@ -15,6 +15,7 @@
- #include <vector>
- 
- #include "base/auto_reset.h"
-+#include "base/containers/contains.h"
- #include "base/feature_list.h"
- #include "base/functional/bind.h"
- #include "base/i18n/rtl.h"
-@@ -452,7 +453,7 @@
+@@ -452,7 +452,7 @@
      if (!has_triggered_in_current_gesture_ &&
          std::abs(cumulative_x_) >= kSwipeThreshold) {
        has_triggered_in_current_gesture_ = true;
@@ -33,7 +25,7 @@
      }
    }
  }
-@@ -464,12 +465,6 @@
+@@ -464,12 +464,6 @@
    has_triggered_in_current_gesture_ = false;
  }
  
@@ -46,7 +38,7 @@
  bool VerticalTabStripFocusSwipeController::IsForward(float x) const {
    return (x < 0) != base::i18n::IsRTL();
  }
-@@ -495,11 +490,23 @@
+@@ -495,11 +489,23 @@
  
  void VerticalTabStripFocusSwipeController::StepSpace(int delta) {
    TabStripModel* const tab_strip_model = model();
@@ -63,7 +55,7 @@
 +            : tab_strip_model->GetTabGroupForTab(
 +                  tab_strip_model->active_index());
 +    tab_strip_model->EnterFocusMode(
-+        active_group.has_value() && base::Contains(spaces, *active_group)
++        active_group.has_value() && std::ranges::contains(spaces, *active_group)
 +            ? *active_group
 +            : spaces.front());
      return;
