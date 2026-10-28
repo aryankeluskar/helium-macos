@@ -19,9 +19,12 @@ import icon_svg
 import small_icons
 
 HERE = Path(__file__).resolve().parent
+INK = "#16171B"
+MONO_INK = "#3C4043"
+FULL_BLEED = (22.0, 980.0, 219.0)
 LINE_NAMES = ["delta", "gamma", "beta", "alpha"]
 TINT_LEVELS = {"delta": 0.55, "gamma": 0.7, "beta": 0.95, "alpha": 0.82}
-LAYOUT = dict(width=26.0, top=292.0, bottom=712.0, margin=150.0)
+LAYOUT = dict(width=52.0, top=260.0, bottom=684.0, margin=244.0)
 
 
 def render(jobs):
@@ -41,11 +44,11 @@ def write_icon_composer(out):
     bundle = out / "AppIcon.icon"
     assets = bundle / "Assets"
     assets.mkdir(parents=True, exist_ok=True)
-    left, right = 100 + LAYOUT["margin"], 924 - LAYOUT["margin"]
+    left, right = LAYOUT["margin"], 1024 - LAYOUT["margin"]
     width, top, bottom = LAYOUT["width"], LAYOUT["top"], LAYOUT["bottom"]
     layers = []
     for name, (wavelength, halo, _core, _strength) in zip(LINE_NAMES, icon_svg.BALMER):
-        x = icon_svg.line_x(wavelength, left, right)
+        x = icon_svg.line_x(wavelength)
         (assets / f"{name}.svg").write_text(layer_svg(
             f'<rect x="{x - width / 2:.2f}" y="{top:.2f}" width="{width:.2f}" height="{bottom - top:.2f}" '
             f'rx="{width / 2:.2f}" fill="{halo}"/>'))
@@ -60,7 +63,7 @@ def write_icon_composer(out):
     gradient = "".join(f'<stop offset="{n / (len(stops) - 1):.3f}" stop-color="{c}"/>' for n, c in enumerate(stops))
     (assets / "band.svg").write_text(layer_svg(
         f'<defs><linearGradient id="s" x1="0" y1="0" x2="1" y2="0">{gradient}</linearGradient></defs>'
-        f'<rect x="{left - 30:.1f}" y="{bottom + 34:.1f}" width="{right - left + 60:.1f}" height="12" rx="6" fill="url(#s)"/>'))
+        f'<rect x="{left:.1f}" y="{bottom + 40:.1f}" width="{right - left:.1f}" height="28" rx="14" fill="url(#s)"/>'))
     icon = {
         "fill": {"linear-gradient": [p3("#FFFFFF"), p3("#E2E4E9")]},
         "fill-specializations": [
@@ -126,6 +129,120 @@ def write_catalog(out, pngs):
     (iconset / "Contents.json").write_text(json.dumps({"images": images, "info": {"author": "xcode", "version": 1}}, indent=2) + "\n")
 
 
+def glyph_rects(box_x, box_y, box_w, line_scale=1.0):
+    """The mark without its tile: the Balmer lines and the band, fitted to a box."""
+    left, right = LAYOUT["margin"], 1024 - LAYOUT["margin"]
+    scale = box_w / (right - left)
+    width = LAYOUT["width"] * scale * line_scale
+    top = box_y
+    height = (LAYOUT["bottom"] - LAYOUT["top"]) * scale
+    rects = []
+    for name, (wavelength, halo, _core, _strength) in zip(LINE_NAMES, icon_svg.BALMER):
+        x = box_x + (icon_svg.line_x(wavelength) - left) * scale
+        rects.append((name, halo, x - width / 2, top, width, height))
+    band_h = max(28 * scale * line_scale, 1.0)
+    band_y = top + height + 40 * scale
+    return rects, (box_x, band_y, box_w, band_h)
+
+
+def glyph_svg(box_x, box_y, box_w, mono=None, line_scale=1.0):
+    rects, (bx, by, bw, bh) = glyph_rects(box_x, box_y, box_w, line_scale)
+    stops = "".join(f'<stop offset="{n / (len(icon_svg.SPECTRUM) - 1):.3f}" stop-color="{c}"/>' for n, c in enumerate(icon_svg.SPECTRUM))
+    out = [] if mono else [f'<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">{stops}</linearGradient></defs>']
+    for _name, halo, x, y, w, h in rects:
+        out.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="{w / 2:.2f}" fill="{mono or halo}"/>')
+    out.append(f'<rect x="{bx:.2f}" y="{by:.2f}" width="{bw:.2f}" height="{bh:.2f}" rx="{bh / 2:.2f}" fill="{mono or "url(#g)"}" opacity="{0.55 if mono else 0.9}"/>')
+    return "".join(out)
+
+
+def write_wordmarks(out, logos):
+    font = (HERE / "fonts" / "Sora-Variable.ttf").as_uri()
+    jobs = []
+    for suffix, ink, scale in (("", INK, 1), ("_white", "#FFFFFF", 1), ("_200", INK, 2), ("_white_200", "#FFFFFF", 2)):
+        w, h = 140 * scale, 32 * scale
+        glyph = glyph_svg(4 * scale, 5 * scale, 26 * scale, mono=None, line_scale=1.5)
+        html = (f'<html><head><style>@font-face{{font-family:Sora;src:url("{font}")}}'
+                f'body{{margin:0;background:transparent}}</style></head><body>'
+                f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">{glyph}'
+                f'<text x="{37 * scale}" y="{23.5 * scale}" font-family="Sora" font-weight="400" font-size="{20.5 * scale}" '
+                f'letter-spacing="{-0.2 * scale}" fill="{ink}">Hydrogen</text></svg></body></html>')
+        page = out / f"wordmark{suffix}.html"
+        page.write_text(html)
+        jobs.append((page, logos / f"product_logo{suffix}.png", f"{w}x{h}"))
+    subprocess.run(["node", str(HERE / "render_svg.cjs"), "--html", *[f"{src}:{dst}:{size}" for src, dst, size in jobs]], check=True)
+    for page, _dst, _size in jobs:
+        page.unlink()
+
+
+def vector_icon(canvas, commands):
+    return "\n".join([
+        "// Copyright 2026 The Hydrogen Authors",
+        "// You can use, redistribute, and/or modify this source code under",
+        "// the terms of the GPL-3.0 license that can be found in the LICENSE file.",
+        "",
+        f"CANVAS_DIMENSIONS, {canvas},",
+        *commands,
+    ]) + "\n"
+
+
+def num(value):
+    text = f"{value:.2f}".rstrip("0").rstrip(".")
+    return text if "." not in text else text + "f"
+
+
+def write_vector_icons(logos):
+    rects, band = glyph_rects(6, 8, 44, line_scale=1.05)
+    mono = []
+    for _name, _halo, x, y, w, h in rects:
+        mono += ["NEW_PATH,", f"ROUND_RECT, {num(x)}, {num(y)}, {num(w)}, {num(h)}, {num(w / 2)},"]
+    bx, by, bw, bh = band
+    mono += ["NEW_PATH,", f"ROUND_RECT, {num(bx)}, {num(by + 1)}, {num(bw)}, {num(max(bh, 3))}, {num(max(bh, 3) / 2)},"]
+    (logos / "product_logo.icon").write_text(vector_icon(56, mono))
+
+    color = ["NEW_PATH,", "PATH_COLOR_ARGB, 0xFF, 0x18, 0x19, 0x1E,", "ROUND_RECT, 0, 0, 256, 256, 67,"]
+    rects, band = glyph_rects(61, 68, 134, line_scale=1.2)
+    for _name, halo, x, y, w, h in rects:
+        r, g, b = (halo[i:i + 2].upper() for i in (1, 3, 5))
+        color += ["NEW_PATH,", f"PATH_COLOR_ARGB, 0xFF, 0x{r}, 0x{g}, 0x{b},", f"ROUND_RECT, {num(x)}, {num(y)}, {num(w)}, {num(h)}, {num(w / 2)},"]
+    bx, by, bw, bh = band
+    segments = icon_svg.SPECTRUM[1:-1]
+    seg_w = bw / len(segments)
+    for n, hex_color in enumerate(segments):
+        r, g, b = (hex_color[i:i + 2].upper() for i in (1, 3, 5))
+        color += ["NEW_PATH,", f"PATH_COLOR_ARGB, 0xE6, 0x{r}, 0x{g}, 0x{b},",
+                  f"ROUND_RECT, {num(bx + n * seg_w)}, {num(by)}, {num(seg_w + 0.5)}, {num(bh)}, {num(bh / 2 if n in (0, len(segments) - 1) else 0)},"]
+    (logos / "product_logo_color.icon").write_text(vector_icon(256, color))
+
+
+def write_flat_logo_svg(logos):
+    body = '<rect width="256" height="256" rx="67" fill="#18191E"/>'
+    (logos / "product_logo.svg").write_text(
+        f'<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">{body}{glyph_svg(61, 68, 134, line_scale=1.2)}</svg>\n')
+
+
+def write_mono(logos):
+    image = Image.new("RGBA", (22, 22), (0, 0, 0, 0))
+    r, g, b = (int(MONO_INK[i:i + 2], 16) for i in (1, 3, 5))
+    for col in (4, 7, 10, 16):
+        for x in (col, col + 1):
+            for y in range(4, 16):
+                image.putpixel((x, y), (r, g, b, 255))
+    for x in range(4, 18):
+        image.putpixel((x, 18), (r, g, b, 150))
+    image.save(logos / "product_logo_22_mono.png")
+
+
+def write_document_icon(app_icon_dir, work):
+    page = ('<path d="M96 32h236l116 116v300a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V64a32 32 0 0 1 32-32z" fill="#FFFFFF" stroke="#D5D8DE" stroke-width="4"/>'
+            '<path d="M332 32v84a32 32 0 0 0 32 32h84" fill="#EEF0F3" stroke="#D5D8DE" stroke-width="4" stroke-linejoin="round"/>')
+    tile = icon_svg.svg(theme="dark", band=0.6, frame=FULL_BLEED, **LAYOUT)
+    tile_inner = tile.split(">", 1)[1].rsplit("</svg>", 1)[0]
+    svg_path = work / "document.svg"
+    svg_path.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">{page}'
+                        f'<svg x="136" y="196" width="240" height="240" viewBox="0 0 1024 1024">{tile_inner}</svg></svg>')
+    render([(svg_path, app_icon_dir / "file.png", 512)])
+
+
 def main(out):
     out = Path(out).resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -156,12 +273,18 @@ def main(out):
     write_icon_composer(out)
     write_catalog(out, legacy)
     write_icns(out / "app.icns", legacy)
-    logos = out / "product_logo"
-    logos.mkdir(exist_ok=True)
-    for pixels in (16, 24, 32, 48, 64, 128, 256):
-        source = legacy[pixels] if pixels in legacy else legacy[1024].resize((pixels, pixels), Image.LANCZOS)
-        source.save(logos / f"product_logo_{pixels}.png")
-    (logos / "product_logo.svg").write_text(icon_svg.svg(theme="dark", band=0.6, **LAYOUT))
+    branding = out / "branding"
+    app_icon_dir = branding / "app_icon"
+    app_icon_dir.mkdir(parents=True, exist_ok=True)
+    (work / "raw.svg").write_text(icon_svg.svg(theme="dark", band=0.6, frame=FULL_BLEED, **LAYOUT))
+    render([(work / "raw.svg", app_icon_dir / "raw.png", 1024)])
+    write_document_icon(app_icon_dir, work)
+    write_wordmarks(work, branding)
+    write_mono(branding)
+    write_vector_icons(branding)
+    write_flat_logo_svg(branding)
+    legacy[1024].save(out / "legacy.png")
+    legacy[1024].resize((512, 512), Image.LANCZOS).save(out / "legacy_crop.png")
     print(f"wrote {out}")
 
 

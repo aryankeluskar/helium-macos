@@ -31,15 +31,19 @@ def continuous_rect(x, y, w, h, r):
             f"C{p(x + g, y + f, x + f, y + g, x + d, y + e)} C{p(x + c, y + i, x + b, y, x + a, y)} Z")
 
 
-def line_x(wavelength, left, right, lo=380.0, hi=700.0):
-    return left + (wavelength - lo) / (hi - lo) * (right - left)
+CENTERS = {410.17: 270.0, 434.05: 342.0, 486.13: 438.0, 656.28: 754.0}
 
 
-def svg(theme="dark", width=26.0, top=292.0, bottom=712.0, margin=150.0, band=0.0, reflection=False,
-        lines_only=False, background_only=False):
+def line_x(wavelength, left=None, right=None):
+    return CENTERS[wavelength]
+
+
+def svg(theme="dark", width=52.0, top=260.0, bottom=684.0, margin=244.0, band=0.0, reflection=False,
+        lines_only=False, background_only=False, frame=(100.0, 824.0, 185.4)):
     t = THEMES[theme]
-    body = continuous_rect(100, 100, 824, 824, 185.4)
-    left, right = 100 + margin, 924 - margin
+    inset, side, radius = frame
+    body = continuous_rect(inset, inset, side, side, radius)
+    left, right = margin, 1024 - margin
     stops = "".join(f'<stop offset="{n / (len(SPECTRUM) - 1):.3f}" stop-color="{c}"/>' for n, c in enumerate(SPECTRUM))
     defs = (
         f'<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{t["bg"][0]}"/>'
@@ -67,24 +71,24 @@ def svg(theme="dark", width=26.0, top=292.0, bottom=712.0, margin=150.0, band=0.
             def rect(wd, ext=0.0):
                 return (f'x="{x - wd / 2:.2f}" y="{y0 - ext:.2f}" width="{wd:.2f}" '
                         f'height="{y1 - y0 + 2 * ext:.2f}" rx="{wd / 2:.2f}"')
-            out.append(f'<rect {rect(width * 5, 40)} fill="{halo}" opacity="{t["bloom"] * strength:.2f}" filter="url(#bloom)"/>')
-            out.append(f'<rect {rect(width * 1.6, 4)} fill="{halo}" opacity="{0.85 * strength:.2f}" filter="url(#glow)"/>')
+            out.append(f'<rect {rect(width * 3, 30)} fill="{halo}" opacity="{t["bloom"] * strength:.2f}" filter="url(#bloom)"/>')
+            out.append(f'<rect {rect(width * 1.25, 3)} fill="{halo}" opacity="{0.6 * strength:.2f}" filter="url(#glow)"/>')
             out.append(f'<rect {rect(width)} fill="{halo}"/>')
-            out.append(f'<rect {rect(width * 0.45)} fill="{core}" opacity="{t["core"]}"/>')
+            out.append(f'<rect {rect(width * 0.34)} fill="{core}" opacity="{t["core"] * 0.8:.2f}"/>')
         return "".join(out)
 
     parts = []
     if not lines_only:
         parts += [f'<path d="{body}" fill="url(#bg)"/>',
                   f'<ellipse cx="512" cy="{(top + bottom) / 2:.0f}" rx="360" ry="250" fill="{t["haze"][0]}" opacity="{t["haze"][1]}" filter="url(#haze)"/>',
-                  '<rect x="100" y="100" width="824" height="420" fill="url(#sheen)"/>']
+                  f'<rect x="{inset}" y="{inset}" width="{side}" height="{side * 0.51:.1f}" fill="url(#sheen)"/>']
     if not background_only:
         parts.append(bars(top, bottom))
         if reflection:
             parts.append(f'<g mask="url(#reflect)" transform="translate(0 {2 * bottom + 44}) scale(1 -1)" opacity="0.9">{bars(top, bottom)}</g>')
         if band:
-            parts.append(f'<rect x="{left - 30:.1f}" y="{bottom + 34:.1f}" width="{right - left + 60:.1f}" height="10" rx="5" fill="url(#spectrum)" opacity="{band}"/>')
-    rim = "" if lines_only else f'<path d="{continuous_rect(101.5, 101.5, 821, 821, 184.7)}" fill="none" stroke="url(#rim)" stroke-width="3"/>'
+            parts.append(f'<rect x="{left:.1f}" y="{bottom + 40:.1f}" width="{right - left:.1f}" height="28" rx="14" fill="url(#spectrum)" opacity="{band}"/>')
+    rim = "" if lines_only else f'<path d="{continuous_rect(inset + 1.5, inset + 1.5, side - 3, side - 3, radius - 0.7)}" fill="none" stroke="url(#rim)" stroke-width="3"/>'
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">'
             f'<defs>{defs}</defs><g clip-path="url(#clip)">{"".join(parts)}</g>{rim}</svg>')
 

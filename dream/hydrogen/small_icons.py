@@ -7,9 +7,9 @@ HALO = {"delta": (138, 43, 226), "gamma": (75, 59, 255), "beta": (18, 226, 255),
 SPECTRUM = [(97, 0, 125), (40, 0, 255), (0, 169, 255), (0, 239, 255), (85, 255, 0), (255, 223, 0),
             (255, 119, 0), (255, 0, 0)]
 LAYOUT = {
-    16: dict(rows=(4, 11), cols=[("delta", 4, 1), ("beta", 6, 1), ("alpha", 10, 1)], band=None),
-    32: dict(rows=(9, 22), cols=[("delta", 8, 1), ("gamma", 10, 1), ("beta", 12, 2), ("alpha", 21, 2)],
-             band=(24, 7, 25)),
+    16: dict(rows=(4, 11), cols=[("delta", 4, 1), ("beta", 6, 1), ("alpha", 11, 1)], band=None),
+    32: dict(rows=(8, 22), cols=[("delta", 7, 2), ("gamma", 10, 2), ("beta", 13, 2), ("alpha", 23, 2)],
+             band=(23, 8, 25)),
 }
 
 
