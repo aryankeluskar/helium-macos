@@ -38,7 +38,7 @@ Helium (imputnet's ungoogled-Chromium browser, Chromium 156) plus the patches in
 | `scrollable-spaces.patch` | Two-finger swipe on the sidebar moves the tab list with the fingers and settles on a space | in every build |
 | `arc-spaces.patch` | Arc's spaces: no group header/chip/indent, space header (emoji icon + name), space bar at the sidebar's foot with `+`, ARCUI paging physics (half-speed tracking, rubber band, 5 pt/s flick, 0.25 s critically damped spring, haptic detents), colour blend between spaces, new tabs stay in the space, per-space last tab, Ctrl+1…9, wheel-mouse paging | in the DMG; seen working in the CI demo |
 | `block-debug-port-on-default-profile.patch` | `--remote-debugging-port` never opens on the default profile (Chrome's anti-infostealer rule, which Chromium builds skip) | in the DMG |
-| `space-swipe-stops-at-the-ends.patch` | Swipes without tracking stop at the first and last space instead of wrapping out of spaces | rebuilding (run `40614042813`) |
+| `space-swipe-stops-at-the-ends.patch` | Swipes without tracking stop at the first and last space instead of wrapping out of spaces | rebuilding (run `40615857553`) |
 
 `dream/arc-spaces.md` is the spaces checklist with ARCUI's measured numbers (from the owner's Ardia repo,
 `docs/dia-spec.md` "Profile paging" and `packages/ardiacore/ios/SwipeModule.swift`). `dream/README.md` is the user
@@ -63,8 +63,8 @@ daemon on a 0600 Unix socket. 33 tests (`cd agent && npm test`) run against head
     space with the fingers, the colour blending between spaces, and a spring settle.
 - **Bug found and fixed:** on the no-tracking path (Reduce Motion, or no space focused yet), a swipe past the last
   space wrapped out of spaces into the plain grouped list.
-  - The fix is `patches/dream/space-swipe-stops-at-the-ends.patch` (compile check `40609155087`).
-  - Run `40614042813` rebuilds incrementally from `40590194934`'s tree with it. The orchestrator (plan revision 5)
+  - The fix is `patches/dream/space-swipe-stops-at-the-ends.patch` (its compile check failed on a removed header, now fixed).
+  - Run `40615857553` rebuilds incrementally from `40590194934`'s tree with it. The orchestrator (plan revision 6)
     waits for that DMG, falls back to `40590194934`'s, and records and verifies whichever it gets.
 - **GitHub's Macs have Reduce Motion on**, so the demo passes `--force-prefers-no-reduced-motion`.
 - **The recording's last ~15 s lag behind the screen** on these VMs; `after.png`, taken after recording stops, is the
