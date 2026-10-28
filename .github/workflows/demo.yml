@@ -49,6 +49,11 @@ jobs:
         continue-on-error: true
         timeout-minutes: 10
         run: .github/demo/verify.sh
+      - name: Check ad blocking breadth, the web store and the vertical tab strip
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        timeout-minutes: 15
+        run: .github/demo/deep-checks.sh
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
