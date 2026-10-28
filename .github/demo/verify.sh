@@ -53,17 +53,27 @@ bundle_name=$(defaults read "$plist" CFBundleName 2>/dev/null)
 bundle_id=$(defaults read "$plist" CFBundleIdentifier 2>/dev/null)
 check "The app is Hydrogen, separate from Helium ($bundle_name, $bundle_id)" \
   '[ "$bundle_name" = Hydrogen ] && [ "$bundle_id" = com.aryankeluskar.hydrogen ]'
-"$hydrogen" open "helium://settings/help" > /dev/null 2>&1
-sleep 3
-"$hydrogen" read > "$out/about.txt" 2>&1
-"$hydrogen" screenshot -o "$out/about.png" > /dev/null 2>&1 || true
+internal_tab() {
+  local url id
+  for url in "$@"; do
+    id=$("$hydrogen" repl "return (await cdp('Target.createTarget', {url: '$url'})).targetId" 2>/dev/null | tr -d '"[:space:]')
+    if [ -n "$id" ]; then
+      echo "$id"
+      return
+    fi
+  done
+}
+about_tab=$(internal_tab helium://settings/help chrome://settings/help)
+sleep 4
+"$hydrogen" read --tab "$about_tab" > "$out/about.txt" 2>&1
+"$hydrogen" screenshot --tab "$about_tab" -o "$out/about.png" > /dev/null 2>&1 || true
 stray=$(grep -o '[^.]*\bHelium\b[^.]*' "$out/about.txt" | grep -v 'Helium services' | head -3 | tr '\n' ' ')
 check "The About page says Hydrogen (\`about.png\`)" 'grep -q "Hydrogen" "$out/about.txt" && [ -z "$stray" ]'
 [ -n "$stray" ] && echo "  - Still says Helium: $stray" >> "$report"
-"$hydrogen" open "helium://setup" > /dev/null 2>&1
-sleep 4
-"$hydrogen" screenshot -o "$out/onboarding.png" > /dev/null 2>&1 || true
-"$hydrogen" read > "$out/onboarding.txt" 2>&1
+setup_tab=$(internal_tab helium://setup chrome://setup)
+sleep 6
+"$hydrogen" read --tab "$setup_tab" > "$out/onboarding.txt" 2>&1
+"$hydrogen" screenshot --tab "$setup_tab" -o "$out/onboarding.png" > /dev/null 2>&1 || true
 check "Onboarding welcomes you to Hydrogen (\`onboarding.png\`)" 'grep -q "Hydrogen" "$out/onboarding.txt"'
 
 "$hydrogen" daemon stop > /dev/null 2>&1 || true
