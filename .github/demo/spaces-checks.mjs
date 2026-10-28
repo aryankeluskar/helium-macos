@@ -443,7 +443,7 @@ async function main() {
     capture('spaces-relaunch', geometry.sidebar());
     const tree = tool(axTool, 'dump', 'Hydrogen');
     writeFileSync(`${out}/spaces-relaunch-ax.txt`, tree);
-    const otherSpaces = ['Hacker News', 'Wikipedia'].filter((t) => tree.split('\n').some((l) => !l.startsWith('window ') && l.includes(t)));
+    const otherSpaces = ['Hacker News', 'Example Domain'].filter((t) => tree.split('\n').some((l) => !l.startsWith('window ') && l.includes(t)));
     return {
       ok: after.spaces.join() === before.spaces.join() && after.space === before.space,
       detail: `quit with ${quitBy}; ${session}; before: ${before.spaces.join(', ')} on space ${before.space + 1}, ${before.tabs} tabs, ${before.url}; after: ${after.spaces.join(', ')} on space ${after.space + 1}, ${after.tabs} tabs, ${after.url}; other spaces' tabs listed after relaunch: ${otherSpaces.join(', ') || 'none'}`,

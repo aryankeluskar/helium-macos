@@ -7,14 +7,22 @@ func post(_ event: CGEvent?, flags: CGEventFlags = []) {
   event?.post(tap: .cghidEventTap)
 }
 
-func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint) {
+func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint, time: CGEventTimestamp) {
   let event = CGEvent(
     scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: 0,
     wheel2: deltaX, wheel3: 0)
   event?.location = point
+  event?.timestamp = time
   event?.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
   event?.setIntegerValueField(.scrollWheelEventScrollPhase, value: phase)
   post(event)
+}
+
+func timestampClock() -> (start: CGEventTimestamp, perSecond: Double) {
+  let first = CGEvent(source: nil)?.timestamp ?? 0
+  usleep(100_000)
+  let second = CGEvent(source: nil)?.timestamp ?? 0
+  return (second, Double(second &- first) / 0.1)
 }
 
 func moveMouse(to point: CGPoint) {
@@ -123,13 +131,15 @@ case "swipe":
   let seconds = arguments.count > 5 ? Double(arguments[5])! : 0.35
   let hold = arguments.count > 6 ? Double(arguments[6])! : 0
   moveMouse(to: point)
-  usleep(150_000)
+  usleep(50_000)
+  let clock = timestampClock()
+  let at = { (seconds: Double) in clock.start + CGEventTimestamp(seconds * clock.perSecond) }
   let steps = max(1, Int(seconds * 60))
-  scroll(0, phase: 1, at: point)
+  scroll(0, phase: 1, at: point, time: at(0))
   var sent = 0
   for step in 1...steps {
     let target = distance * step / steps
-    scroll(Int32(target - sent), phase: 2, at: point)
+    scroll(Int32(target - sent), phase: 2, at: point, time: at(Double(step) / 60))
     sent = target
     usleep(16_666)
   }
@@ -138,7 +148,7 @@ case "swipe":
     fflush(stdout)
     usleep(useconds_t(hold * 1_000_000))
   }
-  scroll(0, phase: 4, at: point)
+  scroll(0, phase: 4, at: point, time: at(Double(steps) / 60 + hold))
 default:
   exit(2)
 }
