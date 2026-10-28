@@ -239,7 +239,6 @@ async function main() {
   writeFileSync(`${profile}/Default/Preferences`, JSON.stringify({
     helium: { browser: { layout: 2 }, completed_onboarding: true },
     vertical_tabs: { collapsed_state: false, expand_on_hover: true },
-    session: { restore_on_startup: 1 },
   }));
   appendFileSync(report, '\n### Spaces, driven with synthetic keyboard, mouse and trackpad input\n\n');
   input('release');

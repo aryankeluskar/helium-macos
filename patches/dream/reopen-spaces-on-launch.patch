@@ -1,0 +1,12 @@
+--- a/chrome/browser/prefs/session_startup_pref.cc
++++ b/chrome/browser/prefs/session_startup_pref.cc
+@@ -71,7 +71,8 @@
+     return SessionStartupPref::LAST;
+   }
+ #endif
+-  return SessionStartupPref::DEFAULT;
++  // Like Arc, reopen the spaces and tabs you had.
++  return SessionStartupPref::LAST;
+ #endif
+ }
+ 
