@@ -1,0 +1,69 @@
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
+@@ -265,6 +265,9 @@
+     return;
+   }
+ 
++  event_time_ = event->time_stamp().is_null() ? base::TimeTicks::Now()
++                                              : event->time_stamp();
++
+   if (region_view_->IsDragging()) {
+     EndTracking();
+     return;
+@@ -647,7 +650,7 @@
+   }
+   position_ = position;
+ 
+-  const base::TimeTicks now = base::TimeTicks::Now();
++  const base::TimeTicks now = event_time_;
+   history_.emplace_back(now, position_);
+   while (now - history_.front().first > kVelocityWindow) {
+     history_.pop_front();
+@@ -664,7 +667,7 @@
+ 
+   end_timer_.Start(
+       FROM_HERE, kTrackingTimeout,
+-      base::BindOnce(&VerticalTabStripFocusSwipeController::EndTracking,
++      base::BindOnce(&VerticalTabStripFocusSwipeController::OnTrackingTimeout,
+                      base::Unretained(this)));
+ }
+ 
+@@ -694,10 +697,16 @@
+   Settle(target, velocity);
+ }
+ 
++// The end event never came, so the fingers have long stopped moving.
++void VerticalTabStripFocusSwipeController::OnTrackingTimeout() {
++  history_.clear();
++  EndTracking();
++}
++
+ // Like ARCUI, only movement in the last 100 ms before the fingers lift counts,
+ // so resting them before lifting lets the space settle on the nearest page.
+ float VerticalTabStripFocusSwipeController::GetReleaseVelocity() const {
+-  const base::TimeTicks now = base::TimeTicks::Now();
++  const base::TimeTicks now = event_time_;
+   const auto recent = std::find_if(
+       history_.begin(), history_.end(),
+       [now](const std::pair<base::TimeTicks, float>& sample) {
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
+@@ -115,6 +115,7 @@
+   bool BeginTracking();
+   void UpdateTracking(float cumulative_x);
+   void EndTracking();
++  void OnTrackingTimeout();
+   float GetReleaseVelocity() const;
+ 
+   void FocusPage(int page);
+@@ -153,6 +154,10 @@
+   int detent_ = 0;
+   base::circular_deque<std::pair<base::TimeTicks, float>> history_;
+   base::OneShotTimer end_timer_;
++  // The time stamp of the scroll event being handled. Swipe velocity uses the
++  // trackpad's own times, so a busy main thread can't turn a flick into a
++  // rest.
++  base::TimeTicks event_time_;
+ 
+   std::optional<Spring> spring_;
+   gfx::LinearAnimation spring_animation_;
