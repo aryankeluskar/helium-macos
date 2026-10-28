@@ -364,13 +364,17 @@ async function main() {
   await check('A quick short flick pages, like Arc (three times each way)', async () => {
     await goTo(0);
     const seen = [];
-    for (let round = 0; round < 3; round++) {
-      seen.push(await swipe(-100, 0.12));
-      seen.push(await swipe(100, 0.12));
+    const early = [];
+    for (let round = 0; round < 6; round++) {
+      await swipeAsync(geometry.stripX, geometry.stripY, round % 2 ? 100 : -100, 0.12);
+      await sleep(400);
+      early.push((await browser.state()).space + 1);
+      await wait(800);
+      seen.push((await browser.state()).space + 1);
     }
     return {
       ok: seen.join() === '2,1,2,1,2,1',
-      detail: `100 pt flicks left and right, three times, landed on spaces ${seen.join(', ')} (expected 2, 1, 2, 1, 2, 1)`,
+      detail: `100 pt flicks with momentum, left and right three times, landed on spaces ${seen.join(', ')} (expected 2, 1, 2, 1, 2, 1); 0.4 s after each lift: ${early.join(', ')}`,
     };
   });
 

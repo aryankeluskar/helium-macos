@@ -7,7 +7,9 @@ func post(_ event: CGEvent?, flags: CGEventFlags = []) {
   event?.post(tap: .cghidEventTap)
 }
 
-func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint, time: CGEventTimestamp) {
+func scroll(
+  _ deltaX: Int32, phase: Int64, at point: CGPoint, time: CGEventTimestamp, momentum: Int64 = 0
+) {
   let event = CGEvent(
     scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: 0,
     wheel2: deltaX, wheel3: 0)
@@ -15,6 +17,7 @@ func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint, time: CGEventTimes
   event?.timestamp = time
   event?.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
   event?.setIntegerValueField(.scrollWheelEventScrollPhase, value: phase)
+  event?.setIntegerValueField(.scrollWheelEventMomentumPhase, value: momentum)
   post(event)
 }
 
@@ -141,7 +144,18 @@ case "swipe":
     fflush(stdout)
     usleep(useconds_t(hold * 1_000_000))
   }
-  scroll(0, phase: 4, at: point, time: at(Double(steps) / 60 + hold))
+  let lift = Double(steps) / 60 + hold
+  scroll(0, phase: 4, at: point, time: at(lift))
+  if hold == 0 {
+    var delta = Double(distance) / Double(steps)
+    for frame in 1...8 {
+      usleep(16_666)
+      delta *= 0.8
+      scroll(Int32(delta.rounded()), phase: 0, at: point, time: at(lift + Double(frame) / 60), momentum: frame == 1 ? 1 : 2)
+    }
+    usleep(16_666)
+    scroll(0, phase: 0, at: point, time: at(lift + 9 / 60), momentum: 3)
+  }
 default:
   exit(2)
 }
