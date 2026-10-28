@@ -26,11 +26,14 @@ jobs:
   record:
     name: Record two-finger swipes between spaces
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Install ffmpeg
         run: brew install ffmpeg
       - name: Get Hydrogen
@@ -50,6 +53,11 @@ jobs:
         continue-on-error: true
         timeout-minutes: 15
         run: .github/demo/deep-checks.sh
+      - name: Check spaces with synthetic keyboard, mouse and trackpad input
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        timeout-minutes: 12
+        run: .github/demo/spaces-checks.sh
       - name: Compare ad blocking with Brave
         if: ${{ !cancelled() }}
         continue-on-error: true

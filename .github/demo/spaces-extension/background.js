@@ -17,4 +17,10 @@ async function createSpaces() {
   }
 }
 
-chrome.runtime.onInstalled.addListener(createSpaces);
+chrome.runtime.onInstalled.addListener(({reason}) => {
+  if (reason === 'install') createSpaces();
+});
+
+chrome.runtime.onStartup.addListener(() => {});
+chrome.tabs.onActivated.addListener(() => {});
+setInterval(() => chrome.runtime.getPlatformInfo(), 20_000);

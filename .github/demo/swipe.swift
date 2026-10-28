@@ -1,3 +1,4 @@
+import AppKit
 import CoreGraphics
 import Foundation
 
@@ -22,6 +23,46 @@ func moveMouse(to point: CGPoint) {
       mouseButton: .left))
 }
 
+func click(at point: CGPoint, right: Bool) {
+  moveMouse(to: point)
+  usleep(80_000)
+  let button: CGMouseButton = right ? .right : .left
+  post(
+    CGEvent(
+      mouseEventSource: nil, mouseType: right ? .rightMouseDown : .leftMouseDown,
+      mouseCursorPosition: point, mouseButton: button))
+  usleep(60_000)
+  post(
+    CGEvent(
+      mouseEventSource: nil, mouseType: right ? .rightMouseUp : .leftMouseUp,
+      mouseCursorPosition: point, mouseButton: button))
+}
+
+let modifierFlags: [String: CGEventFlags] = [
+  "ctrl": .maskControl, "cmd": .maskCommand, "shift": .maskShift, "alt": .maskAlternate,
+]
+
+func key(_ code: CGKeyCode, flags: CGEventFlags) {
+  for down in [true, false] {
+    let event = CGEvent(keyboardEventSource: nil, virtualKey: code, keyDown: down)
+    event?.flags = flags
+    post(event)
+    usleep(30_000)
+  }
+}
+
+func typeText(_ text: String) {
+  for character in text {
+    let units = Array(String(character).utf16)
+    for down in [true, false] {
+      let event = CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: down)
+      event?.keyboardSetUnicodeString(stringLength: units.count, unicodeString: units)
+      post(event)
+      usleep(20_000)
+    }
+  }
+}
+
 let arguments = CommandLine.arguments
 switch arguments[1] {
 case "bounds":
@@ -41,10 +82,29 @@ case "bounds":
   exit(1)
 case "move":
   moveMouse(to: CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!))
+case "click":
+  click(
+    at: CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!),
+    right: arguments.count > 4 && arguments[4] == "right")
+case "key":
+  let flags = arguments.dropFirst(3).reduce(CGEventFlags()) {
+    $0.union(modifierFlags[$1] ?? [])
+  }
+  key(CGKeyCode(arguments[2])!, flags: flags)
+case "type":
+  typeText(arguments[2])
+case "activate":
+  guard
+    let app = NSWorkspace.shared.runningApplications.first(where: {
+      $0.localizedName == arguments[2]
+    })
+  else { exit(1) }
+  app.activate(options: [.activateAllWindows])
 case "swipe":
   let point = CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!)
   let distance = Int(arguments[4])!
   let seconds = arguments.count > 5 ? Double(arguments[5])! : 0.35
+  let hold = arguments.count > 6 ? Double(arguments[6])! : 0
   moveMouse(to: point)
   usleep(150_000)
   let steps = max(1, Int(seconds * 60))
@@ -56,6 +116,7 @@ case "swipe":
     sent = target
     usleep(16_666)
   }
+  if hold > 0 { usleep(useconds_t(hold * 1_000_000)) }
   scroll(0, phase: 4, at: point)
 default:
   exit(2)

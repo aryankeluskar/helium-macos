@@ -1,0 +1,52 @@
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
+@@ -76,6 +76,9 @@
+ constexpr float kRestSpeed = 0.1f;
+ constexpr base::TimeDelta kVelocityWindow = base::Milliseconds(100);
+ constexpr base::TimeDelta kSpringTimeout = base::Seconds(3);
++// A trackpad swipe ends when the fingers lift; resting them mid-swipe keeps
++// the space where it is. This only covers an end event that never arrives.
++constexpr base::TimeDelta kTrackingTimeout = base::Seconds(3);
+ constexpr float kWheelThreshold = 1.0f;
+ constexpr base::TimeDelta kWheelBurstGap = base::Milliseconds(49);
+ constexpr base::TimeDelta kWheelCooldown = base::Milliseconds(250);
+@@ -403,7 +406,7 @@
+     float y_offset,
+     ui::Event* event) {
+   base::TimeTicks now = base::TimeTicks::Now();
+-  if (!last_event_time_.is_null() &&
++  if (!tracking_ && !last_event_time_.is_null() &&
+       (now - last_event_time_) > kGestureResetTimeout) {
+     EndTracking();
+     ResetGesture();
+@@ -660,7 +663,7 @@
+   ApplyPosition();
+ 
+   end_timer_.Start(
+-      FROM_HERE, kGestureResetTimeout,
++      FROM_HERE, kTrackingTimeout,
+       base::BindOnce(&VerticalTabStripFocusSwipeController::EndTracking,
+                      base::Unretained(this)));
+ }
+@@ -691,11 +694,19 @@
+   Settle(target, velocity);
+ }
+ 
++// Like ARCUI, only movement in the last 100 ms before the fingers lift counts,
++// so resting them before lifting lets the space settle on the nearest page.
+ float VerticalTabStripFocusSwipeController::GetReleaseVelocity() const {
+-  if (history_.size() < 2) {
++  const base::TimeTicks now = base::TimeTicks::Now();
++  const auto recent = std::find_if(
++      history_.begin(), history_.end(),
++      [now](const std::pair<base::TimeTicks, float>& sample) {
++        return now - sample.first <= kVelocityWindow;
++      });
++  if (recent == history_.end()) {
+     return 0.0f;
+   }
+-  const auto& [first_time, first_position] = history_.front();
++  const auto& [first_time, first_position] = *recent;
+   const auto& [last_time, last_position] = history_.back();
+   const double seconds = (last_time - first_time).InSecondsF();
+   if (seconds <= 0) {
