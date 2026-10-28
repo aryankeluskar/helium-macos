@@ -17,6 +17,8 @@ four Balmer lines at 410, 434, 486 and 656 nm. It installs as its own app (`Hydr
 | `patches/dream/space-swipe-rests-under-the-fingers.patch` | Swipes let go like Arc's: resting your fingers mid-swipe keeps the space under them, and lifting after a pause settles on the nearer space instead of flicking on to the next one. |
 | `patches/dream/spaces-reopen-on-the-current-space.patch` | Quitting and reopening brings you back to the space you were in. Chromium saved the current space only when it rewrote the whole session file, so a normal quit reopened on the plain grouped list. |
 | `patches/dream/reopen-spaces-on-launch.patch` | Hydrogen reopens your spaces and tabs when you launch it, like Arc ("Continue where you left off" by default; Chromium and Helium open a new tab). Change it in Settings › On startup. |
+| `patches/dream/spaces-accessible-space-bar.patch` | VoiceOver, Voice Control and Full Keyboard Access can use spaces: the space bar is a "Spaces" tab list of named spaces with a "New Space" button, and the header is a button that opens the space's editor. Idle dots get stronger with Increase Contrast, and the `+` and dots respond while pressed. |
+| `patches/dream/spaces-in-the-menu-bar.patch` | New Space, Next Space and Previous Space in the Tabs menu, as Apple's guidelines ask for every command. The space editor says "space" instead of "group" (`dream/hydrogen/space_strings.py`). |
 
 Make a space with the `+` in the space bar at the foot of the sidebar; your existing tabs become the first space. Right-click a space's item, or click its header, to rename or recolour it; start the name with an emoji to give it an icon. Switch with two fingers on the sidebar, a click in the space bar, Ctrl+1…9, or Cmd+Ctrl+X and Cmd+Ctrl+Z.
 

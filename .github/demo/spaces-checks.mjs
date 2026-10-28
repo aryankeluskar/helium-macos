@@ -436,6 +436,48 @@ async function main() {
     };
   });
 
+  await check('VoiceOver can use the space bar: a "Spaces" tab list of named spaces with the current one selected, a "New Space" button, and a header button; pressing a space switches to it (`spaces-ax.txt`)', async () => {
+    await goTo(0);
+    const tree = tool(axTool, 'dump', 'Hydrogen');
+    writeFileSync(`${out}/spaces-bar-ax.txt`, tree);
+    const lines = tree.split('\n');
+    const list = lines.findIndex((l) => /AXTabGroup .*\] Spaces/.test(l));
+    const tabs = list < 0 ? [] : lines.slice(list + 1).filter((l) => l.includes('AXRadioButton')).slice(0, state.spaces.length);
+    const names = tabs.map((l) => l.replace(/^.*\] /, '').split(' | ')[0].replace(/ value=.*$/, ''));
+    const selected = tabs.findIndex((l) => l.includes('value=1'));
+    const newSpace = lines.some((l) => /AXButton .*\] New Space/.test(l));
+    const header = lines.some((l) => /AXButton .*\] Home( |$)/.test(l));
+    let pressed = 0;
+    try {
+      tool(axTool, 'press-role', 'Hydrogen', 'AXRadioButton', 'Research');
+      await wait();
+      pressed = (await browser.state()).space + 1;
+    } catch {}
+    return {
+      ok: list >= 0 && names.length === state.spaces.length && selected === 0 && newSpace && header && pressed === 3,
+      detail: `tab list found: ${list >= 0}; spaces read as ${names.join(', ') || 'none'}; selected: ${selected + 1}; "New Space" button: ${newSpace}; header button "Home": ${header}; pressing "Research" through accessibility landed on space ${pressed}`,
+    };
+  });
+
+  await check('The Tabs menu has New Space, Next Space and Previous Space, and they work', async () => {
+    const before = await browser.state();
+    const seen = [];
+    for (const item of ['Next Space', 'Previous Space', 'New Space']) {
+      tool(axTool, 'press-menu', 'Hydrogen', 'Tabs', item);
+      await wait();
+      const now = await browser.state();
+      seen.push(`${item}: space ${now.space + 1} of ${now.spaces.length}`);
+    }
+    const after = await browser.state();
+    const next = Math.min(before.space + 1, before.spaces.length - 1) + 1;
+    const expected = [`Next Space: space ${next} of ${before.spaces.length}`, `Previous Space: space ${before.space + 1} of ${before.spaces.length}`];
+    state = after;
+    return {
+      ok: seen[0] === expected[0] && seen[1] === expected[1] && after.spaces.length === before.spaces.length + 1 && after.space === after.spaces.length - 1,
+      detail: `from space ${before.space + 1} of ${before.spaces.length}: ${seen.join('; ')}`,
+    };
+  });
+
   await check('Spaces, their names and the current space come back after quitting and reopening (`spaces-relaunch.png`)', async () => {
     await goTo(2);
     await sleep(4000);

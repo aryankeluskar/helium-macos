@@ -64,6 +64,7 @@ replace components/extstore_fixups/chrome-webstore.js \
   "el.nodeValue.replace(CHROME_NAME_REGEX, 'Helium')" "el.nodeValue.replace(CHROME_NAME_REGEX, 'Hydrogen')"
 
 python3 "$here/rename_strings.py" "$src" "$helium"
+python3 "$here/space_strings.py" "$src"
 
 python3 - "$src/ui/webui/resources/cr_elements/icons.html.ts" "$resources/branding/product_logo.icon" <<'EOF'
 import re

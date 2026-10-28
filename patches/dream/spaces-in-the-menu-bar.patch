@@ -1,0 +1,17 @@
+--- a/chrome/browser/ui/cocoa/main_menu_builder.mm
++++ b/chrome/browser/ui/cocoa/main_menu_builder.mm
+@@ -542,6 +542,14 @@
+                   .command_id(IDC_GROUP_TARGET_TAB)
+                   .is_alternate()
+                   .key_equivalent(@"", NSEventModifierFlagOption),
++              Item().is_separator(),
++              Item(IDS_NEW_SPACE_MAC)
++                  .command_id(IDC_NEW_SPACE),
++              Item(IDS_NEXT_SPACE_MAC)
++                  .command_id(IDC_FOCUS_NEXT_TAB_GROUP),
++              Item(IDS_PREVIOUS_SPACE_MAC)
++                  .command_id(IDC_FOCUS_PREV_TAB_GROUP),
++              Item().is_separator(),
+               Item(IDS_TAB_CXMENU_CLOSEOTHERTABS)
+                   .command_id(IDC_WINDOW_CLOSE_OTHER_TABS),
+               Item(is_rtl ? IDS_TAB_CXMENU_CLOSETABSTOLEFT

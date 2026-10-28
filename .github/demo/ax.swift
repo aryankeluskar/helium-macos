@@ -17,17 +17,22 @@ func frame(_ element: AXUIElement) -> CGRect? {
   return CGRect(origin: origin, size: size)
 }
 
-func findButton(_ element: AXUIElement, titled title: String, depth: Int = 0) -> AXUIElement? {
+func findButton(
+  _ element: AXUIElement, titled title: String, role wanted: String = kAXButtonRole as String,
+  depth: Int = 0
+) -> AXUIElement? {
   let role = attribute(element, kAXRoleAttribute) as? String
   if depth > 30 || role == "AXWebArea" { return nil }
-  if role == kAXButtonRole as String,
+  if role == wanted,
     (attribute(element, kAXTitleAttribute) as? String) == title
       || (attribute(element, kAXDescriptionAttribute) as? String) == title
   {
     return element
   }
   for child in (attribute(element, kAXChildrenAttribute) as? [AXUIElement]) ?? [] {
-    if let found = findButton(child, titled: title, depth: depth + 1) { return found }
+    if let found = findButton(child, titled: title, role: wanted, depth: depth + 1) {
+      return found
+    }
   }
   return nil
 }
@@ -49,7 +54,8 @@ func dump(_ element: AXUIElement, depth: Int = 0) {
     .filter { !$0.isEmpty }
     .joined(separator: " | ")
   let rect = frame(element).map { "\(Int($0.minX)),\(Int($0.minY)) \(Int($0.width))x\(Int($0.height))" } ?? ""
-  print("\(String(repeating: "  ", count: depth))\(role) [\(rect)] \(label)")
+  let selected = (attribute(element, kAXValueAttribute) as? NSNumber).map { " value=\($0)" } ?? ""
+  print("\(String(repeating: "  ", count: depth))\(role) [\(rect)] \(label)\(selected)")
   if role == "AXWebArea" { return }
   for child in (attribute(element, kAXChildrenAttribute) as? [AXUIElement]) ?? [] {
     dump(child, depth: depth + 1)
@@ -60,7 +66,9 @@ let arguments = CommandLine.arguments
 guard arguments.count >= 3,
   let app = NSWorkspace.shared.runningApplications.first(where: { $0.localizedName == arguments[2] })
 else {
-  print("usage: ax press <app name> <button title> [seconds] | ax webarea <app name> | ax dump <app name>")
+  print(
+    "usage: ax press <app name> <button title> [seconds] | ax press-role <app name> <role> <title>"
+      + " | ax webarea <app name> | ax dump <app name>")
   exit(64)
 }
 let root = AXUIElementCreateApplication(app.processIdentifier)
@@ -79,6 +87,35 @@ case "press":
     usleep(500_000)
   }
   exit(1)
+case "press-role":
+  guard arguments.count >= 5 else { exit(64) }
+  let deadline = Date().addingTimeInterval(10)
+  while Date() < deadline {
+    for window in windows() {
+      if let element = findButton(window, titled: arguments[4], role: arguments[3]) {
+        exit(AXUIElementPerformAction(element, kAXPressAction as CFString) == .success ? 0 : 2)
+      }
+    }
+    usleep(500_000)
+  }
+  exit(1)
+case "press-menu":
+  guard arguments.count >= 5,
+    let menuBar = attribute(root, kAXMenuBarAttribute).map({ $0 as! AXUIElement })
+  else { exit(64) }
+  let titled = { (element: AXUIElement, title: String) -> AXUIElement? in
+    ((attribute(element, kAXChildrenAttribute) as? [AXUIElement]) ?? []).first {
+      (attribute($0, kAXTitleAttribute) as? String) == title
+    }
+  }
+  guard let menuBarItem = titled(menuBar, arguments[3]),
+    let menu = (attribute(menuBarItem, kAXChildrenAttribute) as? [AXUIElement])?.first,
+    let item = titled(menu, arguments[4])
+  else {
+    print("no \(arguments[3]) › \(arguments[4]) in the menu bar")
+    exit(1)
+  }
+  exit(AXUIElementPerformAction(item, kAXPressAction as CFString) == .success ? 0 : 2)
 case "webarea":
   let deadline = Date().addingTimeInterval(15)
   while Date() < deadline {

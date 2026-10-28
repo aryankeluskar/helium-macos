@@ -35,4 +35,6 @@ dream/space-swipe-velocity-uses-event-times.patch
 dream/space-swipe-flick-survives-coalesced-events.patch
 dream/spaces-reopen-on-the-current-space.patch
 dream/reopen-spaces-on-launch.patch
+dream/spaces-accessible-space-bar.patch
+dream/spaces-in-the-menu-bar.patch
 dream/block-debug-port-on-default-profile.patch
