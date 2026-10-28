@@ -36,8 +36,9 @@ Helium (imputnet's ungoogled-Chromium browser, Chromium 156) plus the patches in
 | `fast-vertical-tabs-hover-expand.patch` | Collapsed sidebar opens in 120 ms ease-out, closes in 100 ms (Brave-fast); expand on hover by default | in every build |
 | `tab-group-spaces-by-default.patch` | Tab Groups Focusing on, freezing off: a focused group is a "space" | in every build |
 | `scrollable-spaces.patch` | Two-finger swipe on the sidebar moves the tab list with the fingers and settles on a space | in every build |
-| `arc-spaces.patch` | Arc's spaces: no group header/chip/indent, space header (emoji icon + name), space bar at the sidebar's foot with `+`, ARCUI paging physics (half-speed tracking, rubber band, 5 pt/s flick, 0.25 s critically damped spring, haptic detents), colour blend between spaces, new tabs stay in the space, per-space last tab, Ctrl+1…9, wheel-mouse paging | compile check running; see below |
-| `block-debug-port-on-default-profile.patch` | `--remote-debugging-port` never opens on the default profile (Chrome's anti-infostealer rule, which Chromium builds skip) | compile check running |
+| `arc-spaces.patch` | Arc's spaces: no group header/chip/indent, space header (emoji icon + name), space bar at the sidebar's foot with `+`, ARCUI paging physics (half-speed tracking, rubber band, 5 pt/s flick, 0.25 s critically damped spring, haptic detents), colour blend between spaces, new tabs stay in the space, per-space last tab, Ctrl+1…9, wheel-mouse paging | in the DMG; seen working in the CI demo |
+| `block-debug-port-on-default-profile.patch` | `--remote-debugging-port` never opens on the default profile (Chrome's anti-infostealer rule, which Chromium builds skip) | in the DMG |
+| `space-swipe-stops-at-the-ends.patch` | Swipes without tracking stop at the first and last space instead of wrapping out of spaces | rebuilding (run `40614042813`) |
 
 `dream/arc-spaces.md` is the spaces checklist with ARCUI's measured numbers (from the owner's Ardia repo,
 `docs/dia-spec.md` "Profile paging" and `packages/ardiacore/ios/SwipeModule.swift`). `dream/README.md` is the user
@@ -51,9 +52,26 @@ daemon on a 0600 Unix socket. 33 tests (`cd agent && npm test`) run against head
 
 ## Where the builds are right now
 
-**Update 21:55 UTC:** the shards finished (all four caches uploaded). Build runs `40590165704` (safe) and
-`40590194934` (Arc spaces + hardening) are running; orchestrator run `40590363960` waits for their DMG, then records the
-demo, runs `verify.sh` and opens the "Dream browser DMG ready" issue.
+**Update 2026-10-28 01:20 UTC:**
+
+- **The Arc spaces DMG is built:** run `40590194934`, artifact `helium_0.20.1.1_arm64-macos.dmg`.
+- **Verified on a GitHub Apple Silicon Mac** (orchestrator run `40609155753`; `verify.md`, `spaces-demo.mp4` and
+  `after.png` are on the `demo-videos` branch):
+  - every check passes: arm64 only, the agent CLI lists, opens and reads tabs, uBlock Origin runs built in, and ad
+    and tracker requests are blocked;
+  - the demo shows the space header, the dot bar with `+`, no group chips, and a two-finger swipe sliding the whole
+    space with the fingers, the colour blending between spaces, and a spring settle.
+- **Bug found and fixed:** on the no-tracking path (Reduce Motion, or no space focused yet), a swipe past the last
+  space wrapped out of spaces into the plain grouped list.
+  - The fix is `patches/dream/space-swipe-stops-at-the-ends.patch` (compile check `40609155087`).
+  - Run `40614042813` rebuilds incrementally from `40590194934`'s tree with it. The orchestrator (plan revision 5)
+    waits for that DMG, falls back to `40590194934`'s, and records and verifies whichever it gets.
+- **GitHub's Macs have Reduce Motion on**, so the demo passes `--force-prefers-no-reduced-motion`.
+- **The recording's last ~15 s lag behind the screen** on these VMs; `after.png`, taken after recording stops, is the
+  real end state.
+- **uBlock Origin needs a few seconds on a fresh profile** before it blocks, so `verify.sh` retries its probes. It also
+  accepts uBlock Origin's harmless stub (it redirects `analytics.js` rather than blocking it).
+- **Notices go on the head commit** of `claude/arc-spaces` as a comment, since issues are off on this fork.
 
 A full Chromium build takes about a day on one free 3-core runner, so this one is split:
 
@@ -66,8 +84,8 @@ A full Chromium build takes about a day on one free 3-core runner, so this one i
 4. "Finish the dream build" (`.github/workflows/orchestrate.yml`, on free Linux runners, started by pushing
    `.github/orchestrate/plan.env`; find its run with `gh run list --workflow orchestrate.yml`) waits for
    2 and 3, dispatches the safe build (resume of 1 with the shard caches) and, if 3 passed, the Arc build (same, plus
-   `resume_patch` = both new patches), waits for a DMG (preferring Arc's), records the demo via `demo.yml`, and opens an
-   issue "Dream browser DMG ready" with the links, including `verify.md` from `.github/demo/verify.sh` (arm64,
+   `resume_patch` = both new patches), waits for a DMG (preferring Arc's), records the demo via `demo.yml`, and comments
+   "Dream browser DMG ready" on the branch's head commit with the links, including `verify.md` from `.github/demo/verify.sh` (arm64,
    ad blocking, extensions and the agent CLI, checked on a GitHub Apple Silicon Mac). **Don't dispatch builds by hand
    while it runs.**
 

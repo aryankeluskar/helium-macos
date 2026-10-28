@@ -9,14 +9,14 @@ Status: ⬜ not started, 🟡 partial, ✅ done.
 
 | | What Arc does | Status |
 |---|---|---|
-| One sidebar per space | The tab list shows only the current space: its header (icon and name), then its tabs. No group headers, chips or focus UI. | 🟡 compiles; not yet run: the focused group draws no header, line or indent; `SpaceHeaderView` names the space and opens the group editor on click |
-| Space colour | The sidebar and the window frame take the space's colour; it blends between spaces while you swipe. | 🟡 compiles; not yet run: Chromium already themes the window from the focused group; the sidebar now blends between the two spaces' frame colours during a swipe |
-| Space bar | The sidebar footer has one item per space (its icon, or a dot), the current one highlighted; click to switch; `+` makes a space; right-click to rename, recolour or delete. | 🟡 compiles; not yet run (`VerticalTabStripSpaceSwitcher`); dropping a tab on an item is still to do |
-| Swipe to page | Two fingers anywhere on the sidebar move the whole space with the fingers, the neighbour slides in beside it, rubber band at the ends, spring settle on release. | 🟡 compiles; not yet run: ARCUI's physics below, haptic detents, wheel-mouse paging; the space bar and shortcuts slide the same way |
+| One sidebar per space | The tab list shows only the current space: its header (icon and name), then its tabs. No group headers, chips or focus UI. | ✅ seen in a build: the focused group draws no header, line or indent, and `SpaceHeaderView` names the space; its click opens the group editor (not yet clicked in a build) |
+| Space colour | The sidebar and the window frame take the space's colour; it blends between spaces while you swipe. | ✅ seen in a build: the sidebar takes each space's colour and blends between them during a swipe |
+| Space bar | The sidebar footer has one item per space (its icon, or a dot), the current one highlighted; click to switch; `+` makes a space; right-click to rename, recolour or delete. | 🟡 renders in a build (`VerticalTabStripSpaceSwitcher`); clicks not yet exercised; dropping a tab on an item is still to do |
+| Swipe to page | Two fingers anywhere on the sidebar move the whole space with the fingers, the neighbour slides in beside it, rubber band at the ends, spring settle on release. | 🟡 seen in a build with synthetic trackpad events: the space slides with the fingers, the neighbour comes in beside it, rubber band at the last space, spring settle. Feel, haptics and wheel paging need a real trackpad and mouse |
 | Favorites | Pinned tabs are a grid at the top shared by every space; they stay put while you swipe. | 🟡 Chromium's pinned grid already sits above the spaces and stays put; its tiles aren't Arc's size yet |
-| Last tab per space | Switching to a space shows the tab you left it on; tabs in other spaces keep running. | 🟡 compiles; not yet run: the model remembers each group's last active tab |
-| Keyboard | Ctrl+1…9 jumps to space N. Arc's Cmd+Option+arrows stay Chrome's next and previous tab here; Chromium's Ctrl+Cmd+X and Ctrl+Cmd+Z step through spaces. | 🟡 compiles; not yet run |
-| New tabs | Cmd+T and links from a tab open in the current space. | 🟡 compiles; not yet run: new tabs join the focused group instead of leaving focus mode |
+| Last tab per space | Switching to a space shows the tab you left it on; tabs in other spaces keep running. | 🟡 in the build; not yet exercised: the model remembers each group's last active tab |
+| Keyboard | Ctrl+1…9 jumps to space N. Arc's Cmd+Option+arrows stay Chrome's next and previous tab here; Chromium's Ctrl+Cmd+X and Ctrl+Cmd+Z step through spaces. | 🟡 in the build; not yet exercised |
+| New tabs | Cmd+T and links from a tab open in the current space. | 🟡 in the build; not yet exercised: new tabs join the focused group instead of leaving focus mode |
 | Persistence | Spaces (name, icon, colour, tabs) survive a relaunch, and the window reopens on the space it was on. | 🟡 session restore brings back groups and the focused group; to check in a build |
 
 A space's icon is the first character of its name when that's an emoji ("🏠 Home" shows 🏠 in the space bar and
