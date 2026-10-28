@@ -80,7 +80,26 @@ Helium):
 
 ## Where the builds are right now
 
-**Update 2026-10-28 15:30 UTC: the current DMG is Hydrogen, run `40697436072`** (artifact
+**Update 2026-10-28 19:55 UTC: the current DMG is run `40736992400`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`,
+113 MB): Hydrogen plus the swipe release fixes, reopening your spaces at launch and on the space you left.
+- **How it was built:** it resumed `40721215586` (which added `space-swipe-rests-under-the-fingers.patch` to
+  `40697436072`) with `space-swipe-velocity-uses-event-times.patch`, `spaces-reopen-on-the-current-space.patch` and
+  `reopen-spaces-on-launch.patch`.
+- **Checked on a GitHub Apple Silicon Mac** (orchestrator run `40756361778`, `verify.md` on `demo-videos`): every
+  build, ad-blocking and extension check, and all 13 spaces checks in `.github/demo/spaces-checks.mjs`, which drive a
+  fresh profile with synthetic keys, clicks and trackpad scrolls and read the current space from a test extension:
+  - Ctrl+1…9, space bar dots, `+`, renaming to "🏠 Home" from the right-click editor, Cmd+T joining the space, the
+    last tab per space, and the sidebar listing only the current space's tabs;
+  - swipes: one space at a time, stopping at the ends, a quick flick pages, a quarter drag then rest snaps back,
+    resting mid-swipe keeps the space under the fingers;
+  - quitting cleanly and relaunching brings back the spaces, their names and the current space.
+- **Lessons from writing those checks:** synthetic modifier keys must be pressed and released as flagsChanged events
+  or every later click arrives as a Ctrl+click; Chrome's hold-to-quit can't be driven synthetically (quit with
+  DevTools' `Browser.close`); `session.restore_on_startup` is a protected pref, so it can't be set from outside; a new
+  CGEvent has no time stamp, so macOS stamps the synthetic swipes when they're posted, and the flick check failed once
+  in two runs on this build when the runner stalled the input tool before the lift.
+
+Earlier, the Hydrogen DMG before those fixes was run `40697436072` (artifact
 `hydrogen_0.20.1.1_arm64-macos.dmg`):
 - **How it was built:** it resumed `40615857553`'s tree with `resume_patch=dream/hydrogen/rebrand.sh`, in 1 h 36 min.
 - **What the checks confirmed** (on a GitHub Apple Silicon Mac, orchestrator run `40716033864`):
