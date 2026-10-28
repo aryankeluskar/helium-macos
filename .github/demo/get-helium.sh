@@ -8,7 +8,7 @@ else
   gh release download --repo imputnet/helium-macos --pattern '*arm64-macos.dmg' --dir dmg
 fi
 
-dmg_file=$(find dmg -name '*.dmg' | head -1)
+dmg_file=$(find dmg -type f -name '*.dmg' | head -1)
 hdiutil attach -nobrowse -mountpoint /Volumes/HeliumDemo "$dmg_file"
 cp -R /Volumes/HeliumDemo/Helium.app /Applications/
 hdiutil detach /Volumes/HeliumDemo

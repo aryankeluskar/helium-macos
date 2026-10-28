@@ -3,7 +3,8 @@ name: Finish the dream build
 # Runs the hand-offs between build stages on free Linux runners, so a DMG
 # arrives without anyone watching: wait for the parallel compile shards and
 # the compile check, start the safe build and the Arc spaces build, wait for
-# them, record a demo of the result, and open an issue linking both.
+# them, record a demo of the result, and comment on the branch's head commit
+# (the fork has issues off) linking both.
 
 on:
   push:
@@ -170,4 +171,5 @@ jobs:
             "$demo" \
             "Install: open the DMG, drag Helium to Applications, then allow it once in System Settings > Privacy & Security, since it isn't notarized." \
             "Agents: turn on chrome://inspect/#remote-debugging, run \`ln -sf /Applications/Helium.app/Contents/Resources/helium-agent/helium /opt/homebrew/bin/helium\`, then \`claude mcp add helium -- helium mcp\`.")
-          gh issue create --repo "$GITHUB_REPOSITORY" --title "Dream browser DMG ready" --body "$body"
+          head=$(gh api "repos/$GITHUB_REPOSITORY/commits/$REF" --jq .sha)
+          gh api "repos/$GITHUB_REPOSITORY/commits/$head/comments" -f body="**Dream browser DMG ready.** $body" --jq .html_url

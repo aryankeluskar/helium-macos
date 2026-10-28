@@ -23,6 +23,12 @@ check() { if eval "$2"; then pass "$1"; else fail "$1"; fi; }
   echo
 } > "$report"
 
+if [ ! -d "$app" ]; then
+  echo "- ❌ Helium.app isn't installed, so nothing was checked (see the Get Helium step)." >> "$report"
+  cat "$report"
+  exit 1
+fi
+
 framework=$(find "$app/Contents/Frameworks" -maxdepth 4 -type f -name 'Helium Framework' | head -1)
 archs=$(lipo -archs "$framework" 2>/dev/null)
 check "Native Apple Silicon: the browser framework is \`$archs\` only" '[ "$archs" = arm64 ]'
