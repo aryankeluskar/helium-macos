@@ -38,7 +38,7 @@ Helium (imputnet's ungoogled-Chromium browser, Chromium 156) plus the patches in
 | `scrollable-spaces.patch` | Two-finger swipe on the sidebar moves the tab list with the fingers and settles on a space | in every build |
 | `arc-spaces.patch` | Arc's spaces: no group header/chip/indent, space header (emoji icon + name), space bar at the sidebar's foot with `+`, ARCUI paging physics (half-speed tracking, rubber band, 5 pt/s flick, 0.25 s critically damped spring, haptic detents), colour blend between spaces, new tabs stay in the space, per-space last tab, Ctrl+1…9, wheel-mouse paging | in the DMG; seen working in the CI demo |
 | `block-debug-port-on-default-profile.patch` | `--remote-debugging-port` never opens on the default profile (Chrome's anti-infostealer rule, which Chromium builds skip) | in the DMG |
-| `space-swipe-stops-at-the-ends.patch` | Swipes without tracking stop at the first and last space instead of wrapping out of spaces | rebuilding (run `40615857553`) |
+| `space-swipe-stops-at-the-ends.patch` | Swipes without tracking stop at the first and last space instead of wrapping out of spaces | in the DMG (run `40615857553`) |
 
 `dream/arc-spaces.md` is the spaces checklist with ARCUI's measured numbers (from the owner's Ardia repo,
 `docs/dia-spec.md` "Profile paging" and `packages/ardiacore/ios/SwipeModule.swift`). `dream/README.md` is the user
@@ -52,20 +52,21 @@ daemon on a 0600 Unix socket. 33 tests (`cd agent && npm test`) run against head
 
 ## Where the builds are right now
 
-**Update 2026-10-28 01:20 UTC:**
+**Update 2026-10-28 02:35 UTC: the current DMG is run `40615857553`** (artifact `helium_0.20.1.1_arm64-macos.dmg`):
 
-- **The Arc spaces DMG is built:** run `40590194934`, artifact `helium_0.20.1.1_arm64-macos.dmg`.
-- **Verified on a GitHub Apple Silicon Mac** (orchestrator run `40609155753`; `verify.md`, `spaces-demo.mp4` and
-  `after.png` are on the `demo-videos` branch):
+- **What it is:** Arc spaces, the hardening patch, and `space-swipe-stops-at-the-ends.patch`. It was rebuilt incrementally
+  from run `40590194934`'s finished tree in 52 min; that's the way to ship small spaces fixes.
+- **Verified on a GitHub Apple Silicon Mac** (orchestrator run `40615908250`; `verify.md`, `spaces-demo.mp4` and
+  `after.png` are on the `demo-videos` branch; the ready notice is a comment on commit `3c45847`):
   - every check passes: arm64 only, the agent CLI lists, opens and reads tabs, uBlock Origin runs built in, and ad
     and tracker requests are blocked;
   - the demo shows the space header, the dot bar with `+`, no group chips, and a two-finger swipe sliding the whole
-    space with the fingers, the colour blending between spaces, and a spring settle.
-- **Bug found and fixed:** on the no-tracking path (Reduce Motion, or no space focused yet), a swipe past the last
-  space wrapped out of spaces into the plain grouped list.
-  - The fix is `patches/dream/space-swipe-stops-at-the-ends.patch` (its compile check failed on a removed header, now fixed).
-  - Run `40615857553` rebuilds incrementally from `40590194934`'s tree with it. The orchestrator (plan revision 6)
-    waits for that DMG, falls back to `40590194934`'s, and records and verifies whichever it gets.
+    space with the fingers, the colour blending between spaces, and a spring settle;
+  - it goes Work → Personal → Research, rubber-bands at the last space, and swipes back to Work without leaving spaces.
+- **The fixed bug:** on the no-tracking path (Reduce Motion, or no space focused yet), a swipe past the last space used
+  to wrap out of spaces into the plain grouped list.
+- **Chromium 156 builds as C++23 and has no `base/containers/contains.h`:** use `std::ranges::contains`, and check
+  headers against a source tree before pushing.
 - **GitHub's Macs have Reduce Motion on**, so the demo passes `--force-prefers-no-reduced-motion`.
 - **The recording's last ~15 s lag behind the screen** on these VMs; `after.png`, taken after recording stops, is the
   real end state.
@@ -154,7 +155,7 @@ priority, only with the owner's OK.
 
 ## Next, in order
 
-1. When the DMG lands: owner installs it; check on the real M5 trackpad:
+1. Owner installs the DMG from run `40615857553`; check on the real M5 trackpad:
    - swipe feel, rubber band, haptics, colour blend;
    - space header and space bar (`+`, right-click editor, emoji icons);
    - Ctrl+1…9;
