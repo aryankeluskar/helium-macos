@@ -64,10 +64,10 @@ jobs:
             exit 1
           }
 
-          if [ -n "${SAFE_RUN:-}" ]; then
-            echo "safe_run=$SAFE_RUN" >> "$GITHUB_OUTPUT"
+          if [ -n "${SAFE_RUN:-}" ] || [ -n "${ARC_RUN:-}" ]; then
+            echo "safe_run=${SAFE_RUN:-}" >> "$GITHUB_OUTPUT"
             echo "arc_run=${ARC_RUN:-}" >> "$GITHUB_OUTPUT"
-            echo "Builds already started: safe $SAFE_RUN, Arc ${ARC_RUN:-none}"
+            echo "Builds already started: safe ${SAFE_RUN:-none}, Arc ${ARC_RUN:-none}"
             exit 0
           fi
 
