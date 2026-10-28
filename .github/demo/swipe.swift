@@ -23,20 +23,20 @@ struct EventClock {
   let perSecond: Double
   let description: String
 
-  init?() {
+  init() {
     let stamp = CGEvent(source: nil)?.timestamp ?? 0
     let ticks = mach_absolute_time()
-    let nanos = clock_gettime_nsec_np(CLOCK_UPTIME_RAW)
     var timebase = mach_timebase_info_data_t()
     mach_timebase_info(&timebase)
-    let distance = { (a: UInt64, b: UInt64) in a > b ? a - b : b - a }
-    let inTicks = distance(stamp, ticks) < distance(stamp, nanos)
-    description =
-      "a new event's time stamp \(stamp), mach ticks \(ticks), uptime ns \(nanos): "
-      + (stamp == 0 ? "unset, left to macOS" : inTicks ? "mach ticks" : "nanoseconds")
-    if stamp == 0 { return nil }
-    start = inTicks ? ticks : nanos
-    perSecond = inTicks ? 1e9 * Double(timebase.denom) / Double(timebase.numer) : 1e9
+    if stamp != 0 && stamp > ticks &* 10 {
+      start = clock_gettime_nsec_np(CLOCK_UPTIME_RAW)
+      perSecond = 1e9
+      description = "uptime nanoseconds (a new event's stamp \(stamp))"
+    } else {
+      start = ticks
+      perSecond = 1e9 * Double(timebase.denom) / Double(timebase.numer)
+      description = "mach ticks at \(Int(perSecond)) per second (a new event's stamp \(stamp))"
+    }
   }
 
   func at(_ seconds: Double) -> CGEventTimestamp {
@@ -145,7 +145,7 @@ case "activate":
   else { exit(1) }
   app.activate(options: [.activateAllWindows])
 case "clock":
-  print(EventClock()?.description ?? "a new event has no time stamp: left to macOS")
+  print(EventClock().description)
 case "swipe":
   let point = CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!)
   let distance = Int(arguments[4])!
@@ -154,7 +154,7 @@ case "swipe":
   moveMouse(to: point)
   usleep(50_000)
   let clock = EventClock()
-  let at = { (seconds: Double) in clock?.at(seconds) }
+  let at = { (seconds: Double) -> CGEventTimestamp? in clock.at(seconds) }
   let steps = max(1, Int(seconds * 60))
   scroll(0, phase: 1, at: point, time: at(0))
   var sent = 0

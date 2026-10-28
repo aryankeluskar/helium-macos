@@ -361,13 +361,16 @@ async function main() {
     return { ok: seen.join() === '2,3,3,2,1,1', detail: `from space 1, three swipes left then three right: ${seen.join(', ')} (expected 2, 3, 3, 2, 1, 1)` };
   });
 
-  await check('A quick short flick pages, like Arc', async () => {
+  await check('A quick short flick pages, like Arc (three times each way)', async () => {
     await goTo(0);
-    const forward = await swipe(-100, 0.12);
-    const back = await swipe(100, 0.12);
+    const seen = [];
+    for (let round = 0; round < 3; round++) {
+      seen.push(await swipe(-100, 0.12));
+      seen.push(await swipe(100, 0.12));
+    }
     return {
-      ok: forward === 2 && back === 1,
-      detail: `a 100 pt flick left landed on space ${forward}, then right on space ${back}; synthetic event clock: ${input('clock')}`,
+      ok: seen.join() === '2,1,2,1,2,1',
+      detail: `100 pt flicks left and right, three times, landed on spaces ${seen.join(', ')} (expected 2, 1, 2, 1, 2, 1); synthetic events are stamped in ${input('clock')}`,
     };
   });
 
