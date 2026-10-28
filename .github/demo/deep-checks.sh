@@ -24,11 +24,11 @@ check() { if eval "$2"; then pass "$1"; else fail "$1"; fi; }
 swiftc -O "$demo_dir/ax.swift" -o "$ax"
 
 cat > "$profile/Default/Preferences" <<'JSON'
-{"helium": {"browser": {"layout": 2}}, "vertical_tabs": {"collapsed_state": true, "expand_on_hover": true}}
+{"helium": {"browser": {"layout": 2}, "completed_onboarding": true, "services": {"user_consented": true}}, "vertical_tabs": {"collapsed_state": true, "expand_on_hover": true}}
 JSON
 
 "$app/Contents/MacOS/Helium" --user-data-dir="$profile" --no-first-run --no-default-browser-check \
-  --remote-debugging-port=0 --window-position=0,25 --window-size=1024,710 \
+  --remote-debugging-port=0 --window-position=0,25 --window-size=1024,710 --force-prefers-no-reduced-motion \
   "https://en.wikipedia.org/wiki/Arc_(web_browser)" https://news.ycombinator.com https://github.com/imputnet/helium \
   > "$out/deep-helium.log" 2>&1 &
 browser=$!
@@ -71,7 +71,7 @@ if [ -n "$bounds" ]; then
       > "$out/hover-motion.txt"
     rm -f "$out/hover.mov"
     moving=$(awk '$2 > 1 { n++ } END { print n + 0 }' "$out/hover-motion.txt")
-    echo "- ℹ️ The strip area changed in $moving frames at 30 fps across one hover in and out (\`hover-motion.txt\`, \`hover-expand.mp4\`); Brave-fast is about 4 frames each way" >> "$report"
+    echo "- ℹ️ The strip area changed in $moving frames at 30 fps across one hover in and out (\`hover-motion.txt\`, \`hover-expand.mp4\`); Brave-fast is about 4 frames in and 3 out" >> "$report"
   fi
   echo "- ℹ️ Collapsed with favicons: \`tabs-collapsed.png\`; expanded on hover: \`tabs-hover-expanded.png\`" >> "$report"
 else
@@ -79,10 +79,10 @@ else
 fi
 
 probe() {
-  "$helium" eval "fetch('$1', {mode: 'no-cors', cache: 'no-store', redirect: 'manual'}).then(r => r.type === 'opaqueredirect' ? 'stubbed' : 'loaded', () => 'blocked')" 2>/dev/null | tr -d '"[:space:]'
+  "$helium" eval --tab "$probe_tab" "fetch('$1', {mode: 'no-cors', cache: 'no-store', redirect: 'manual'}).then(r => r.type === 'opaqueredirect' ? 'stubbed' : 'loaded', () => 'blocked')" 2>/dev/null | tr -d '"[:space:]'
 }
 
-"$helium" open https://example.com > /dev/null 2>&1
+probe_tab=$("$helium" open https://example.com --json 2>/dev/null | jq -r '.tab.id')
 for _ in $(seq 1 12); do
   case "$(probe https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js)" in blocked|stubbed) break ;; esac
   sleep 5
@@ -146,7 +146,7 @@ done
 check "$blocked of ${#ad_urls[@]} ad and tracker requests never reach the page" "[ $blocked -ge $(( ${#ad_urls[@]} * 9 / 10 )) ]"
 check "$loaded of ${#control_urls[@]} normal requests (CDNs, fonts, images) load, so blocking doesn't break sites" "[ $loaded -eq ${#control_urls[@]} ]"
 
-cosmetic=$("$helium" eval "(async () => { for (const id of ['ad_banner', 'google_ads']) { const slot = document.createElement('div'); slot.id = id; slot.textContent = 'ad'; slot.style.height = '90px'; document.body.append(slot); } await new Promise(r => setTimeout(r, 3000)); return ['ad_banner', 'google_ads'].map(id => getComputedStyle(document.getElementById(id)).display).join(','); })()" 2>/dev/null | tr -d '"[:space:]')
+cosmetic=$("$helium" eval --tab "$probe_tab" "(async () => { for (const id of ['ad_banner', 'google_ads']) { const slot = document.createElement('div'); slot.id = id; slot.textContent = 'ad'; slot.style.height = '90px'; document.body.append(slot); } await new Promise(r => setTimeout(r, 3000)); return ['ad_banner', 'google_ads'].map(id => getComputedStyle(document.getElementById(id)).display).join(','); })()" 2>/dev/null | tr -d '"[:space:]')
 check "Ad slots added to a page are hidden (cosmetic filtering: $cosmetic)" '[ "$cosmetic" = none,none ]'
 {
   echo
@@ -162,6 +162,8 @@ check "Ad slots added to a page are hidden (cosmetic filtering: $cosmetic)" '[ "
 {
   echo
   echo "## Chrome Web Store"
+  echo
+  echo "Helium downloads Web Store extensions through its own proxy, so Google doesn't see them; the proxy works once you agree to Helium services in onboarding, as this profile has."
   echo
 } >> "$report"
 
