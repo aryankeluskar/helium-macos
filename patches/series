@@ -29,4 +29,5 @@ dream/fast-vertical-tabs-hover-expand.patch
 dream/tab-group-spaces-by-default.patch
 dream/scrollable-spaces.patch
 dream/arc-spaces.patch
+dream/space-swipe-stops-at-the-ends.patch
 dream/block-debug-port-on-default-profile.patch

@@ -1,0 +1,74 @@
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.h
+@@ -97,11 +97,12 @@
+ 
+   void ProcessSwipeOffset(float x_offset, float y_offset, ui::Event* event);
+   void ResetGesture();
+-  void RotateTabGroupFocus(bool forward);
+   bool IsForward(float x) const;
+ 
+   // A wheel mouse pages one space per burst of horizontal wheel events.
+   void OnHorizontalWheel(float x_offset);
++  // Moves `delta` spaces from the focused one, stopping at the first and last
++  // space; outside any space, enters the active tab's space or the first one.
+   void StepSpace(int delta);
+ 
+   TabStripModel* model() const;
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_focus_swipe_controller.cc
+@@ -15,6 +15,7 @@
+ #include <vector>
+ 
+ #include "base/auto_reset.h"
++#include "base/containers/contains.h"
+ #include "base/feature_list.h"
+ #include "base/functional/bind.h"
+ #include "base/i18n/rtl.h"
+@@ -452,7 +453,7 @@
+     if (!has_triggered_in_current_gesture_ &&
+         std::abs(cumulative_x_) >= kSwipeThreshold) {
+       has_triggered_in_current_gesture_ = true;
+-      RotateTabGroupFocus(IsForward(cumulative_x_));
++      StepSpace(IsForward(cumulative_x_) ? 1 : -1);
+     }
+   }
+ }
+@@ -464,12 +465,6 @@
+   has_triggered_in_current_gesture_ = false;
+ }
+ 
+-void VerticalTabStripFocusSwipeController::RotateTabGroupFocus(bool forward) {
+-  if (TabStripModel* const tab_strip_model = model()) {
+-    tab_strip_model->RotateFocusedGroup(forward);
+-  }
+-}
+-
+ bool VerticalTabStripFocusSwipeController::IsForward(float x) const {
+   return (x < 0) != base::i18n::IsRTL();
+ }
+@@ -495,11 +490,23 @@
+ 
+ void VerticalTabStripFocusSwipeController::StepSpace(int delta) {
+   TabStripModel* const tab_strip_model = model();
++  const std::vector<tab_groups::TabGroupId> spaces = GetSpaces();
++  if (!tab_strip_model || spaces.empty()) {
++    return;
++  }
+   const std::optional<int> page = GetFocusedPage();
+-  if (!tab_strip_model || !page.has_value()) {
++  if (!page.has_value()) {
++    const std::optional<tab_groups::TabGroupId> active_group =
++        tab_strip_model->active_index() == TabStripModel::kNoTab
++            ? std::nullopt
++            : tab_strip_model->GetTabGroupForTab(
++                  tab_strip_model->active_index());
++    tab_strip_model->EnterFocusMode(
++        active_group.has_value() && base::Contains(spaces, *active_group)
++            ? *active_group
++            : spaces.front());
+     return;
+   }
+-  const std::vector<tab_groups::TabGroupId> spaces = GetSpaces();
+   const int target =
+       std::clamp(*page + delta, 0, static_cast<int>(spaces.size()) - 1);
+   if (target != *page) {

@@ -7,6 +7,7 @@ profile="$RUNNER_TEMP/demo-profile"
 mkdir -p "$out" "$profile/Default"
 
 swiftc -O "$demo_dir/swipe.swift" -o "$RUNNER_TEMP/swipe"
+echo "System Reduce Motion: $(defaults read com.apple.universalaccess reduceMotion 2>&1)" > "$out/system.txt"
 swipe="$RUNNER_TEMP/swipe"
 
 cat > "$profile/Default/Preferences" <<'JSON'
@@ -17,6 +18,7 @@ JSON
   --user-data-dir="$profile" --no-first-run --no-default-browser-check \
   --load-extension="$demo_dir/spaces-extension" \
   --enable-features=TabGroupsFocusing \
+  --force-prefers-no-reduced-motion \
   --window-position=0,25 --window-size=1024,710 \
   about:blank > "$out/helium.log" 2>&1 &
 helium_pid=$!
