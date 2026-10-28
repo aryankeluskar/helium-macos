@@ -7,20 +7,6 @@ func post(_ event: CGEvent?, flags: CGEventFlags = []) {
   event?.post(tap: .cghidEventTap)
 }
 
-func scroll(
-  _ deltaX: Int32, phase: Int64, at point: CGPoint, time: CGEventTimestamp, momentum: Int64 = 0
-) {
-  let event = CGEvent(
-    scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: 0,
-    wheel2: deltaX, wheel3: 0)
-  event?.location = point
-  event?.timestamp = time
-  event?.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
-  event?.setIntegerValueField(.scrollWheelEventScrollPhase, value: phase)
-  event?.setIntegerValueField(.scrollWheelEventMomentumPhase, value: momentum)
-  post(event)
-}
-
 struct EventClock {
   let perSecond: Double
   let description: String
@@ -46,9 +32,23 @@ struct EventClock {
     description = "\(chosen.0) (\(readings.joined(separator: "; ")))"
   }
 
-  func at(_ uptime: Double) -> CGEventTimestamp {
-    CGEventTimestamp(uptime * perSecond)
+  func now() -> CGEventTimestamp {
+    CGEventTimestamp(ProcessInfo.processInfo.systemUptime * perSecond)
   }
+}
+
+let eventClock = EventClock()
+
+func scroll(_ deltaX: Int32, phase: Int64, at point: CGPoint, momentum: Int64 = 0) {
+  let event = CGEvent(
+    scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 2, wheel1: 0,
+    wheel2: deltaX, wheel3: 0)
+  event?.location = point
+  event?.timestamp = eventClock.now()
+  event?.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
+  event?.setIntegerValueField(.scrollWheelEventScrollPhase, value: phase)
+  event?.setIntegerValueField(.scrollWheelEventMomentumPhase, value: momentum)
+  post(event)
 }
 
 func moveMouse(to point: CGPoint) {
@@ -152,7 +152,7 @@ case "activate":
   else { exit(1) }
   app.activate(options: [.activateAllWindows])
 case "clock":
-  print(EventClock().description)
+  print(eventClock.description)
 case "swipe":
   let point = CGPoint(x: Double(arguments[2])!, y: Double(arguments[3])!)
   let distance = Int(arguments[4])!
@@ -160,15 +160,12 @@ case "swipe":
   let hold = arguments.count > 6 ? Double(arguments[6])! : 0
   moveMouse(to: point)
   usleep(150_000)
-  let clock = EventClock()
-  let start = ProcessInfo.processInfo.systemUptime
-  let at = { (seconds: Double) in clock.at(start + seconds) }
   let steps = max(1, Int(seconds * 60))
-  scroll(0, phase: 1, at: point, time: at(0))
+  scroll(0, phase: 1, at: point)
   var sent = 0
   for step in 1...steps {
     let target = distance * step / steps
-    scroll(Int32(target - sent), phase: 2, at: point, time: at(Double(step) / 60))
+    scroll(Int32(target - sent), phase: 2, at: point)
     sent = target
     usleep(16_666)
   }
@@ -177,17 +174,16 @@ case "swipe":
     fflush(stdout)
     usleep(useconds_t(hold * 1_000_000))
   }
-  let lift = Double(steps) / 60 + hold
-  scroll(0, phase: 4, at: point, time: at(lift))
+  scroll(0, phase: 4, at: point)
   if hold == 0 {
     var delta = Double(distance) / Double(steps)
     for frame in 1...8 {
       usleep(16_666)
       delta *= 0.8
-      scroll(Int32(delta.rounded()), phase: 0, at: point, time: at(lift + Double(frame) / 60), momentum: frame == 1 ? 1 : 2)
+      scroll(Int32(delta.rounded()), phase: 0, at: point, momentum: frame == 1 ? 1 : 2)
     }
     usleep(16_666)
-    scroll(0, phase: 0, at: point, time: at(lift + 9 / 60), momentum: 3)
+    scroll(0, phase: 0, at: point, momentum: 3)
   }
 default:
   exit(2)
