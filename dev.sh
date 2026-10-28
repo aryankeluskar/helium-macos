@@ -237,6 +237,7 @@ __helium_menu() {
         presetup) shift; ___helium_setup_presetup "$@";;
         configure) gn_gen --export-compile-commands;;
         resources) helium_resources;;
+        hydrogen) "$_root_dir/dream/hydrogen/rebrand.sh" "$_src_dir";;
 
         sub|unsub) ___helium_substitution "$1";;
         namesub|nameunsub) ___helium_name_substitution "$1";;

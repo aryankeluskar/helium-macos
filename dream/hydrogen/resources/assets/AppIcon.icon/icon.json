@@ -1,0 +1,147 @@
+{
+  "fill": {
+    "linear-gradient": [
+      "srgb:1.00000,1.00000,1.00000,1.00000",
+      "srgb:0.88627,0.89412,0.91373,1.00000"
+    ]
+  },
+  "fill-specializations": [
+    {
+      "appearance": "dark",
+      "value": {
+        "linear-gradient": [
+          "srgb:0.18039,0.18824,0.21176,1.00000",
+          "srgb:0.05882,0.06275,0.07451,1.00000"
+        ]
+      }
+    },
+    {
+      "appearance": "tinted",
+      "value": {
+        "linear-gradient": [
+          "extended-gray:0.20000,1.00000",
+          "extended-gray:0.06000,1.00000"
+        ]
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "Balmer lines",
+      "layers": [
+        {
+          "name": "alpha",
+          "image-name": "alpha.svg",
+          "glass": false,
+          "fill-specializations": [
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.82000,1.00000"
+              }
+            }
+          ]
+        },
+        {
+          "name": "beta",
+          "image-name": "beta.svg",
+          "glass": false,
+          "fill-specializations": [
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.95000,1.00000"
+              }
+            }
+          ]
+        },
+        {
+          "name": "gamma",
+          "image-name": "gamma.svg",
+          "glass": false,
+          "fill-specializations": [
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.70000,1.00000"
+              }
+            }
+          ]
+        },
+        {
+          "name": "delta",
+          "image-name": "delta.svg",
+          "glass": false,
+          "fill-specializations": [
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.55000,1.00000"
+              }
+            }
+          ]
+        }
+      ],
+      "lighting": "individual",
+      "shadow-specializations": [
+        {
+          "value": {
+            "kind": "layer-color",
+            "opacity": 0.55
+          }
+        },
+        {
+          "appearance": "dark",
+          "value": {
+            "kind": "layer-color",
+            "opacity": 0.9
+          }
+        }
+      ],
+      "specular": true,
+      "translucency": {
+        "enabled": false,
+        "value": 0.1
+      }
+    },
+    {
+      "name": "Spectrum",
+      "layers": [
+        {
+          "name": "band",
+          "image-name": "band.svg",
+          "glass": false,
+          "fill-specializations": [
+            {
+              "appearance": "tinted",
+              "value": {
+                "solid": "extended-gray:0.60000,1.00000"
+              }
+            }
+          ]
+        }
+      ],
+      "opacity-specializations": [
+        {
+          "value": 0.7
+        },
+        {
+          "appearance": "dark",
+          "value": 0.6
+        }
+      ],
+      "shadow": {
+        "kind": "none",
+        "opacity": 0.5
+      },
+      "specular": false,
+      "translucency": {
+        "enabled": false,
+        "value": 0.5
+      }
+    }
+  ],
+  "supported-platforms": {
+    "squares": "shared"
+  }
+}

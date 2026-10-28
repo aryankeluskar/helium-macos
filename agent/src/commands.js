@@ -1,5 +1,5 @@
 import { runRepl } from './repl.js';
-import { HeliumError } from './util.js';
+import { HydrogenError } from './util.js';
 
 export async function runCommand(browser, command, args = {}, { cwd = process.cwd() } = {}) {
   const { tab } = args;
@@ -41,6 +41,6 @@ export async function runCommand(browser, command, args = {}, { cwd = process.cw
     case 'repl':
       return runRepl(browser, args.code, { cwd });
     default:
-      throw new HeliumError(`Unknown command "${command}".`);
+      throw new HydrogenError(`Unknown command "${command}".`);
   }
 }

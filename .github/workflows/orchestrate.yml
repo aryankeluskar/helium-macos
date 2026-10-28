@@ -169,7 +169,7 @@ jobs:
           body=$(printf '%s\n\n%s\n\n%s\n\n%s\n' \
             "Your dream browser DMG ($kind) is ready: download \`$DMG_NAME\` from $server/actions/runs/$DMG_RUN" \
             "$demo" \
-            "Install: open the DMG, drag Helium to Applications, then allow it once in System Settings > Privacy & Security, since it isn't notarized." \
-            "Agents: turn on chrome://inspect/#remote-debugging, run \`ln -sf /Applications/Helium.app/Contents/Resources/helium-agent/helium /opt/homebrew/bin/helium\`, then \`claude mcp add helium -- helium mcp\`.")
+            "Install: open the DMG, drag Hydrogen to Applications, then allow it once in System Settings > Privacy & Security, since it isn't notarized." \
+            "Agents: turn on chrome://inspect/#remote-debugging, run \`ln -sf /Applications/Hydrogen.app/Contents/Resources/hydrogen-agent/hydrogen /opt/homebrew/bin/hydrogen\`, then \`claude mcp add hydrogen -- hydrogen mcp\`.")
           head=$(gh api "repos/$GITHUB_REPOSITORY/commits/$REF" --jq .sha)
           gh api "repos/$GITHUB_REPOSITORY/commits/$head/comments" -f body="**Dream browser DMG ready.** $body" --jq .html_url

@@ -6,9 +6,9 @@ import { findEndpoint } from './endpoint.js';
 import { keyEvents } from './keys.js';
 import * as scripts from './page-scripts.js';
 import { buildSnapshot } from './snapshot.js';
-import { HeliumError, readJson, shortId, sleep, writePrivateJson } from './util.js';
+import { HydrogenError, readJson, shortId, sleep, writePrivateJson } from './util.js';
 
-const WORLD = 'helium-agent';
+const WORLD = 'hydrogen-agent';
 const NOT_TEXT = new Set(['button', 'link', 'checkbox', 'radio', 'switch', 'slider', 'option', 'menuitem', 'menuitemcheckbox', 'menuitemradio', 'tab', 'image']);
 
 export class Browser {
@@ -148,10 +148,10 @@ export class Browser {
     let match = /^\d{1,3}$/.test(value) ? tabs[Number(value) - 1] : undefined;
     if (!match) {
       const found = tabs.filter((t) => t.id.toLowerCase().startsWith(value));
-      if (found.length > 1) throw new HeliumError(`Tab "${spec}" matches ${found.length} tabs; use more characters of the id.`);
+      if (found.length > 1) throw new HydrogenError(`Tab "${spec}" matches ${found.length} tabs; use more characters of the id.`);
       match = found[0];
     }
-    if (!match) throw new HeliumError(`No tab "${spec}". Run \`helium tabs\` to list tabs.`);
+    if (!match) throw new HydrogenError(`No tab "${spec}". Run \`hydrogen tabs\` to list tabs.`);
     if (makeCurrent && this.current !== match.id) {
       this.current = match.id;
       this.save();
@@ -163,7 +163,7 @@ export class Browser {
     if (this.current && this.targets.has(this.current)) return this.current;
     const agentTab = [...this.agentTabs].reverse().find((id) => this.targets.has(id));
     if (agentTab) return agentTab;
-    throw new HeliumError('There is no agent tab yet. Open one with `helium open <url>`, or pass --tab <id> (see `helium tabs`).');
+    throw new HydrogenError('There is no agent tab yet. Open one with `hydrogen open <url>`, or pass --tab <id> (see `hydrogen tabs`).');
   }
 
   async session(id) {
@@ -211,7 +211,7 @@ export class Browser {
       params.contextId = executionContextId;
     }
     const result = await this.send(id, 'Runtime.evaluate', params, timeoutMs);
-    if (result.exceptionDetails) throw new HeliumError(`JavaScript error: ${describeException(result.exceptionDetails)}`);
+    if (result.exceptionDetails) throw new HydrogenError(`JavaScript error: ${describeException(result.exceptionDetails)}`);
     return result.result.value;
   }
 
@@ -223,10 +223,10 @@ export class Browser {
     const tab = await this.session(id);
     const entry = tab.refs.get(ref);
     if (!entry) {
-      throw new HeliumError(
+      throw new HydrogenError(
         tab.refs.size
-          ? `Unknown ref "${ref}" for tab ${shortId(id)}. Refs come from the latest \`helium snapshot\` of that tab.`
-          : `No refs for tab ${shortId(id)}: take a \`helium snapshot\` first (refs reset when the page navigates).`,
+          ? `Unknown ref "${ref}" for tab ${shortId(id)}. Refs come from the latest \`hydrogen snapshot\` of that tab.`
+          : `No refs for tab ${shortId(id)}: take a \`hydrogen snapshot\` first (refs reset when the page navigates).`,
       );
     }
     const { executionContextId } = await this.send(id, 'Page.createIsolatedWorld', { frameId: entry.frameId ?? id, worldName: WORLD });
@@ -234,10 +234,10 @@ export class Browser {
     try {
       ({ object } = await this.send(id, 'DOM.resolveNode', { backendNodeId: entry.backendNodeId, executionContextId, objectGroup: WORLD }));
     } catch {
-      throw new HeliumError(`Ref "${ref}" no longer exists on the page. Take a new \`helium snapshot\`.`);
+      throw new HydrogenError(`Ref "${ref}" no longer exists on the page. Take a new \`hydrogen snapshot\`.`);
     }
     const resolved = await this.send(id, 'Runtime.callFunctionOn', { objectId: object.objectId, functionDeclaration: scripts.toElement.toString(), objectGroup: WORLD });
-    if (resolved.result.subtype === 'null') throw new HeliumError(`Ref "${ref}" no longer exists on the page. Take a new \`helium snapshot\`.`);
+    if (resolved.result.subtype === 'null') throw new HydrogenError(`Ref "${ref}" no longer exists on the page. Take a new \`hydrogen snapshot\`.`);
     return { ...entry, ref, objectId: resolved.result.objectId };
   }
 
@@ -249,7 +249,7 @@ export class Browser {
       returnByValue: true,
       awaitPromise: true,
     });
-    if (result.exceptionDetails) throw new HeliumError(`JavaScript error: ${describeException(result.exceptionDetails)}`);
+    if (result.exceptionDetails) throw new HydrogenError(`JavaScript error: ${describeException(result.exceptionDetails)}`);
     return result.result.value;
   }
 
@@ -299,7 +299,7 @@ export class Browser {
     this.save();
     return this.withTab(id, async () => {
       const result = await this.send(id, 'Page.navigate', { url });
-      if (result.errorText && result.errorText !== 'net::ERR_ABORTED') throw new HeliumError(`Could not open ${url}: ${result.errorText}`);
+      if (result.errorText && result.errorText !== 'net::ERR_ABORTED') throw new HydrogenError(`Could not open ${url}: ${result.errorText}`);
       const loaded = await this.waitForLoad(id, 30_000);
       if (!existing) await this.send(id, 'Page.resetNavigationHistory').catch(() => {});
       return { tab: await this.tabInfo(id), loaded };
@@ -309,7 +309,7 @@ export class Browser {
   async close(spec) {
     const id = await this.resolveTab(spec, { makeCurrent: false });
     if ((spec === undefined || spec === null || spec === '') && !this.agentTabs.has(id)) {
-      throw new HeliumError(`The current tab ${shortId(id)} is one of your own tabs; pass its id to close it.`);
+      throw new HydrogenError(`The current tab ${shortId(id)} is one of your own tabs; pass its id to close it.`);
     }
     const info = await this.tabInfo(id);
     await this.cdp.send('Target.closeTarget', { targetId: id });
@@ -408,8 +408,8 @@ export class Browser {
         if (point) await this.mouseClick(id, point.x, point.y);
         state = await this.callOn(id, el.objectId, scripts.prepareForTyping, true);
       }
-      if (state === 'not-editable') throw new HeliumError(`Ref "${ref}" (${el.role}) isn't a text field. Use the ref of a textbox from the snapshot.`);
-      if (state !== 'ready') throw new HeliumError(`Ref "${ref}" (${el.role}) is ${state}.`);
+      if (state === 'not-editable') throw new HydrogenError(`Ref "${ref}" (${el.role}) isn't a text field. Use the ref of a textbox from the snapshot.`);
+      if (state !== 'ready') throw new HydrogenError(`Ref "${ref}" (${el.role}) is ${state}.`);
       if (text) await this.send(id, 'Input.insertText', { text });
       else await this.pressKeys(id, 'Delete');
       if (submit) await this.pressKeys(id, 'Enter');
@@ -433,7 +433,7 @@ export class Browser {
     return this.withTab(tab, async (id) => {
       const el = await this.element(id, ref);
       const result = await this.callOn(id, el.objectId, scripts.selectOption, String(value));
-      if (result.error) throw new HeliumError(`Ref "${ref}" ${result.error}.`);
+      if (result.error) throw new HydrogenError(`Ref "${ref}" ${result.error}.`);
       return { ref, ...result };
     });
   }
@@ -463,7 +463,7 @@ export class Browser {
       try {
         ({ data } = await this.send(id, 'Page.captureScreenshot', params, 30_000));
       } catch (error) {
-        throw new HeliumError(`${error.message}\nIf the tab is in the background, bring it forward with \`helium focus ${shortId(id)}\` and try again.`);
+        throw new HydrogenError(`${error.message}\nIf the tab is in the background, bring it forward with \`hydrogen focus ${shortId(id)}\` and try again.`);
       }
       const bytes = Buffer.from(data, 'base64');
       if (file) {
@@ -481,7 +481,7 @@ export class Browser {
       if (!exceptionDetails && result.subtype === 'promise' && result.objectId) {
         ({ result, exceptionDetails } = await this.send(id, 'Runtime.awaitPromise', { promiseObjectId: result.objectId }, 60_000));
       }
-      if (exceptionDetails) throw new HeliumError(`JavaScript error: ${describeException(exceptionDetails)}`);
+      if (exceptionDetails) throw new HydrogenError(`JavaScript error: ${describeException(exceptionDetails)}`);
       if (result.type === 'undefined') return { value: undefined };
       if (!result.objectId) return { value: result.value ?? result.unserializableValue ?? result.description };
       if (['node', 'error', 'function', 'regexp', 'date', 'proxy', 'promise'].includes(result.subtype ?? result.type)) {
@@ -497,7 +497,7 @@ export class Browser {
   }
 
   async wait({ tab, text, selector, idle = false, timeoutMs = 30_000 } = {}) {
-    if (text === undefined && selector === undefined && !idle) throw new HeliumError('Wait for what? Pass --text, --selector or --idle.');
+    if (text === undefined && selector === undefined && !idle) throw new HydrogenError('Wait for what? Pass --text, --selector or --idle.');
     return this.withTab(tab, async (id, state) => {
       const deadline = Date.now() + timeoutMs;
       let quietSince = 0;
@@ -515,12 +515,12 @@ export class Browser {
             else if (Date.now() - quietSince >= 500) return { found: 'idle' };
           }
         } catch (error) {
-          if (error instanceof HeliumError && /JavaScript error/.test(error.message)) throw error;
+          if (error instanceof HydrogenError && /JavaScript error/.test(error.message)) throw error;
         }
         await sleep(100);
       }
       const what = text !== undefined ? `text "${text}"` : selector !== undefined ? `selector ${selector}` : 'the page to go idle';
-      throw new HeliumError(`Timed out after ${Math.round(timeoutMs / 1000)}s waiting for ${what}.`);
+      throw new HydrogenError(`Timed out after ${Math.round(timeoutMs / 1000)}s waiting for ${what}.`);
     });
   }
 
@@ -536,7 +536,7 @@ export class Browser {
     return this.withTab(spec, async (id) => {
       const { currentIndex, entries } = await this.send(id, 'Page.getNavigationHistory');
       const entry = entries[currentIndex + delta];
-      if (!entry) throw new HeliumError(`There is no page to go ${delta < 0 ? 'back' : 'forward'} to.`);
+      if (!entry) throw new HydrogenError(`There is no page to go ${delta < 0 ? 'back' : 'forward'} to.`);
       await this.send(id, 'Page.navigateToHistoryEntry', { entryId: entry.id });
       const deadline = Date.now() + 10_000;
       while (Date.now() < deadline) {

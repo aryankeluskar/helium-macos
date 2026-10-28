@@ -11,7 +11,7 @@ const EXPECTED_TOOLS = [
   'page_select', 'page_scroll', 'page_read', 'page_screenshot', 'page_eval', 'page_wait', 'page_back', 'page_forward',
 ];
 
-describe('helium mcp over stdio', () => {
+describe('hydrogen mcp over stdio', () => {
   let chrome;
   let site;
   let client;
@@ -19,9 +19,10 @@ describe('helium mcp over stdio', () => {
   before(async () => {
     chrome = await launchChromium();
     site = await startSite();
-    const env = { ...process.env, HELIUM_USER_DATA_DIR: chrome.profile, HELIUM_AGENT_HOME: path.join(chrome.dir, 'agent-home') };
+    const env = { ...process.env, HYDROGEN_USER_DATA_DIR: chrome.profile, HYDROGEN_AGENT_HOME: path.join(chrome.dir, 'agent-home') };
+    delete env.HYDROGEN_CDP_URL;
     delete env.HELIUM_CDP_URL;
-    client = new Client({ name: 'helium-test', version: '1.0.0' });
+    client = new Client({ name: 'hydrogen-test', version: '1.0.0' });
     await client.connect(new StdioClientTransport({ command: process.execPath, args: [BIN, 'mcp'], env, stderr: 'ignore' }));
   });
 
@@ -50,7 +51,7 @@ describe('helium mcp over stdio', () => {
 
   test('opens a page, snapshots it and acts on a ref', async () => {
     const [opened] = await call('tab_open', { url: `${site.url}/` });
-    assert.match(opened.text, /^Opened [0-9A-F]{8} {2}Helium test page/);
+    assert.match(opened.text, /^Opened [0-9A-F]{8} {2}Hydrogen test page/);
 
     const [snapshot] = await call('page_snapshot');
     const ref = /button "Click me" \[ref=(e\d+)\]/.exec(snapshot.text)[1];

@@ -3,9 +3,9 @@ import fs from 'node:fs';
 import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 import { findEndpoint } from './endpoint.js';
-import { HeliumError, ensureAgentHome, logPath, sleep, socketPath } from './util.js';
+import { HydrogenError, ensureAgentHome, logPath, setting, sleep, socketPath } from './util.js';
 
-const BIN = process.env.HELIUM_AGENT_ENTRY || fileURLToPath(new URL('../bin/helium.js', import.meta.url));
+const BIN = setting(process.env, 'AGENT_ENTRY') || fileURLToPath(new URL('../bin/hydrogen.js', import.meta.url));
 
 export async function request(command, args = {}, { env = process.env, onNotice = () => {}, autostart = true } = {}) {
   const sock = socketPath(env);
@@ -41,7 +41,7 @@ async function startDaemon(sock, env) {
     if (exited) break;
     await sleep(50);
   }
-  throw new HeliumError(`The helium daemon didn't start. See ${logPath(env)}:\n${tail(logPath(env))}`);
+  throw new HydrogenError(`The hydrogen daemon didn't start. See ${logPath(env)}:\n${tail(logPath(env))}`);
 }
 
 function exchange(socket, message, onNotice, env) {
@@ -62,12 +62,12 @@ function exchange(socket, message, onNotice, env) {
         settled = true;
         socket.end();
         if (reply.ok) resolve(reply.result);
-        else reject(new HeliumError(reply.error));
+        else reject(new HydrogenError(reply.error));
       }
     });
     socket.on('error', () => {});
     socket.on('close', () => {
-      if (!settled) reject(new HeliumError(`The helium daemon stopped before answering. See ${logPath(env)}.`));
+      if (!settled) reject(new HydrogenError(`The hydrogen daemon stopped before answering. See ${logPath(env)}.`));
     });
     socket.write(`${JSON.stringify(message)}\n`);
   });

@@ -7,15 +7,15 @@
 set -uo pipefail
 
 demo_dir="$(cd "$(dirname "$0")" && pwd)"
-app=/Applications/Helium.app
+app=/Applications/Hydrogen.app
 out="$GITHUB_WORKSPACE/demo-out"
 report="$out/verify.md"
-helium="$app/Contents/Resources/helium-agent/helium"
+hydrogen="$app/Contents/Resources/hydrogen-agent/hydrogen"
 profile="$RUNNER_TEMP/deep-profile"
 swipe="$RUNNER_TEMP/swipe"
 ax="$RUNNER_TEMP/ax"
 mkdir -p "$out" "$profile/Default"
-export HELIUM_USER_DATA_DIR="$profile" HELIUM_AGENT_HOME="$RUNNER_TEMP/helium-agent-deep"
+export HYDROGEN_USER_DATA_DIR="$profile" HYDROGEN_AGENT_HOME="$RUNNER_TEMP/hydrogen-agent-deep"
 
 pass() { echo "- ✅ $1" >> "$report"; }
 fail() { echo "- ❌ $1" >> "$report"; }
@@ -28,11 +28,11 @@ cat > "$profile/Default/Preferences" <<'JSON'
 {"helium": {"browser": {"layout": 2}, "completed_onboarding": true, "services": {"user_consented": true}}, "vertical_tabs": {"collapsed_state": true, "expand_on_hover": true}}
 JSON
 
-"$app/Contents/MacOS/Helium" --user-data-dir="$profile" --no-first-run --no-default-browser-check \
+"$app/Contents/MacOS/Hydrogen" --user-data-dir="$profile" --no-first-run --no-default-browser-check \
   --remote-debugging-port=0 --window-position=0,25 --window-size=1024,710 --force-prefers-no-reduced-motion \
   --load-extension="$demo_dir/request-observer" \
   "https://en.wikipedia.org/wiki/Arc_(web_browser)" https://news.ycombinator.com https://github.com/imputnet/helium \
-  > "$out/deep-helium.log" 2>&1 &
+  > "$out/deep-hydrogen.log" 2>&1 &
 browser=$!
 for _ in $(seq 1 60); do [ -s "$profile/DevToolsActivePort" ] && break; sleep 1; done
 sleep 20
@@ -43,7 +43,7 @@ sleep 20
   echo
 } >> "$report"
 
-bounds=$("$swipe" bounds Helium || true)
+bounds=$("$swipe" bounds Hydrogen || true)
 if [ -n "$bounds" ]; then
   read -r win_x win_y _ win_h <<< "$bounds"
   away_x=$((win_x + 700))
@@ -77,16 +77,16 @@ if [ -n "$bounds" ]; then
   fi
   echo "- ℹ️ Collapsed with favicons: \`tabs-collapsed.png\`; expanded on hover: \`tabs-hover-expanded.png\`" >> "$report"
 else
-  fail "The Helium window wasn't found, so the vertical tab strip wasn't checked"
+  fail "The Hydrogen window wasn't found, so the vertical tab strip wasn't checked"
 fi
 
 observer=bocpdjonlkcamnhcdfelpabhlkaihjke
-probe_tab=$("$helium" open https://example.com --json 2>/dev/null | jq -r '.tab.id')
+probe_tab=$("$hydrogen" open https://example.com --json 2>/dev/null | jq -r '.tab.id')
 
 request() {
   local urls
   urls=$(printf '%s\n' "$@" | jq -R . | jq -sc .)
-  "$helium" eval --tab "$probe_tab" "Promise.all($urls.map(url => new Promise(done => {
+  "$hydrogen" eval --tab "$probe_tab" "Promise.all($urls.map(url => new Promise(done => {
     const element = /\.(png|jpe?g)(\?|$)/.test(url) ? new Image()
       : /fonts\.googleapis|\.css(\?|$)/.test(url) ? Object.assign(document.createElement('link'), { rel: 'stylesheet' })
       : document.createElement('script');
@@ -99,9 +99,9 @@ request() {
 
 outcomes() {
   local tab
-  tab=$("$helium" open "chrome-extension://$observer/outcomes.html" --json 2>/dev/null | jq -r '.tab.id')
-  "$helium" eval --tab "$tab" --json "new Promise(r => setTimeout(r, 500)).then(() => JSON.parse(document.getElementById('outcomes').textContent))" 2>/dev/null | jq -c '.value // {}'
-  "$helium" close "$tab" > /dev/null 2>&1 || true
+  tab=$("$hydrogen" open "chrome-extension://$observer/outcomes.html" --json 2>/dev/null | jq -r '.tab.id')
+  "$hydrogen" eval --tab "$tab" --json "new Promise(r => setTimeout(r, 500)).then(() => JSON.parse(document.getElementById('outcomes').textContent))" 2>/dev/null | jq -c '.value // {}'
+  "$hydrogen" close "$tab" > /dev/null 2>&1 || true
 }
 
 outcome_of() {
@@ -178,7 +178,7 @@ done
 check "$blocked of ${#ad_urls[@]} ad and tracker requests are blocked, or answered with uBlock Origin's harmless stub" "[ $blocked -ge $(( ${#ad_urls[@]} * 9 / 10 )) ]"
 check "$loaded of ${#control_urls[@]} normal requests (CDNs, fonts, images) load, so blocking doesn't break sites" "[ $loaded -eq ${#control_urls[@]} ]"
 
-cosmetic=$("$helium" eval --tab "$probe_tab" "(async () => { for (const id of ['ad_banner', 'google_ads']) { const slot = document.createElement('div'); slot.id = id; slot.textContent = 'ad'; slot.style.height = '90px'; document.body.append(slot); } await new Promise(r => setTimeout(r, 3000)); return ['ad_banner', 'google_ads'].map(id => getComputedStyle(document.getElementById(id)).display).join(','); })()" 2>/dev/null | tr -d '"[:space:]')
+cosmetic=$("$hydrogen" eval --tab "$probe_tab" "(async () => { for (const id of ['ad_banner', 'google_ads']) { const slot = document.createElement('div'); slot.id = id; slot.textContent = 'ad'; slot.style.height = '90px'; document.body.append(slot); } await new Promise(r => setTimeout(r, 3000)); return ['ad_banner', 'google_ads'].map(id => getComputedStyle(document.getElementById(id)).display).join(','); })()" 2>/dev/null | tr -d '"[:space:]')
 check "Ad slots added to a page are hidden (cosmetic filtering: $cosmetic)" '[ "$cosmetic" = none,none ]'
 {
   echo
@@ -195,29 +195,29 @@ check "Ad slots added to a page are hidden (cosmetic filtering: $cosmetic)" '[ "
   echo
   echo "## Chrome Web Store"
   echo
-  echo "Helium downloads Web Store extensions through its own proxy, so Google doesn't see them; the proxy works once you agree to Helium services in onboarding, as this profile has."
+  echo "Hydrogen downloads Web Store extensions through Helium's privacy proxy, so Google doesn't see them; the proxy works once you agree to Helium services in onboarding, as this profile has."
   echo
 } >> "$report"
 
 extension=eimadpbcbfnmbkopoojfekhnkhdbieeh
-"$helium" open "https://chromewebstore.google.com/detail/$extension" > /dev/null 2>&1
+"$hydrogen" open "https://chromewebstore.google.com/detail/$extension" > /dev/null 2>&1
 sleep 8
-"$helium" snapshot > "$out/web-store-snapshot.txt" 2>&1
+"$hydrogen" snapshot > "$out/web-store-snapshot.txt" 2>&1
 ref=$(grep -iE 'button "(Add to|Install)' "$out/web-store-snapshot.txt" | grep -o 'ref=e[0-9]*' | head -1 | cut -d= -f2)
 if [ -n "$ref" ]; then
-  "$helium" click "$ref" > "$out/web-store-click.txt" 2>&1
+  "$hydrogen" click "$ref" > "$out/web-store-click.txt" 2>&1
   sleep 3
   screencapture -x "$out/web-store-dialog.png" || true
-  "$ax" press Helium "Add extension" 20 || echo "no Add extension button" >> "$out/web-store-click.txt"
+  "$ax" press Hydrogen "Add extension" 20 || echo "no Add extension button" >> "$out/web-store-click.txt"
   for _ in $(seq 1 30); do [ -d "$profile/Default/Extensions/$extension" ] && break; sleep 1; done
   sleep 3
   screencapture -x "$out/web-store-installed.png" || true
 fi
 check "Dark Reader installs from the Chrome Web Store (\`web-store-dialog.png\`, \`web-store-installed.png\`)" \
   '[ -d "$profile/Default/Extensions/$extension" ]'
-running=$("$helium" repl "return (await cdp('Target.getTargets')).targetInfos.some(t => t.url.startsWith('chrome-extension://$extension/'))" 2>/dev/null | tr -d '"[:space:]')
+running=$("$hydrogen" repl "return (await cdp('Target.getTargets')).targetInfos.some(t => t.url.startsWith('chrome-extension://$extension/'))" 2>/dev/null | tr -d '"[:space:]')
 check "The installed extension runs (its pages or service worker: $running)" '[ "$running" = true ]'
 
-"$helium" daemon stop > /dev/null 2>&1 || true
+"$hydrogen" daemon stop > /dev/null 2>&1 || true
 kill "$browser" 2>/dev/null || true
 cat "$report"

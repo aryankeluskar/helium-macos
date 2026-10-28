@@ -14,22 +14,22 @@ cat > "$profile/Default/Preferences" <<'JSON'
 {"helium": {"browser": {"layout": 2}}, "vertical_tabs": {"collapsed_state": false, "expand_on_hover": true}}
 JSON
 
-/Applications/Helium.app/Contents/MacOS/Helium \
+/Applications/Hydrogen.app/Contents/MacOS/Hydrogen \
   --user-data-dir="$profile" --no-first-run --no-default-browser-check \
   --load-extension="$demo_dir/spaces-extension" \
   --enable-features=TabGroupsFocusing \
   --force-prefers-no-reduced-motion \
   --window-position=0,25 --window-size=1024,710 \
-  about:blank > "$out/helium.log" 2>&1 &
-helium_pid=$!
+  about:blank > "$out/hydrogen.log" 2>&1 &
+hydrogen_pid=$!
 
 bounds=""
 for _ in $(seq 1 60); do
-  bounds=$("$swipe" bounds Helium || true)
+  bounds=$("$swipe" bounds Hydrogen || true)
   [ -n "$bounds" ] && break
   sleep 1
 done
-[ -n "$bounds" ] || { echo "no Helium window"; exit 1; }
+[ -n "$bounds" ] || { echo "no Hydrogen window"; exit 1; }
 read -r win_x win_y win_w win_h <<< "$bounds"
 strip_x=$((win_x + 70))
 strip_y=$((win_y + win_h / 2))
@@ -66,7 +66,7 @@ done
 
 wait "$recording" || true
 screencapture -x "$out/after.png" || true
-kill "$helium_pid" || true
+kill "$hydrogen_pid" || true
 
 if [ -s "$out/screen.mov" ]; then
   ffmpeg -y -loglevel error -i "$out/screen.mov" \

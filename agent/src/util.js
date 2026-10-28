@@ -2,12 +2,16 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-export class HeliumError extends Error {}
+export class HydrogenError extends Error {}
+
+export function setting(env, name) {
+  return env[`HYDROGEN_${name}`] || env[`HELIUM_${name}`];
+}
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function agentHome(env = process.env) {
-  return env.HELIUM_AGENT_HOME || path.join(os.homedir(), '.helium-agent');
+  return setting(env, 'AGENT_HOME') || path.join(os.homedir(), '.hydrogen-agent');
 }
 
 export function ensureAgentHome(env = process.env) {
@@ -27,7 +31,7 @@ export function shortId(id) {
 
 export function normalizeUrl(input, cwd = process.cwd()) {
   const value = String(input ?? '').trim();
-  if (!value) throw new HeliumError('Give a URL to open, e.g. `helium open example.com`.');
+  if (!value) throw new HydrogenError('Give a URL to open, e.g. `hydrogen open example.com`.');
   if (/^(localhost|127\.0\.0\.1|\[::1\]|[\w-]+(\.[\w-]+)*:\d+)(\/|$|:)/i.test(value)) return `http://${value}`;
   if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return value;
   if (/^[.~/]/.test(value)) {
@@ -35,7 +39,7 @@ export function normalizeUrl(input, cwd = process.cwd()) {
     if (fs.existsSync(file)) return new URL(`file://${file}`).href;
   }
   if (/^[^\s/]+\.[^\s/]+/.test(value)) return `https://${value}`;
-  throw new HeliumError(`"${value}" doesn't look like a URL. Include the scheme, e.g. https://${value}.`);
+  throw new HydrogenError(`"${value}" doesn't look like a URL. Include the scheme, e.g. https://${value}.`);
 }
 
 export function writePrivateJson(file, data) {

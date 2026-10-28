@@ -1,0 +1,15 @@
+// Copyright 2026 The Hydrogen Authors
+// You can use, redistribute, and/or modify this source code under
+// the terms of the GPL-3.0 license that can be found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 56,
+NEW_PATH,
+ROUND_RECT, 5.89f, 8, 4.48f, 34.81f, 2.24f,
+NEW_PATH,
+ROUND_RECT, 11.8f, 8, 4.48f, 34.81f, 2.24f,
+NEW_PATH,
+ROUND_RECT, 19.68f, 8, 4.48f, 34.81f, 2.24f,
+NEW_PATH,
+ROUND_RECT, 45.62f, 8, 4.48f, 34.81f, 2.24f,
+NEW_PATH,
+ROUND_RECT, 6, 47.09f, 44, 3, 1.5f,

@@ -119,7 +119,10 @@ jobs:
           RESUME_PATCH: ${{ inputs.resume_patch }}
         run: |
           for resume_patch in $RESUME_PATCH; do
-            patch -d build/src -p1 --forward < "$GITHUB_WORKSPACE/$resume_patch"
+            case "$resume_patch" in
+              *.sh) "$GITHUB_WORKSPACE/$resume_patch" build/src ;;
+              *) patch -d build/src -p1 --forward < "$GITHUB_WORKSPACE/$resume_patch" ;;
+            esac
           done
       - name: Download compile caches from parallel shards
         if: ${{ inputs.resume && inputs.cache_run != '' }}

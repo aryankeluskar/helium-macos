@@ -1,7 +1,7 @@
 import http from 'node:http';
 
 const pages = {
-  '/': () => `<!doctype html><html><head><title>Helium test page</title></head><body>
+  '/': () => `<!doctype html><html><head><title>Hydrogen test page</title></head><body>
 <main>
 <h1>Test page</h1>
 <p>Some <b>readable</b> text with a <a href="/next">link to next</a>.</p>

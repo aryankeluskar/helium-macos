@@ -1,4 +1,4 @@
-import { HeliumError } from './util.js';
+import { HydrogenError } from './util.js';
 
 const MODIFIERS = {
   alt: { bit: 1, key: 'Alt', code: 'AltLeft', keyCode: 18 },
@@ -42,7 +42,7 @@ export function keyEvents(combo, platform = process.platform) {
   const keyName = parts.pop();
   const modifiers = parts.map((part) => {
     const modifier = MODIFIERS[part.toLowerCase()];
-    if (!modifier) throw new HeliumError(`Unknown modifier "${part}" in "${combo}". Use Shift, Control, Alt or Meta.`);
+    if (!modifier) throw new HydrogenError(`Unknown modifier "${part}" in "${combo}". Use Shift, Control, Alt or Meta.`);
     return modifier;
   });
   const mask = modifiers.reduce((sum, modifier) => sum | modifier.bit, 0);
@@ -82,5 +82,5 @@ function describe(name) {
     else if (/[0-9]/.test(name)) code = `Digit${name}`;
     return { key: name, code, keyCode: /[a-z0-9]/i.test(name) ? upper.charCodeAt(0) : 0, text: name };
   }
-  throw new HeliumError(`Unknown key "${name}". Use a character or a name like Enter, Tab, Escape, ArrowDown, PageDown, F5.`);
+  throw new HydrogenError(`Unknown key "${name}". Use a character or a name like Enter, Tab, Escape, ArrowDown, PageDown, F5.`);
 }

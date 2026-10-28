@@ -10,7 +10,7 @@ import packageJson from '../package.json' with { type: 'json' };
 
 const VERSION = packageJson.version;
 
-const INSTRUCTIONS = `These tools control the user's real Helium browser, signed in to their accounts.
+const INSTRUCTIONS = `These tools control the user's real Hydrogen browser, signed in to their accounts.
 - Pages you open go to a separate agent window, so the user's own tabs stay untouched. tabs_list shows every tab; act on the user's tabs only when asked.
 - Typical loop: tab_open, then page_snapshot to get element refs (e1, e2, ...), then page_click / page_type / page_select with those refs, then page_snapshot again to see the result.
 - Refs belong to the latest snapshot of a tab and reset when the page navigates.
@@ -184,7 +184,7 @@ export async function runMcp(env = process.env) {
     return connecting;
   };
 
-  const server = new Server({ name: 'helium', version: VERSION }, { capabilities: { tools: {} }, instructions: INSTRUCTIONS });
+  const server = new Server({ name: 'hydrogen', version: VERSION }, { capabilities: { tools: {} }, instructions: INSTRUCTIONS });
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: TOOLS.map(({ name, description, inputSchema, annotations }) => ({ name, description, inputSchema, annotations })),
   }));

@@ -1,15 +1,11 @@
 name: Record a spaces demo
 
 on:
-  push:
-    paths:
-      - '.github/demo/**'
-      - '.github/workflows/demo.yml'
   workflow_dispatch:
     inputs:
       build_run:
         required: false
-        description: "Run ID of a Build macOS binaries of Helium run to record; empty records the official Helium release"
+        description: "Run ID of a Build macOS binaries of Helium run whose Hydrogen DMG to record"
         default: ""
   workflow_call:
     inputs:
@@ -37,11 +33,11 @@ jobs:
           persist-credentials: false
       - name: Install ffmpeg
         run: brew install ffmpeg
-      - name: Get Helium
+      - name: Get Hydrogen
         env:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ inputs.build_run }}
-        run: .github/demo/get-helium.sh
+        run: .github/demo/get-hydrogen.sh
       - name: Record
         run: .github/demo/demo.sh
       - name: Verify the build
@@ -71,8 +67,8 @@ jobs:
         run: |
           set -euo pipefail
           cd demo-out
-          rm -f helium.log.gz && gzip -k helium.log || true
-          rm -f helium.log
+          rm -f hydrogen.log.gz && gzip -k hydrogen.log || true
+          rm -f hydrogen.log
           git init -q -b demo-videos
           git add -A
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \

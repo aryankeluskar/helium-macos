@@ -3,7 +3,7 @@ import net from 'node:net';
 import { Browser } from './browser.js';
 import { APPROVAL_NOTICE } from './cdp.js';
 import { runCommand } from './commands.js';
-import { HeliumError, ensureAgentHome, socketPath, statePath } from './util.js';
+import { HydrogenError, ensureAgentHome, setting, socketPath, statePath } from './util.js';
 
 const DEFAULT_IDLE_MS = 30 * 60 * 1000;
 
@@ -11,7 +11,7 @@ export async function runDaemon(env = process.env) {
   process.umask(0o077);
   ensureAgentHome(env);
   const sock = socketPath(env);
-  const idleLimitMs = Number(env.HELIUM_AGENT_IDLE_MS) || DEFAULT_IDLE_MS;
+  const idleLimitMs = Number(setting(env, 'AGENT_IDLE_MS')) || DEFAULT_IDLE_MS;
   const startedAt = Date.now();
   let lastActive = Date.now();
   let active = 0;
@@ -34,7 +34,7 @@ export async function runDaemon(env = process.env) {
       browser = connected;
       browserConnections++;
       log(`connected to ${connected.endpoint.url}`);
-      connected.cdp.on('close', () => shutdown('Helium closed the connection'));
+      connected.cdp.on('close', () => shutdown('Hydrogen closed the connection'));
       return connected;
     },
     (error) => {
@@ -57,7 +57,7 @@ export async function runDaemon(env = process.env) {
     return {
       pid: process.pid,
       connected: !!browser,
-      endpoint: browser?.endpoint.url ?? 'Helium',
+      endpoint: browser?.endpoint.url ?? 'Hydrogen',
       uptimeMs: Date.now() - startedAt,
       idleMs: active ? 0 : Date.now() - lastActive,
       idleLimitMs,
@@ -119,7 +119,7 @@ export async function runDaemon(env = process.env) {
       const result = await runCommand(connected, request.command, request.args ?? {}, { cwd: request.cwd });
       reply({ ok: true, result });
     } catch (error) {
-      if (!(error instanceof HeliumError)) log(error.stack || String(error));
+      if (!(error instanceof HydrogenError)) log(error.stack || String(error));
       reply({ ok: false, error: error.message });
     } finally {
       active--;

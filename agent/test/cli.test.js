@@ -2,10 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { after, before, describe, test } from 'node:test';
-import { countingProxy, helium, heliumJson, launchChromium, profileFor, refOf, stopDaemon } from './helpers.js';
+import { countingProxy, hydrogen, hydrogenJson, launchChromium, profileFor, refOf, stopDaemon } from './helpers.js';
 import { startSite } from './site.js';
 
-describe('helium CLI against headless Chromium', () => {
+describe('hydrogen CLI against headless Chromium', () => {
   let chrome;
   let site;
   let proxy;
@@ -22,7 +22,8 @@ describe('helium CLI against headless Chromium', () => {
     proxy = await countingProxy(chrome.port);
     home = path.join(chrome.dir, 'agent-home');
     const profile = profileFor(path.join(chrome.dir, 'proxied-profile'), proxy.port, chrome.wsPath);
-    env = { ...process.env, HELIUM_USER_DATA_DIR: profile, HELIUM_AGENT_HOME: home };
+    env = { ...process.env, HYDROGEN_USER_DATA_DIR: profile, HYDROGEN_AGENT_HOME: home };
+    delete env.HYDROGEN_CDP_URL;
     delete env.HELIUM_CDP_URL;
   });
 
@@ -33,21 +34,21 @@ describe('helium CLI against headless Chromium', () => {
     await chrome?.close();
   });
 
-  const run = (...args) => helium(args, env);
+  const run = (...args) => hydrogen(args, env);
   const ok = async (...args) => {
     const result = await run(...args);
-    assert.equal(result.code, 0, `helium ${args.join(' ')} failed: ${result.stderr}`);
+    assert.equal(result.code, 0, `hydrogen ${args.join(' ')} failed: ${result.stderr}`);
     return result.stdout;
   };
-  const evaluate = async (js) => (await heliumJson(['eval', js], env)).value;
+  const evaluate = async (js) => (await hydrogenJson(['eval', js], env)).value;
 
   test('tabs lists the user tab and starts the daemon', async () => {
-    const tabs = await heliumJson(['tabs'], env);
+    const tabs = await hydrogenJson(['tabs'], env);
     assert.equal(tabs.length, 1);
     assert.equal(tabs[0].url, 'about:blank');
     assert.equal(tabs[0].agent, false);
     userTab = tabs[0].id;
-    const status = await heliumJson(['daemon', 'status'], env);
+    const status = await hydrogenJson(['daemon', 'status'], env);
     assert.equal(status.connected, true);
     daemonPid = status.pid;
   });
@@ -60,17 +61,17 @@ describe('helium CLI against headless Chromium', () => {
   test('open creates an agent window, and later opens add tabs to it', async () => {
     const out = await ok('open', `${site.url}/next`);
     assert.match(out, /^Opened [0-9A-F]{8} {2}Next page {2}http:\/\/127\.0\.0\.1:\d+\/next/);
-    const second = await heliumJson(['open', `${site.url}/`], env);
+    const second = await hydrogenJson(['open', `${site.url}/`], env);
     agentTab = second.tab.id;
-    assert.equal(second.tab.title, 'Helium test page');
+    assert.equal(second.tab.title, 'Hydrogen test page');
 
-    const tabs = await heliumJson(['tabs'], env);
+    const tabs = await hydrogenJson(['tabs'], env);
     const agentTabs = tabs.filter((t) => t.agent);
     assert.equal(agentTabs.length, 2);
     assert.equal(tabs.find((t) => t.current).id, agentTab);
     assert.equal(tabs.find((t) => t.id === userTab).agent, false);
 
-    const windowOf = async (targetId) => (await heliumJson(['repl', `return (await cdp('Browser.getWindowForTarget', { targetId: '${targetId}' })).windowId`], env)).value;
+    const windowOf = async (targetId) => (await hydrogenJson(['repl', `return (await cdp('Browser.getWindowForTarget', { targetId: '${targetId}' })).windowId`], env)).value;
     const agentWindow = await windowOf(agentTabs[0].id);
     assert.equal(await windowOf(agentTabs[1].id), agentWindow);
     assert.notEqual(await windowOf(userTab), agentWindow);
@@ -78,7 +79,7 @@ describe('helium CLI against headless Chromium', () => {
 
   test('snapshot gives refs for interactive and meaningful nodes', async () => {
     const out = await ok('snapshot');
-    assert.match(out, /^Tab [0-9A-F]{8} {2}Helium test page/);
+    assert.match(out, /^Tab [0-9A-F]{8} {2}Hydrogen test page/);
     assert.match(out, /- heading "Test page" \[level=1\] \[ref=e\d+\]/);
     assert.match(out, /- link "link to next" \[url=\/next\] \[ref=e\d+\]/);
     assert.match(out, /- combobox "Color" \[options: Red \| Green \| Blue\] \[ref=e\d+\]: Red/);
@@ -90,7 +91,7 @@ describe('helium CLI against headless Chromium', () => {
       bottom: refOf(out, /Bottom of page/),
       link: refOf(out, /link "link to next"/),
     };
-    const json = await heliumJson(['snapshot'], env);
+    const json = await hydrogenJson(['snapshot'], env);
     assert.ok(json.refs >= 10);
   });
 
@@ -116,17 +117,17 @@ describe('helium CLI against headless Chromium', () => {
 
   test('scroll moves the page and brings refs into view', async () => {
     const snapshot = await ok('snapshot');
-    const down = await heliumJson(['scroll', 'down'], env);
+    const down = await hydrogenJson(['scroll', 'down'], env);
     assert.ok(down.top > 0);
-    const toRef = await heliumJson(['scroll', refOf(snapshot, /Bottom of page/)], env);
+    const toRef = await hydrogenJson(['scroll', refOf(snapshot, /Bottom of page/)], env);
     assert.equal(toRef.atBottom, true);
-    const up = await heliumJson(['scroll', 'up'], env);
+    const up = await hydrogenJson(['scroll', 'up'], env);
     assert.ok(up.top < toRef.top);
   });
 
   test('read returns markdown with link URLs', async () => {
     const out = await ok('read');
-    assert.match(out, /^# Helium test page\nhttp:\/\/127\.0\.0\.1:\d+\/\n/);
+    assert.match(out, /^# Hydrogen test page\nhttp:\/\/127\.0\.0\.1:\d+\/\n/);
     assert.match(out, /^# Test page$/m);
     assert.match(out, new RegExp(`Some readable text with a \\[link to next\\]\\(${site.url}/next\\)\\.`));
     assert.match(out, /^- First item\n- Second item$/m);
@@ -145,7 +146,7 @@ describe('helium CLI against headless Chromium', () => {
 
   test('eval returns values and reports errors', async () => {
     assert.equal(await evaluate('1 + 2'), 3);
-    assert.deepEqual(await evaluate('({ a: [1, 2], b: document.title })'), { a: [1, 2], b: 'Helium test page' });
+    assert.deepEqual(await evaluate('({ a: [1, 2], b: document.title })'), { a: [1, 2], b: 'Hydrogen test page' });
     assert.equal(await evaluate('await new Promise((r) => setTimeout(() => r("later"), 50))'), 'later');
     assert.equal(await evaluate('new Promise((r) => setTimeout(() => r("returned"), 50))'), 'returned');
     assert.equal(await evaluate("fetch('http://127.0.0.1:9/').then(() => 'loaded', () => 'blocked')"), 'blocked');
@@ -178,7 +179,7 @@ describe('helium CLI against headless Chromium', () => {
   });
 
   test('back and forward move through history', async () => {
-    assert.match(await ok('back'), /^Back to [0-9A-F]{8} {2}Helium test page/);
+    assert.match(await ok('back'), /^Back to [0-9A-F]{8} {2}Hydrogen test page/);
     assert.match(await ok('forward'), /^Forward to [0-9A-F]{8} {2}Submitted/);
     await ok('back');
   });
@@ -231,10 +232,10 @@ describe('helium CLI against headless Chromium', () => {
       await page.close();
       return { tabCount: (await tabs()).length, text: text.slice(0, 11), shot, value };
     `;
-    const result = await helium(['repl', '--json'], { ...env }, { input: code });
+    const result = await hydrogen(['repl', '--json'], { ...env }, { input: code });
     assert.equal(result.code, 0, result.stderr);
     const { value, logs } = JSON.parse(result.stdout);
-    assert.deepEqual(logs, ['title Helium test page']);
+    assert.deepEqual(logs, ['title Hydrogen test page']);
     assert.equal(value.text, '# Test page');
     assert.equal(value.value, 5);
     assert.equal(value.tabCount, 3);
@@ -244,10 +245,10 @@ describe('helium CLI against headless Chromium', () => {
   });
 
   test('close removes a tab', async () => {
-    const before = await heliumJson(['tabs'], env);
+    const before = await hydrogenJson(['tabs'], env);
     const out = await ok('close', agentTab.slice(0, 8));
     assert.match(out, /^Closed [0-9A-F]{8}/);
-    const afterClose = await heliumJson(['tabs'], env);
+    const afterClose = await hydrogenJson(['tabs'], env);
     assert.equal(afterClose.length, before.length - 1);
     assert.ok(!afterClose.some((t) => t.id === agentTab));
   });
@@ -257,7 +258,7 @@ describe('helium CLI against headless Chromium', () => {
     await ok('click', refOf(await ok('snapshot'), /link "Get the report"/));
     let download;
     for (let i = 0; i < 50 && download?.state !== 'completed'; i++) {
-      download = (await heliumJson(['downloads'], env)).session.find((d) => d.filename === 'report.csv');
+      download = (await hydrogenJson(['downloads'], env)).session.find((d) => d.filename === 'report.csv');
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
     assert.equal(download?.state, 'completed');
@@ -268,12 +269,12 @@ describe('helium CLI against headless Chromium', () => {
   });
 
   test("the user's tab was never touched", async () => {
-    const tabs = await heliumJson(['tabs'], env);
+    const tabs = await hydrogenJson(['tabs'], env);
     assert.equal(tabs.find((t) => t.id === userTab).url, 'about:blank');
   });
 
   test('every command went through one daemon and one browser connection', async () => {
-    const status = await heliumJson(['daemon', 'status'], env);
+    const status = await hydrogenJson(['daemon', 'status'], env);
     assert.equal(status.pid, daemonPid);
     assert.equal(status.browserConnections, 1);
     assert.equal(proxy.connections, 1);

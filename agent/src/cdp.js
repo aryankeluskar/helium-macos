@@ -1,9 +1,9 @@
 import { EventEmitter } from 'node:events';
 import WebSocket from 'ws';
-import { HeliumError } from './util.js';
+import { HydrogenError } from './util.js';
 
 export const APPROVAL_TIMEOUT_MS = 120_000;
-export const APPROVAL_NOTICE = 'Approve the connection in Helium: click "Allow" in the "Allow remote debugging?" dialog. Waiting…';
+export const APPROVAL_NOTICE = 'Approve the connection in Hydrogen: click "Allow" in the "Allow remote debugging?" dialog. Waiting…';
 
 export class Connection extends EventEmitter {
   constructor(ws) {
@@ -16,7 +16,7 @@ export class Connection extends EventEmitter {
     ws.on('error', () => {});
     ws.on('close', () => {
       this.closed = true;
-      for (const { reject } of this.pending.values()) reject(new HeliumError('Helium closed the DevTools connection.'));
+      for (const { reject } of this.pending.values()) reject(new HydrogenError('Hydrogen closed the DevTools connection.'));
       this.pending.clear();
       this.emit('close');
     });
@@ -37,14 +37,14 @@ export class Connection extends EventEmitter {
   }
 
   send(method, params = {}, sessionId, timeoutMs = 30_000) {
-    if (this.closed) return Promise.reject(new HeliumError('The connection to Helium is closed.'));
+    if (this.closed) return Promise.reject(new HydrogenError('The connection to Hydrogen is closed.'));
     const id = ++this.nextId;
     const message = { id, method, params };
     if (sessionId) message.sessionId = sessionId;
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new HeliumError(`Helium did not answer ${method} within ${Math.round(timeoutMs / 1000)}s.`));
+        reject(new HydrogenError(`Hydrogen did not answer ${method} within ${Math.round(timeoutMs / 1000)}s.`));
       }, timeoutMs);
       this.pending.set(id, { resolve, reject, timer, method });
       this.ws.send(JSON.stringify(message));
@@ -77,40 +77,40 @@ export async function connect(endpoint, { timeoutMs = APPROVAL_TIMEOUT_MS } = {}
     const wasClosed = connection.closed;
     connection.close();
     if (wasClosed) throw rejected();
-    if (error instanceof HeliumError) throw approvalTimedOut();
+    if (error instanceof HydrogenError) throw approvalTimedOut();
     throw error;
   }
   return connection;
 }
 
 function approvalTimedOut() {
-  return new HeliumError(
+  return new HydrogenError(
     'Timed out waiting for approval.\n' +
-      'Run the command again and click "Allow" in the "Allow remote debugging?" dialog in Helium.',
+      'Run the command again and click "Allow" in the "Allow remote debugging?" dialog in Hydrogen.',
   );
 }
 
 function rejected() {
-  return new HeliumError(
-    'Helium closed the connection before it was approved.\n' +
-      'Run the command again and click "Allow" in the "Allow remote debugging?" dialog in Helium.',
+  return new HydrogenError(
+    'Hydrogen closed the connection before it was approved.\n' +
+      'Run the command again and click "Allow" in the "Allow remote debugging?" dialog in Hydrogen.',
   );
 }
 
 function explain(error, endpoint) {
   if (error.code === 'ECONNREFUSED') {
-    return new HeliumError(
+    return new HydrogenError(
       `Nothing is listening at ${endpoint.url} (from ${endpoint.source}).\n` +
-        'Start Helium, make sure remote debugging is on at chrome://inspect/#remote-debugging, and try again.',
+        'Start Hydrogen, make sure remote debugging is on at chrome://inspect/#remote-debugging, and try again.',
     );
   }
   if (/handshake has timed out/i.test(error.message)) return approvalTimedOut();
   if (error.code === 'ECONNRESET' || /socket hang up/i.test(error.message)) return rejected();
   if (/Unexpected server response: (403|404)/.test(error.message)) {
-    return new HeliumError(
-      `Helium refused the connection (${error.message}).\n` +
+    return new HydrogenError(
+      `Hydrogen refused the connection (${error.message}).\n` +
         'Open chrome://inspect/#remote-debugging, check remote debugging is on, run the command again and click "Allow".',
     );
   }
-  return new HeliumError(`Could not connect to Helium at ${endpoint.url}: ${error.message}`);
+  return new HydrogenError(`Could not connect to Hydrogen at ${endpoint.url}: ${error.message}`);
 }

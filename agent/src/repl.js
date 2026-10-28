@@ -2,10 +2,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { inspect } from 'node:util';
 import vm from 'node:vm';
-import { HeliumError, normalizeUrl, sleep } from './util.js';
+import { HydrogenError, normalizeUrl, sleep } from './util.js';
 
 export async function runRepl(browser, code, { cwd = process.cwd() } = {}) {
-  if (!code || !code.trim()) throw new HeliumError('Give the REPL some JavaScript, e.g. helium repl "return (await tabs()).length".');
+  if (!code || !code.trim()) throw new HydrogenError('Give the REPL some JavaScript, e.g. hydrogen repl "return (await tabs()).length".');
   const logs = [];
   const log = (...values) => logs.push(values.map((v) => (typeof v === 'string' ? v : inspect(v, { depth: 4 }))).join(' '));
   const context = vm.createContext({
@@ -97,7 +97,7 @@ function api(browser, cwd) {
       return (await browser.read({ tab: this.id })).text;
     }
 
-    async screenshot(name = path.join(os.tmpdir(), `helium-${Date.now()}.png`), { full = false } = {}) {
+    async screenshot(name = path.join(os.tmpdir(), `hydrogen-${Date.now()}.png`), { full = false } = {}) {
       return (await browser.screenshot({ tab: this.id, path: file(name), full })).path;
     }
 

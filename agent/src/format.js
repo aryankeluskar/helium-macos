@@ -45,7 +45,7 @@ export const formatters = {
       const marks = `${tab.current ? '>' : ' '}${tab.agent ? '*' : ' '}`;
       return `${marks} ${String(tab.index).padStart(2)}  ${shortId(tab.id)}  ${titles[i].padEnd(width)}  ${truncate(tab.url, 120)}`;
     });
-    return `${rows.join('\n')}\n\n> current tab   * agent tab (opened by helium)`;
+    return `${rows.join('\n')}\n\n> current tab   * agent tab (opened by hydrogen)`;
   },
   open: (r) => `Opened ${tabLine(r.tab)}${r.loaded === false ? '\n(the page was still loading)' : ''}`,
   close: (r) => `Closed ${tabLine(r.tab)}`,

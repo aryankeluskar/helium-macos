@@ -1,5 +1,5 @@
 #!/bin/bash
-# Runs the helium agent CLI bundled inside Helium.app with this Mac's Node.js.
+# Runs the hydrogen agent CLI bundled inside Hydrogen.app with this Mac's Node.js.
 set -euo pipefail
 
 here="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
@@ -15,9 +15,9 @@ if [ -z "$node" ]; then
   done
 fi
 if [ -z "$node" ]; then
-  echo "helium needs Node.js 20.10 or newer: brew install node" >&2
+  echo "hydrogen needs Node.js 20.10 or newer: brew install node" >&2
   exit 1
 fi
 
-export HELIUM_AGENT_ENTRY="$here/helium.mjs"
-exec "$node" "$here/helium.mjs" "$@"
+export HYDROGEN_AGENT_ENTRY="$here/hydrogen.mjs"
+exec "$node" "$here/hydrogen.mjs" "$@"

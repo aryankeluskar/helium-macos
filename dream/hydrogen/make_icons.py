@@ -3,7 +3,7 @@
 the Icon Composer bundle macOS 26 compiles into Assets.car, the asset catalog
 and app.icns older macOS reads, and the product logos WebUI pages show.
 
-Usage: make_icons.py <output dir>   (needs node with playwright, and Pillow)
+Usage: make_icons.py <resources dir> [masters dir]   (needs node with playwright, and Pillow)
 """
 
 import io
@@ -11,10 +11,12 @@ import json
 import struct
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from PIL import Image
 
+import dmg_background
 import icon_svg
 import small_icons
 
@@ -41,7 +43,7 @@ def layer_svg(body):
 
 
 def write_icon_composer(out):
-    bundle = out / "AppIcon.icon"
+    bundle = out / "assets" / "AppIcon.icon"
     assets = bundle / "Assets"
     assets.mkdir(parents=True, exist_ok=True)
     left, right = LAYOUT["margin"], 1024 - LAYOUT["margin"]
@@ -116,9 +118,9 @@ def write_icns(path, pngs):
 
 
 def write_catalog(out, pngs):
-    iconset = out / "Assets.xcassets" / "AppIcon.appiconset"
+    iconset = out / "assets" / "Assets.xcassets" / "AppIcon.appiconset"
     iconset.mkdir(parents=True, exist_ok=True)
-    (out / "Assets.xcassets" / "Contents.json").write_text(json.dumps({"info": {"author": "xcode", "version": 1}}, indent=2) + "\n")
+    (out / "assets" / "Assets.xcassets" / "Contents.json").write_text(json.dumps({"info": {"author": "xcode", "version": 1}}, indent=2) + "\n")
     images = []
     for size in (16, 32, 128, 256, 512):
         for scale in (1, 2):
@@ -148,10 +150,10 @@ def glyph_rects(box_x, box_y, box_w, line_scale=1.0):
 def glyph_svg(box_x, box_y, box_w, mono=None, line_scale=1.0):
     rects, (bx, by, bw, bh) = glyph_rects(box_x, box_y, box_w, line_scale)
     stops = "".join(f'<stop offset="{n / (len(icon_svg.SPECTRUM) - 1):.3f}" stop-color="{c}"/>' for n, c in enumerate(icon_svg.SPECTRUM))
-    out = [] if mono else [f'<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">{stops}</linearGradient></defs>']
+    out = [] if mono else [f'<defs><linearGradient id="hydrogen-spectrum" x1="0" y1="0" x2="1" y2="0">{stops}</linearGradient></defs>']
     for _name, halo, x, y, w, h in rects:
         out.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{w:.2f}" height="{h:.2f}" rx="{w / 2:.2f}" fill="{mono or halo}"/>')
-    out.append(f'<rect x="{bx:.2f}" y="{by:.2f}" width="{bw:.2f}" height="{bh:.2f}" rx="{bh / 2:.2f}" fill="{mono or "url(#g)"}" opacity="{0.55 if mono else 0.9}"/>')
+    out.append(f'<rect x="{bx:.2f}" y="{by:.2f}" width="{bw:.2f}" height="{bh:.2f}" rx="{bh / 2:.2f}" fill="{mono or "url(#hydrogen-spectrum)"}" opacity="{0.55 if mono else 0.9}"/>')
     return "".join(out)
 
 
@@ -243,11 +245,38 @@ def write_document_icon(app_icon_dir, work):
     render([(svg_path, app_icon_dir / "file.png", 512)])
 
 
-def main(out):
+def write_onboarding_logo(out):
+    folder = out / "onboarding"
+    folder.mkdir(exist_ok=True)
+    (folder / "HeliumLogoRaw.svelte").write_text(
+        f'<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">\n'
+        f'    {glyph_svg(16, 40, 224, line_scale=1.1)}\n</svg>\n')
+
+
+def write_dmg(out, work):
+    (work / "dmg_background.svg").write_text(dmg_background.svg())
+    render([(work / "dmg_background.svg", out / "dmg_background.png", f"{dmg_background.WIDTH}x{dmg_background.HEIGHT}")])
+    layout = {
+        "title": "Hydrogen",
+        "icon": "Hydrogen.app/Contents/Resources/app.icns",
+        "background": "dmg_background.png",
+        "icon-size": 90,
+        "contents": [
+            {"x": 175, "y": 130, "type": "file", "path": "Hydrogen.app"},
+            {"x": 175, "y": 370, "type": "link", "path": "/Applications"},
+        ],
+        "window": {"size": {"width": 350, "height": 518}},
+        "format": "ULMO",
+        "filesystem": "APFS",
+    }
+    (out / "dmg.json").write_text(json.dumps(layout, indent=4) + "\n")
+
+
+def main(out, masters=None):
     out = Path(out).resolve()
     out.mkdir(parents=True, exist_ok=True)
-    work = out / "masters"
-    work.mkdir(exist_ok=True)
+    work = Path(masters or tempfile.mkdtemp(prefix="hydrogen-masters-")).resolve()
+    work.mkdir(parents=True, exist_ok=True)
     jobs = []
     for theme in ("light", "dark"):
         (work / f"icon-{theme}.svg").write_text(icon_svg.svg(theme=theme, band=0.6, **LAYOUT))
@@ -272,7 +301,7 @@ def main(out):
     legacy = pngs["dark"]
     write_icon_composer(out)
     write_catalog(out, legacy)
-    write_icns(out / "app.icns", legacy)
+    write_icns(out / "assets" / "app.icns", legacy)
     branding = out / "branding"
     app_icon_dir = branding / "app_icon"
     app_icon_dir.mkdir(parents=True, exist_ok=True)
@@ -283,12 +312,14 @@ def main(out):
     write_mono(branding)
     write_vector_icons(branding)
     write_flat_logo_svg(branding)
-    legacy[1024].save(out / "legacy.png")
-    legacy[1024].resize((512, 512), Image.LANCZOS).save(out / "legacy_crop.png")
+    write_onboarding_logo(out)
+    write_dmg(out, work)
+    legacy[1024].save(out / "assets" / "legacy.png")
+    legacy[1024].resize((512, 512), Image.LANCZOS).save(out / "assets" / "legacy_crop.png")
     print(f"wrote {out}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 3):
         sys.exit(__doc__)
-    main(sys.argv[1])
+    main(*sys.argv[1:])

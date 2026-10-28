@@ -1,10 +1,10 @@
 {
-  "name": "helium-agent",
+  "name": "hydrogen-agent",
   "version": "0.1.0",
-  "description": "Let coding agents drive your logged-in Helium browser over the Chrome DevTools Protocol: a CLI, an MCP server and a JS REPL.",
+  "description": "Let coding agents drive your logged-in Hydrogen browser over the Chrome DevTools Protocol: a CLI, an MCP server and a JS REPL.",
   "type": "module",
   "bin": {
-    "helium": "bin/helium.js"
+    "hydrogen": "bin/hydrogen.js"
   },
   "files": [
     "bin",
@@ -16,7 +16,7 @@
   },
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.js",
-    "bundle": "esbuild bin/helium.js --bundle --platform=node --format=esm --target=node20 --outfile=dist/helium.mjs --external:bufferutil --external:utf-8-validate --log-level=warning \"--banner:js=import { createRequire as createRequireForBundle } from 'node:module'; const require = createRequireForBundle(import.meta.url);\""
+    "bundle": "esbuild bin/hydrogen.js --bundle --platform=node --format=esm --target=node20 --outfile=dist/hydrogen.mjs --external:bufferutil --external:utf-8-validate --log-level=warning \"--banner:js=import { createRequire as createRequireForBundle } from 'node:module'; const require = createRequireForBundle(import.meta.url);\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",

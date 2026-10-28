@@ -59,6 +59,7 @@ prepare_sources() {
     --tree "$_main_repo" --platform-tree "$_root_dir" --chromium-tree "$_src_dir"
 
   helium_resources
+  "$_root_dir/dream/hydrogen/rebrand.sh" "$_src_dir"
 }
 
 write_gn_args() {

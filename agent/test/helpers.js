@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const BIN = fileURLToPath(new URL('../bin/helium.js', import.meta.url));
+export const BIN = fileURLToPath(new URL('../bin/hydrogen.js', import.meta.url));
 
 export function findChromium() {
   const root = '/opt/pw-browsers';
@@ -21,7 +21,7 @@ export function findChromium() {
 }
 
 export async function launchChromium() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'helium-agent-test-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hydrogen-agent-test-'));
   const profile = path.join(dir, 'profile');
   const child = spawn(
     findChromium(),
@@ -132,7 +132,7 @@ export function profileFor(dir, port, wsPath) {
   return dir;
 }
 
-export function helium(args, env, { input } = {}) {
+export function hydrogen(args, env, { input } = {}) {
   return new Promise((resolve) => {
     const child = spawn(process.execPath, [BIN, ...args], { env, stdio: ['pipe', 'pipe', 'pipe'] });
     let stdout = '';
@@ -148,16 +148,16 @@ export function helium(args, env, { input } = {}) {
   });
 }
 
-export async function heliumJson(args, env) {
-  const result = await helium([...args, '--json'], env);
-  if (result.code !== 0) throw new Error(`helium ${args.join(' ')} failed (${result.code}): ${result.stderr}`);
+export async function hydrogenJson(args, env) {
+  const result = await hydrogen([...args, '--json'], env);
+  if (result.code !== 0) throw new Error(`hydrogen ${args.join(' ')} failed (${result.code}): ${result.stderr}`);
   return JSON.parse(result.stdout);
 }
 
 export async function stopDaemon(env) {
-  const status = await helium(['daemon', 'status', '--json'], env);
+  const status = await hydrogen(['daemon', 'status', '--json'], env);
   const pid = status.code === 0 ? JSON.parse(status.stdout).pid : null;
-  await helium(['daemon', 'stop'], env);
+  await hydrogen(['daemon', 'stop'], env);
   if (pid) await waitForExit(pid);
 }
 
