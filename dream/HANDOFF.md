@@ -39,6 +39,10 @@ Helium (imputnet's ungoogled-Chromium browser, Chromium 156) plus the patches in
 | `arc-spaces.patch` | Arc's spaces: no group header/chip/indent, space header (emoji icon + name), space bar at the sidebar's foot with `+`, ARCUI paging physics (half-speed tracking, rubber band, 5 pt/s flick, 0.25 s critically damped spring, haptic detents), colour blend between spaces, new tabs stay in the space, per-space last tab, Ctrl+1…9, wheel-mouse paging | in the DMG; seen working in the CI demo |
 | `block-debug-port-on-default-profile.patch` | `--remote-debugging-port` never opens on the default profile (Chrome's anti-infostealer rule, which Chromium builds skip) | in the DMG |
 | `space-swipe-stops-at-the-ends.patch` | Swipes without tracking stop at the first and last space instead of wrapping out of spaces | in the DMG (run `40615857553`) |
+| `space-swipe-rests-under-the-fingers.patch` | Like ARCUI: only the last 100 ms of movement before the fingers lift counts as a flick, and resting the fingers mid-swipe keeps the space under them (the timer is a 3 s safety net, not 300 ms) | build `40721215586`; its checks pass |
+| `space-swipe-velocity-uses-event-times.patch` | Swipe velocity uses the trackpad events' own time stamps, so a busy main thread can't turn a flick into a rest | build `40736992400` |
+| `spaces-reopen-on-the-current-space.patch` | Saves the focused space on every change (Chromium wrote it only on session rebuilds), so a relaunch reopens on it | build `40736992400` |
+| `reopen-spaces-on-launch.patch` | "Continue where you left off" by default, as Arc always reopens your spaces (Chromium's default is a new tab) | build `40736992400` |
 
 `dream/arc-spaces.md` is the spaces checklist with ARCUI's measured numbers (from the owner's Ardia repo,
 `docs/dia-spec.md` "Profile paging" and `packages/ardiacore/ios/SwipeModule.swift`). `dream/README.md` is the user
