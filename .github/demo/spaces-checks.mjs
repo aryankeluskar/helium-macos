@@ -365,7 +365,10 @@ async function main() {
     await goTo(0);
     const forward = await swipe(-100, 0.12);
     const back = await swipe(100, 0.12);
-    return { ok: forward === 2 && back === 1, detail: `a 100 pt flick left landed on space ${forward}, then right on space ${back}` };
+    return {
+      ok: forward === 2 && back === 1,
+      detail: `a 100 pt flick left landed on space ${forward}, then right on space ${back}; synthetic event clock: ${input('clock')}`,
+    };
   });
 
   await check('Dragging a quarter of the way, resting, then lifting snaps back to the same space', async () => {
