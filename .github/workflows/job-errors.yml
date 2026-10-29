@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           job=$(tr -d '[:space:]' < .github/diagnostics/job-errors)
-          gh api "repos/$GITHUB_REPOSITORY/actions/jobs/$job/logs" > job.log
+          gh api --allow-escape-sequences "repos/$GITHUB_REPOSITORY/actions/jobs/$job/logs" | sed 's/\x1b\[[0-9;]*m//g' > job.log
           wc -l job.log
           grep -n -E 'FAILED|error:|Error:|fatal|undefined symbol|No such file' job.log | head -80 || true
           line=$(grep -n -m1 -E 'FAILED' job.log | cut -d: -f1 || true)
