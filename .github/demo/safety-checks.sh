@@ -45,11 +45,19 @@ canvas_hash='(async () => {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canvas.toDataURL()));
   return [...new Uint8Array(digest)].slice(0, 6).map(b => b.toString(16).padStart(2, "0")).join("");
 })()'
+ublock_lists='vAPI.messaging.send("dashboard", {what: "getLists"}).then(lists => JSON.stringify(Object.fromEntries(
+  ["ublock-badware", "urlhaus-1", "curben-phishing", "adguard-spyware-url"].map(key => [key, {
+    on: lists.current[key] !== undefined,
+    entries: (lists.current[key] || lists.available[key] || {}).entryCount || 0,
+  }]))))'
 page_text='document.title + " | " + (document.body ? document.body.innerText.replace(/\s+/g, " ").slice(0, 200) : "")'
 
 measure() {
   local label="$1" binary="$2" profile="$RUNNER_TEMP/safety-$1" browser tab
-  mkdir -p "$profile"
+  mkdir -p "$profile/Default"
+  if [ "$label" = hydrogen ]; then
+    echo '{"helium": {"completed_onboarding": true, "services": {"user_consented": true}}}' > "$profile/Default/Preferences"
+  fi
   export HYDROGEN_USER_DATA_DIR="$profile" HYDROGEN_AGENT_HOME="$RUNNER_TEMP/safety-agent-$label"
   "$binary" --user-data-dir="$profile" --no-first-run --no-default-browser-check --remote-debugging-port=0 \
     about:blank > "$out/safety-$label.log" 2>&1 &
@@ -77,6 +85,14 @@ measure() {
     sleep 10
     record "$label" "$kind" "$(page_eval "$tab" "$page_text")"
   done
+
+  if [ "$label" = hydrogen ]; then
+    local ublock
+    ublock=$("$hydrogen" repl "return new URL((await cdp('Target.getTargets')).targetInfos.find(t => /ublock/i.test(t.title)).url).host" 2>/dev/null | tr -d '"[:space:]')
+    tab=$(open_tab "chrome-extension://$ublock/3p-filters.html")
+    sleep 6
+    record "$label" lists "$(page_eval "$tab" "$ublock_lists")"
+  fi
 
   "$hydrogen" daemon stop > /dev/null 2>&1 || true
   kill "$browser" 2>/dev/null || true
@@ -117,7 +133,8 @@ summary() {
     | def interstitial: test("Dangerous site|Deceptive site|site ahead contains|Attackers on|Security error"; "i");
       def ublock: test("uBlock Origin has prevented|uBlock₀ has prevented"; "i");
       def local_ip: test("(^| )(10\\.|192\\.168\\.|172\\.(1[6-9]|2[0-9]|3[01])\\.|169\\.254\\.)");
-    if ($r | length) == 0 then "– not measured"
+    if $row == "lists" and $browser == "brave" then "– not uBlock Origin: Brave Shields lists, plus Google Safe Browsing"
+    elif ($r | length) == 0 then "– not measured"
     elif $row == "https" then
       (if ($r.https // "") | startswith("https://") then "✅ upgraded to HTTPS" elif ($r.https // "") == "" then "– couldn'\''t read" else "❌ stayed on HTTP" end)
     elif $row == "params" then
@@ -140,6 +157,13 @@ summary() {
          elif ($t | ublock) then "✅ blocked by uBlock Origin"
          elif $t == "" then "– couldn'\''t read the page"
          else "❌ loaded" end) + " (`\($t | .[0:70])`)"
+    elif $row == "lists" then
+      (($r.lists // "{}") | (try fromjson catch {})) as $l
+      | if ($l | length) == 0 then "– couldn'\''t read uBlock Origin'\''s lists"
+        else [["ublock-badware", "badware"], ["urlhaus-1", "malware"], ["curben-phishing", "phishing"], ["adguard-spyware-url", "URL tracking"]]
+          | map(. as [$key, $name] | $l[$key] as $e
+            | if $e.on then "✅ \($name) (\($e.entries) entries)" else "❌ \($name) off" end)
+          | join(", ") end
     elif $row == "debug_port" then
       (if $r.debug_port == "refused" then "✅ stays closed" elif $r.debug_port == "open" then "❌ opens" else "–" end)
     else "" end' "$results"
@@ -149,7 +173,7 @@ summary() {
   echo
   echo "## Safety compared with Brave"
   echo
-  echo "Each browser on a fresh profile with default settings; Brave $brave_version with standard Shields. Raw values in \`safety.json\`."
+  echo "Each browser on a fresh profile with default settings (Hydrogen's with Helium services agreed to, as onboarding asks); Brave $brave_version with standard Shields, which has no uBlock Origin. Raw values in \`safety.json\`."
   echo
   echo "| Protection | Hydrogen | Brave |"
   echo "|---|---|---|"
@@ -160,7 +184,8 @@ summary() {
     "canvas:Canvas fingerprint differs between example.com and example.org" \
     "phishing:Google's Safe Browsing phishing test page" \
     "malware:Google's Safe Browsing malware test page" \
-    "debug_port:--remote-debugging-port on the default profile (how infostealers read cookies)"; do
+    "debug_port:--remote-debugging-port on the default profile (how infostealers read cookies)" \
+    "lists:Malware, phishing and tracking blocklists in uBlock Origin"; do
     key="${row%%:*}"
     echo "| ${row#*:} | $(summary hydrogen "$key") | $(summary brave "$key") |"
   done
