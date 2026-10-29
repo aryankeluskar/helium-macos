@@ -159,7 +159,10 @@ Earlier, before the rename (run `40615857553`, artifact `helium_0.20.1.1_arm64-m
     Outbrain, Meta, Hotjar, TikTok, LinkedIn and others) are blocked or answered with uBlock Origin's stub. 5 of 5
     normal CDN, font and image requests load, and ad slots are hidden. A test extension
     (`.github/demo/request-observer`) reads each outcome from `chrome.webRequest`; fetch-based probes can't tell.
-  - **Chrome Web Store:** Dark Reader installs from the Web Store and runs. Helium downloads extensions through its
+  - **Chrome Web Store:** Dark Reader installs from the Web Store and runs. `.github/demo/extensions-check.sh` (quick
+    check run `40845414182` on build `40820087458`) installs eight through the store's button and the native dialog:
+    Dark Reader, Bitwarden, 1Password, Vimium, React Developer Tools, Google Translate, SponsorBlock and Grammarly, all
+    MV3. Each one's popup runs, Dark Reader darkens Wikipedia and Vimium shows link hints on f. Helium downloads extensions through its
     privacy proxy, which works only after the user agrees to Helium services in first-run onboarding (pref
     `helium.services.user_consented`).
   - **Vertical tabs:** collapsed, the strip shows favicons. Hover expands it over the page in about 3 frames (~100 ms)
