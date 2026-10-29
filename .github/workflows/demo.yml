@@ -84,6 +84,11 @@ jobs:
         continue-on-error: true
         timeout-minutes: 20
         run: .github/demo/compare-brave.sh
+      - name: Compare safety defaults with Brave
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        timeout-minutes: 12
+        run: .github/demo/safety-checks.sh
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

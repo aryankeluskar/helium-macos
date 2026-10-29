@@ -224,8 +224,8 @@ used to leave out for want of a signing key. The pieces are in `dream/hydrogen/u
   with the DMG and `appcast-arm64.xml`, marked latest. It runs after an orchestrated build whose checks all pass (set
   `PUBLISH=0` in `plan.env` to skip) and after upstream-sync builds (`build.yml` with `publish: true` runs `demo.yml`
   then `release.yml`). Without the secret it prints a notice and publishes nothing.
-- **Checked on a Mac.** `.github/demo/update-check.sh` (in every demo; alone via `update-check.yml`, triggered by
-  pushing a build run ID to `.github/diagnostics/update-check-run`) stamps the build as releases 1 and 2 with a
+- **Checked on a Mac.** `.github/demo/update-check.sh` (in every demo; alone via `quick-check.yml`, triggered by
+  pushing "<build run> update-check.sh" to `.github/diagnostics/quick-check`) stamps the build as releases 1 and 2 with a
   throwaway key, serves release 2's appcast from the runner through `--custom-update-server-url`, and follows it to
   the installed, relaunched release 2.
 - **Owner's one-time setup** (the session's GitHub token can't write secrets or repo settings):

@@ -1,0 +1,52 @@
+name: Quick check
+
+# Runs some of demo.yml's checks on their own, for a quick rerun: push
+# .github/diagnostics/quick-check holding a build's run ID and the scripts in
+# .github/demo to run, like "40793741179 update-check.sh safety-checks.sh".
+
+on:
+  push:
+    paths:
+      - '.github/diagnostics/quick-check'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  check:
+    name: Run the chosen checks
+    runs-on: macos-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Get Hydrogen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          read -r build_run _ < .github/diagnostics/quick-check
+          BUILD_RUN="$build_run" .github/demo/get-hydrogen.sh
+      - name: Run the checks
+        run: |
+          read -r _ checks < .github/diagnostics/quick-check
+          for check in $checks; do
+            ".github/demo/$check" || echo "::warning::$check exited with $?"
+          done
+      - name: Show the logs
+        if: ${{ always() }}
+        run: |
+          for file in demo-out/*; do
+            case "$file" in *.png|*.dmg|*.mp4|*.gz) continue ;; esac
+            echo "=== $file"
+            tail -80 "$file"
+          done
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: quick-check
+          path: demo-out/
