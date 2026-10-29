@@ -80,7 +80,14 @@ Helium):
 
 ## Where the builds are right now
 
-**Update 2026-10-28 22:50 UTC: the current DMG is run `40771149709`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+**Update 2026-10-29 00:05 UTC: the current DMG is run `40781573927`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+`40771149709` plus the design review's fixes (`dream/design-review.md`, made with the `apple-design` and
+`make-interfaces-feel-better` skills in `.claude/skills/`): `spaces-accessible-space-bar.patch`,
+`spaces-in-the-menu-bar.patch` and the space wording from `dream/hydrogen/space_strings.py`. On a GitHub Mac
+(orchestrator run `40781699572`) all 15 spaces checks and every other check pass, including VoiceOver driving the space
+bar and the Tabs menu's New, Next and Previous Space.
+
+Before that, the DMG was run `40771149709` (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
 `40736992400` plus `space-swipe-flick-survives-coalesced-events.patch`. On a GitHub Mac (orchestrator run `40771190699`)
 every check passes, including all 13 spaces checks: six quick flicks in a row page correctly, the resting checks hold,
 and a relaunch restores the spaces. Next up is run `40781573927`, which adds the design review's fixes

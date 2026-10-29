@@ -94,9 +94,12 @@ trade-off left is the space bar's 12 pt hit width, kept for Arc parity.
 
 ## Verification and verdict
 
-- **Verification**: `spaces-checks.mjs` gains two checks. One reads the space bar through the accessibility tree (tab
-  list "Spaces", tabs named after the spaces, the current one selected, "New Space", the header button) and switches
-  space by pressing a tab through accessibility, as VoiceOver does. The other presses Tabs › Next Space, Previous Space
-  and New Space through the menu bar. Both run on the build that carries the fixes.
+- **Verification** (build `40781573927`, orchestrator run `40781699572`, `verify.md` on `demo-videos`): all 15 spaces
+  checks pass, with every build, ad-blocking and extension check.
+  - VoiceOver reads the space bar as the tab list "Spaces" with tabs "Home, Personal, Research, Space", the current one
+    selected, a "New Space" button and the header button "Home". Pressing "Research" through accessibility switches to
+    it, as VoiceOver does.
+  - Tabs › Next Space, Previous Space and New Space work from the menu bar.
+  - The editor's field is now named "Space name".
 - **Not verified**: Increase Contrast and the press feedback need a look on a real screen.
-- **Verdict**: **Needs changes** until both checks pass on a build; then **Approve** with the hit-width trade-off noted.
+- **Verdict**: **Approve**, with the space bar's 12 pt hit width kept as a named trade-off for Arc parity.
