@@ -1,6 +1,6 @@
 #!/bin/bash
 # Runs Speedometer 3.1 (browserbench.org) in Hydrogen, Brave and Google Chrome
-# on this Apple Silicon runner, two rounds interleaved so the three share the
+# on this Apple Silicon runner, three rounds interleaved so the three share the
 # machine's conditions, each on a fresh profile with its window in front.
 # Appends the scores to demo-out/verify.md. Not part of every demo: run it
 # through quick-check.yml ("<build run> speedometer.sh").
@@ -28,7 +28,10 @@ run() {
   local name="$1" round="$2" binary profile="$RUNNER_TEMP/speedometer-$1-$2" browser tab state score=""
   binary=$(app_of "$name")
   [ -x "$binary" ] || return
-  mkdir -p "$profile"
+  mkdir -p "$profile/Default"
+  if [ "$name" = Hydrogen ]; then
+    echo '{"helium": {"completed_onboarding": true, "services": {"user_consented": true}}}' > "$profile/Default/Preferences"
+  fi
   export HYDROGEN_USER_DATA_DIR="$profile" HYDROGEN_AGENT_HOME="$RUNNER_TEMP/speedometer-agent-$1-$2"
   "$binary" --user-data-dir="$profile" --no-first-run --no-default-browser-check --remote-debugging-port=0 \
     --window-position=0,25 --window-size=1280,900 "$url" > "$out/speedometer-$name-$round.log" 2>&1 &
@@ -55,7 +58,7 @@ run() {
 }
 
 pkill -x Hydrogen 2>/dev/null && sleep 3
-for round in 1 2; do
+for round in 1 2 3; do
   for name in Hydrogen Brave Chrome; do
     run "$name" "$round"
   done
@@ -70,12 +73,14 @@ version() {
   echo
   echo "## Speedometer 3.1 on this Apple Silicon runner"
   echo
-  echo "$(sysctl -n machdep.cpu.brand_string), macOS $(sw_vers -productVersion). Two rounds, interleaved; higher is better."
+  echo "$(sysctl -n machdep.cpu.brand_string), macOS $(sw_vers -productVersion). Three rounds, interleaved; higher is better."
   echo
-  echo "| Browser | Version | Round 1 | Round 2 |"
-  echo "|---|---|---|---|"
+  echo "| Browser | Version | Round 1 | Round 2 | Round 3 | Median |"
+  echo "|---|---|---|---|---|---|"
   for name in Hydrogen Brave Chrome; do
-    echo "| $name | $(version "$name") | $(awk -F'\t' -v n="$name" '$1 == n && $2 == 1 { print $3 }' "$results") | $(awk -F'\t' -v n="$name" '$1 == n && $2 == 2 { print $3 }' "$results") |"
+    rounds=$(for round in 1 2 3; do awk -F'\t' -v n="$name" -v r="$round" '$1 == n && $2 == r { print $3 }' "$results"; done)
+    median=$(grep -E '^[0-9.]+$' <<< "$rounds" | sort -n | awk '{ v[NR] = $1 } END { if (NR) print (NR % 2 ? v[(NR + 1) / 2] : (v[NR / 2] + v[NR / 2 + 1]) / 2); else print "–" }')
+    echo "| $name | $(version "$name") | $(tr '\n' '|' <<< "$rounds" | sed 's/|$//; s/|/ | /g') | **$median** |"
   done
 } >> "$report"
 cat "$report"
