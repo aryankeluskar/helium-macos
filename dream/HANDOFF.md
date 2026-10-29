@@ -81,7 +81,13 @@ Helium):
 
 ## Where the builds are right now
 
-**Update 2026-10-29 04:50 UTC: the current DMG is run `40812288983`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+**Update 2026-10-29 06:35 UTC: the current DMG is run `40820087458`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+`40812288983` plus `phishing-list-through-helium-services.patch`. On a GitHub Mac (orchestrator run `40827263201`) all
+32 checks pass, including the five update checks, and uBlock Origin runs its phishing list (167,552 entries) next to
+the malware (122,620), badware and URL-tracking lists. `ARC_RUN` points at it, so `turn-on-updates.sh` publishes it as
+the first release.
+
+**Update 2026-10-29 04:50 UTC: the DMG was run `40812288983`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
 `40793741179` plus `global-privacy-control-on.patch`. On a GitHub Mac (orchestrator run `40812345349`) all 32 checks
 pass, including the five update checks, and the safety comparison with Brave matches the README's table (GPC now
 sent). `ARC_RUN` in `plan.env` points at it, so `turn-on-updates.sh` publishes it as the first release.
@@ -249,9 +255,11 @@ WebRTC local IPs, per-site canvas fingerprints, Google's Safe Browsing test page
 Brave's list downloads after launch), the debugging port on the default profile, and uBlock Origin's malware,
 phishing and tracking lists. On build `40807405351` Hydrogen matched or beat Brave on everything but Safe Browsing,
 which ungoogled Chromium removes (see the README's table). `global-privacy-control-on.patch` closed the GPC gap.
-A phishing-list default was tried and dropped: with Helium services on, uBlock bootstraps its asset registry from
-Helium's server, so a bundled `assets.json` default never applies, and without services it would fetch the list
-directly instead of through Helium's proxy.
+A bundled `assets.json` default for the phishing list didn't work: with Helium services on, uBlock bootstraps its
+asset registry from Helium's server, and uBlock picks its lists on first launch, before onboarding turns services on.
+`phishing-list-through-helium-services.patch` (uBlock's `storage.js`) instead adds `curben-phishing` once, the first
+time `assetsBootstrapLocation` is set (Helium reloads uBlock when services change), records `hydrogenAddedPhishingList`
+so unticking it sticks, and invalidates the selfie so it compiles on that launch. Without services nothing changes.
 
 ## CI facts that cost hours to learn
 
