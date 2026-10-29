@@ -22,7 +22,9 @@ fail() { echo "- ❌ $1" >> "$report"; }
 
 pkill -x Hydrogen 2>/dev/null && sleep 3
 "$app/Contents/MacOS/Hydrogen" --user-data-dir="$profile" --no-first-run --no-default-browser-check \
-  --remote-debugging-port=0 about:blank > "$out/widevine-hydrogen.log" 2>&1 &
+  --remote-debugging-port=0 --enable-logging=stderr \
+  --vmodule='*component*=2,*update_client*=2,*widevine*=2,*cdm*=2,*crx*=2,*unzip*=1' \
+  about:blank > "$out/widevine-hydrogen.log" 2>&1 &
 browser=$!
 for _ in $(seq 1 60); do [ -s "$profile/DevToolsActivePort" ] && break; sleep 1; done
 sleep 10
@@ -76,4 +78,7 @@ echo "  - chrome://components: ${widevine:-no Widevine row}" >> "$report"
 
 "$agent" daemon stop > /dev/null 2>&1 || true
 kill "$browser" 2>/dev/null || true
+grep -i -E 'widevine|oimompecagnajdejgnnjijobebaeigek|error|crx|install' "$out/widevine-hydrogen.log" | grep -v -i stun | head -120 \
+  > "$out/widevine-updater.txt"
+ls -laR "$profile/WidevineCdm" > "$out/widevine-files.txt" 2>&1 || true
 cat "$report"
