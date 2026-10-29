@@ -81,7 +81,12 @@ Helium):
 
 ## Where the builds are right now
 
-**Update 2026-10-29 02:30 UTC: the current DMG is run `40793741179`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+**Update 2026-10-29 04:50 UTC: the current DMG is run `40812288983`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+`40793741179` plus `global-privacy-control-on.patch`. On a GitHub Mac (orchestrator run `40812345349`) all 32 checks
+pass, including the five update checks, and the safety comparison with Brave matches the README's table (GPC now
+sent). `ARC_RUN` in `plan.env` points at it, so `turn-on-updates.sh` publishes it as the first release.
+
+**Update 2026-10-29 02:30 UTC: the DMG was run `40793741179`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
 `40781573927` with Helium's Sparkle updater built in and its feed on the fork's releases. On a GitHub Mac (orchestrator
 run `40804887084`) all 32 checks pass, including five new update checks: a copy stamped as release 1 fetches the feed,
 downloads release 2, Sparkle logs "OK: EdDSA signature is correct for update", About shows "Nearly up to date! Relaunch
