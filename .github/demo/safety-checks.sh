@@ -80,10 +80,17 @@ measure() {
   sleep 6
   record "$label" canvas_b "$(page_eval "$tab" "$canvas_hash")"
 
+  local kind text attempt
   for kind in phishing malware; do
-    tab=$(open_tab "https://testsafebrowsing.appspot.com/s/$kind.html")
-    sleep 10
-    record "$label" "$kind" "$(page_eval "$tab" "$page_text")"
+    for attempt in 1 2 3 4 5; do
+      tab=$(open_tab "https://testsafebrowsing.appspot.com/s/$kind.html")
+      sleep 10
+      text=$(page_eval "$tab" "$page_text")
+      grep -qi "$kind Page Example" <<< "$text" || break
+      [ "$attempt" -lt 5 ] && sleep 20
+    done
+    record "$label" "$kind" "$text"
+    record "$label" "${kind}_attempts" "$attempt"
   done
 
   if [ "$label" = hydrogen ]; then
@@ -139,7 +146,7 @@ summary() {
       (if ($r.https // "") | startswith("https://") then "✅ upgraded to HTTPS" elif ($r.https // "") == "" then "– couldn'\''t read" else "❌ stayed on HTTP" end)
     elif $row == "params" then
       ($r.params // "") as $q
-      | ([("fbclid", "gclid", "msclkid", "mc_eid", "utm_source") | select($q | contains(. + "=") | not)] | length) as $stripped
+      | ([("fbclid", "gclid", "msclkid", "mc_eid", "utm_source") | . as $param | select($q | contains($param + "=") | not)] | length) as $stripped
       | "\(if $stripped == 5 then "✅" elif $stripped > 0 then "◐" else "❌" end) \($stripped) of 5 stripped (`\($q)`)"
     elif $row == "gpc" then
       (if $r.gpc == "true" then "✅ sent" else "❌ not sent (`\($r.gpc // "")`)" end)
@@ -153,10 +160,11 @@ summary() {
        else "❌ the same on every site (\($r.canvas_a))" end)
     elif $row == "phishing" or $row == "malware" then
       ($r[$row] // "") as $t
+      | ($r[$row + "_attempts"] // "1") as $attempts
       | (if ($t | interstitial) then "✅ blocked with a warning page"
          elif ($t | ublock) then "✅ blocked by uBlock Origin"
          elif $t == "" then "– couldn'\''t read the page"
-         else "❌ loaded" end) + " (`\($t | .[0:70])`)"
+         else "❌ loaded, \($attempts) tries over two minutes" end) + " (`\($t | .[0:70])`)"
     elif $row == "lists" then
       (($r.lists // "{}") | (try fromjson catch {})) as $l
       | if ($l | length) == 0 then "– couldn'\''t read uBlock Origin'\''s lists"
