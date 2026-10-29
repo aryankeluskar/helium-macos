@@ -43,6 +43,7 @@ Helium (imputnet's ungoogled-Chromium browser, Chromium 156) plus the patches in
 | `space-swipe-velocity-uses-event-times.patch` | Swipe velocity uses the trackpad events' own time stamps, so a busy main thread can't turn a flick into a rest | build `40736992400` |
 | `spaces-reopen-on-the-current-space.patch` | Saves the focused space on every change (Chromium wrote it only on session rebuilds), so a relaunch reopens on it | build `40736992400` |
 | `reopen-spaces-on-launch.patch` | "Continue where you left off" by default, as Arc always reopens your spaces (Chromium's default is a new tab) | build `40736992400` |
+| `hydrogen-updates-from-github.patch` | Sparkle's feed is the fork's `releases/latest/download/appcast-arm64.xml` instead of updates.helium.computer (see "Updates" below) | build `40793741179`; the update check passes |
 
 `dream/arc-spaces.md` is the spaces checklist with ARCUI's measured numbers (from the owner's Ardia repo,
 `docs/dia-spec.md` "Profile paging" and `packages/ardiacore/ios/SwipeModule.swift`). `dream/README.md` is the user
@@ -80,7 +81,14 @@ Helium):
 
 ## Where the builds are right now
 
-**Update 2026-10-29 00:05 UTC: the current DMG is run `40781573927`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+**Update 2026-10-29 02:30 UTC: the current DMG is run `40793741179`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
+`40781573927` with Helium's Sparkle updater built in and its feed on the fork's releases. On a GitHub Mac (orchestrator
+run `40804887084`) all 32 checks pass, including five new update checks: a copy stamped as release 1 fetches the feed,
+downloads release 2, Sparkle logs "OK: EdDSA signature is correct for update", About shows "Nearly up to date! Relaunch
+Hydrogen to finish updating.", and the relaunch installs 0.20.1.1.2, validly signed. Its updater trusts only a
+placeholder key, so it can't take real updates: install the first published release instead (see "Updates").
+
+**Update 2026-10-29 00:05 UTC: the DMG was run `40781573927`** (artifact `hydrogen_0.20.1.1_arm64-macos.dmg`):
 `40771149709` plus the design review's fixes (`dream/design-review.md`, made with the `apple-design` and
 `make-interfaces-feel-better` skills in `.claude/skills/`): `spaces-accessible-space-bar.patch`,
 `spaces-in-the-menu-bar.patch` and the space wording from `dream/hydrogen/space_strings.py`. On a GitHub Mac
@@ -199,6 +207,35 @@ gh run view <id> --repo aryankeluskar/helium-macos --log-failed | tail -200
   the run ID to `.github/shards/tree-run` and push: four runners compile the rest in parallel, then resume the run with
   `cache_run` = the shard run.
 
+## Updates
+
+Hydrogen updates itself with Helium's Sparkle 2 integration (`patches/helium/macos/updater/`), which the fork's builds
+used to leave out for want of a signing key. The pieces are in `dream/hydrogen/updates/`:
+
+- **Built in, key stamped later.** Every build compiles Sparkle with `placeholder-public-key`, a key whose private half
+  was never kept (`devutils/shared.sh` for fresh builds, `enable-sparkle.sh` as a `resume_patch` for resumed ones).
+  `stamp-dmg.sh` copies a DMG with the real `SUPublicEDKey` and a release number appended to `CFBundleVersion`
+  (Helium's version, so `0.20.1.1.N`), re-signs the app ad hoc and keeps the Finder layout. So a key added after a
+  build still works with that build, and Hydrogen-only releases count as newer.
+- **Signing.** `HYDROGEN_UPDATE_KEY` (an Actions secret, the base64 of a 32-byte Ed25519 seed) signs each DMG
+  (`appcast.py`); the appcast's `sparkle:edSignature` is checked against the stamped key before extraction
+  (`SUVerifyUpdateBeforeExtraction`).
+- **Publishing.** `release.yml` (`publish.sh`) stamps, signs and creates the GitHub release `hydrogen-<version>-rN`
+  with the DMG and `appcast-arm64.xml`, marked latest. It runs after an orchestrated build whose checks all pass (set
+  `PUBLISH=0` in `plan.env` to skip) and after upstream-sync builds (`build.yml` with `publish: true` runs `demo.yml`
+  then `release.yml`). Without the secret it prints a notice and publishes nothing.
+- **Checked on a Mac.** `.github/demo/update-check.sh` (in every demo; alone via `update-check.yml`, triggered by
+  pushing a build run ID to `.github/diagnostics/update-check-run`) stamps the build as releases 1 and 2 with a
+  throwaway key, serves release 2's appcast from the runner through `--custom-update-server-url`, and follows it to
+  the installed, relaunched release 2.
+- **Owner's one-time setup** (the session's GitHub token can't write secrets or repo settings):
+  `curl -fsSL https://raw.githubusercontent.com/aryankeluskar/helium-macos/claude/arc-spaces/dream/hydrogen/updates/turn-on-updates.sh | bash`
+  makes the key straight into the secret (never shown or saved), sets `claude/arc-spaces` as the default branch (so
+  the six-hourly upstream sync runs) and dispatches `release.yml`, which publishes `ARC_RUN`. Then install that
+  release's DMG once.
+- Updates need Helium services consented (onboarding), Helium's own gate for its updater
+  (`helium::ShouldAccessUpdateService`). Before the first release, the feed answers 404, which Sparkle logs and ignores.
+
 ## CI facts that cost hours to learn
 
 - Free plan: **5 concurrent macOS jobs**. Every push starts "Sanity check" (2 macOS jobs): cancel it
@@ -211,7 +248,9 @@ gh run view <id> --repo aryankeluskar/helium-macos --log-failed | tail -200
 - `GITHUB_TOKEN` pushes don't start workflows, but `gh workflow run` with it does.
 - Schedules (`upstream-sync.yml` every 6 h, merging Helium's security releases and rebuilding) and `workflow_run`
   (`build-failure-issue.yml`) only fire from the default branch: **set `claude/arc-spaces` as the fork's default branch**
-  (owner's click in repo settings) for security updates to flow automatically.
+  (`turn-on-updates.sh` does it) for security updates to flow automatically.
+- A reusable workflow sees its caller's `github.run_number`, so release numbers come from the existing release tags,
+  not the run number.
 - The compile check skips test sources: Helium's source tarball has no `chrome/test/data`.
 
 ## Editing a patch
@@ -237,7 +276,9 @@ priority, only with the owner's OK.
 
 ## Next, in order
 
-1. Owner installs the Hydrogen DMG from run `40697436072`; check on the real M5 trackpad:
+1. Owner runs `turn-on-updates.sh` (see "Updates") and installs the first release's DMG from
+   https://github.com/aryankeluskar/helium-macos/releases; from then on Hydrogen updates itself.
+2. Owner checks on the real M5 trackpad:
    - swipe feel, rubber band, haptics, colour blend;
    - space header and space bar (`+`, right-click editor, emoji icons);
    - Ctrl+1…9;
@@ -246,16 +287,17 @@ priority, only with the owner's OK.
 
    Fix what's off, measured against Arc/Dia captures with numbers (the owner's Ardia repo has the method and measured
    values).
-2. Agent CLI on the real browser: approval dialog flow, agent window placement next to the spaces sidebar,
+3. Agent CLI on the real browser: approval dialog flow, agent window placement next to the spaces sidebar,
    screenshots of a background window (`agent/README.md`, "Only a real macOS Helium can confirm").
-3. Spaces backlog (`dream/arc-spaces.md`):
+4. Spaces backlog (`dream/arc-spaces.md`):
    - drop a tab on a space bar item;
    - Arc-size favourites tiles;
    - per-space pinned tabs with a "Clear" divider and Today tabs;
    - per-space profiles.
-4. Agent-native phase 2 in the browser:
+5. Agent-native phase 2 in the browser:
    - a native agent space ("🤖 Claude") that agent tabs live in;
    - an "agent is driving" indicator;
    - pairing instead of the per-session prompt (Keychain token, revocable, scoped to the agent space and a site list,
      with an audit log).
-5. Set the default branch (above) so security updates rebuild by themselves.
+6. If the owner hasn't run the setup, the default branch is still unset, so security updates don't rebuild by
+   themselves; run "Follow upstream Helium" by hand meanwhile (or dispatch `build.yml` with `publish: true`).
