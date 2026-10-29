@@ -34,7 +34,7 @@ jq -r -s '
       else "\($p.requests) req, \($p.megabytes) MB, \(if $p.loadSeconds == null then "no load event" else "loaded in \($p.loadSeconds) s" end)" end;
     def total($pages; f): [$pages[] | select(.error == null and (.requests // 0) > 0) | f] | add // 0;
   ([$h | keys[] | select($b[.] != null and $h[.].requests > 0 and $b[.].requests > 0)]) as $both
-  | "Ad and tracker requests that got an answer, of those the page made (\(.[0].blockerReadyAfterTries // "?") and \(.[1].blockerReadyAfterTries // "?") tries until each blocker was active):",
+  | "Ad and tracker requests that got an answer, of those the page made:",
     "",
     "| Page | Hydrogen | Brave | Hydrogen weight | Brave weight |",
     "|---|---|---|---|---|",
@@ -46,7 +46,7 @@ jq -r -s '
   echo
   echo "## Ads on real pages compared with Brave"
   echo
-  echo "Twelve ad-heavy pages, each given 20 seconds in a fresh profile; requests counted over the DevTools protocol, including frames in other processes. Fewer answered ad and tracker requests is better."
+  echo "Twelve ad-heavy pages, each given 20 seconds in a fresh profile once the browser's blocker stops a test ad request (up to 2.5 minutes after launch); requests counted over the DevTools protocol, including frames in other processes. Fewer answered ad and tracker requests is better."
   echo
   cat "$out/real-sites.md"
 } >> "$report"

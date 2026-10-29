@@ -261,6 +261,14 @@ asset registry from Helium's server, and uBlock picks its lists on first launch,
 time `assetsBootstrapLocation` is set (Helium reloads uBlock when services change), records `hydrogenAddedPhishingList`
 so unticking it sticks, and invalidates the selfie so it compiles on that launch. Without services nothing changes.
 
+## Ads on real pages compared with Brave
+
+`.github/demo/real-sites.sh` (with `real-sites.mjs`, in every demo after the safety comparison) loads twelve ad-heavy
+pages in each browser on a fresh profile, once its blocker stops a probe request, and follows every request over the
+DevTools protocol, auto-attaching to out-of-process frames. On build `40820087458` (quick-check run `40830506936`):
+ad and tracker requests answered, Hydrogen 12 of 84 and Brave 43 of 126; 62 MB against 66 MB; Hydrogen's load event
+came sooner on 10 of 12 pages. macOS runners have no `timeout` command, so the script keeps its own deadline.
+
 ## CI facts that cost hours to learn
 
 - Free plan: **5 concurrent macOS jobs**. Every push starts "Sanity check" (2 macOS jobs): cancel it
