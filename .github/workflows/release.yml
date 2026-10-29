@@ -1,0 +1,52 @@
+name: Publish a Hydrogen update
+
+# Signs a build's Hydrogen DMG with the fork's update key and publishes it as
+# the latest GitHub release, which every installed Hydrogen checks for updates
+# (dream/hydrogen/updates). Does nothing until the HYDROGEN_UPDATE_KEY secret
+# exists: dream/hydrogen/updates/turn-on-updates.sh adds it once.
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run:
+        required: false
+        description: "Run ID of a build whose Hydrogen DMG to publish; empty publishes ARC_RUN from .github/orchestrate/plan.env"
+        default: ""
+  workflow_call:
+    inputs:
+      build_run:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: hydrogen-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Sign and publish the update
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HYDROGEN_UPDATE_KEY: ${{ secrets.HYDROGEN_UPDATE_KEY }}
+          BUILD_RUN: ${{ inputs.build_run }}
+        run: |
+          set -euo pipefail
+          if [ -z "$HYDROGEN_UPDATE_KEY" ]; then
+            echo "::notice::There's no HYDROGEN_UPDATE_KEY secret, so nothing was published. Run dream/hydrogen/updates/turn-on-updates.sh once to add it."
+            exit 0
+          fi
+          if [ -z "$BUILD_RUN" ]; then
+            BUILD_RUN=$(source .github/orchestrate/plan.env && echo "$ARC_RUN")
+          fi
+          dream/hydrogen/updates/publish.sh "$BUILD_RUN"

@@ -78,10 +78,10 @@ write_gn_args() {
     if [ -n "${PROD_MACOS_SPECIAL_ENTITLEMENTS_PROFILE_B64:-}" ]; then
       echo 'include_branded_entitlements=true' >> "$args"
     fi
-    if [ -n "${PROD_MACOS_SPARKLE_ED_PUB_KEY:-}" ]; then
-      echo 'enable_sparkle=true' >> "$args"
-      printf 'sparkle_ed_key="%s"\n' "$PROD_MACOS_SPARKLE_ED_PUB_KEY" >> "$args"
-    fi
+    # Hydrogen always builds Sparkle in; release.yml stamps the real update
+    # key into the DMG it publishes (dream/hydrogen/updates).
+    echo 'enable_sparkle=true' >> "$args"
+    printf 'sparkle_ed_key="%s"\n' "${PROD_MACOS_SPARKLE_ED_PUB_KEY:-$(cat "$_root_dir/dream/hydrogen/updates/placeholder-public-key")}" >> "$args"
     echo 'symbol_level=1' >> "$args"
     if [ "${HELIUM_BUILD_TOOL:-siso}" = ninja ]; then
       echo 'use_siso=false' >> "$args"

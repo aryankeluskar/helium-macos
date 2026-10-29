@@ -32,6 +32,7 @@ jobs:
     outputs:
       safe_run: ${{ steps.dispatch.outputs.safe_run }}
       arc_run: ${{ steps.dispatch.outputs.arc_run }}
+      publish: ${{ steps.dispatch.outputs.publish }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,6 +43,7 @@ jobs:
           set -euo pipefail
           source .github/orchestrate/plan.env
           repo="$GITHUB_REPOSITORY"
+          echo "publish=${PUBLISH:-1}" >> "$GITHUB_OUTPUT"
 
           wait_for() {
             until [ "$(gh run view "$1" --repo "$repo" --json status --jq .status)" = completed ]; do
@@ -139,6 +141,15 @@ jobs:
     name: Record the demo
     needs: wait-builds
     uses: ./.github/workflows/demo.yml
+    with:
+      build_run: ${{ needs.wait-builds.outputs.dmg_run }}
+
+  release:
+    name: Publish the update
+    needs: [start-builds, wait-builds, demo]
+    if: ${{ needs.start-builds.outputs.publish == '1' && needs.wait-builds.outputs.dmg_run == needs.start-builds.outputs.arc_run && needs.demo.outputs.failed_checks == '0' }}
+    uses: ./.github/workflows/release.yml
+    secrets: inherit
     with:
       build_run: ${{ needs.wait-builds.outputs.dmg_run }}
 

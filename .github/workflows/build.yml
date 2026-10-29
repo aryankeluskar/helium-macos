@@ -31,6 +31,11 @@ on:
         type: boolean
         description: "Create a release after build is done"
         default: false
+      publish:
+        required: false
+        type: boolean
+        description: "Check the Hydrogen DMG on a Mac, then publish it as an update when every check passes"
+        default: false
 
 permissions:
   contents: read
@@ -53,6 +58,29 @@ jobs:
       resume_patch: ${{ inputs.resume_patch }}
       build_tool: ${{ inputs.build_tool }}
       cache_run: ${{ inputs.cache_run }}
+
+  checks:
+    needs: build
+    name: Check the Hydrogen DMG
+    if: ${{ inputs.publish }}
+    permissions:
+      contents: write
+      actions: read
+    uses: ./.github/workflows/demo.yml
+    with:
+      build_run: ${{ github.run_id }}
+
+  publish:
+    needs: checks
+    name: Publish the Hydrogen update
+    if: ${{ inputs.publish && needs.checks.outputs.failed_checks == '0' }}
+    permissions:
+      contents: write
+      actions: read
+    uses: ./.github/workflows/release.yml
+    secrets: inherit
+    with:
+      build_run: ${{ github.run_id }}
 
   release:
     needs: build

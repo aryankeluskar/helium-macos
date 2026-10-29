@@ -13,6 +13,10 @@ on:
         required: false
         type: string
         default: ""
+    outputs:
+      failed_checks:
+        description: "How many checks in verify.md failed"
+        value: ${{ jobs.record.outputs.failed_checks }}
 
 permissions:
   contents: write
@@ -26,7 +30,9 @@ jobs:
   record:
     name: Record two-finger swipes between spaces
     runs-on: macos-latest
-    timeout-minutes: 55
+    timeout-minutes: 65
+    outputs:
+      failed_checks: ${{ steps.result.outputs.failed_checks }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,6 +64,21 @@ jobs:
         continue-on-error: true
         timeout-minutes: 12
         run: .github/demo/spaces-checks.sh
+      - name: Check that Hydrogen updates itself
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        timeout-minutes: 12
+        run: .github/demo/update-check.sh
+      - name: Count failed checks
+        id: result
+        if: ${{ !cancelled() }}
+        run: |
+          failed=$(grep -c '❌' demo-out/verify.md 2>/dev/null || true)
+          if ! grep -q '✅' demo-out/verify.md 2>/dev/null; then
+            failed=$((${failed:-0} + 1))
+          fi
+          echo "failed_checks=${failed:-0}" >> "$GITHUB_OUTPUT"
+          echo "${failed:-0} failed checks"
       - name: Compare ad blocking with Brave
         if: ${{ !cancelled() }}
         continue-on-error: true
