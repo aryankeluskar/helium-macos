@@ -3,6 +3,7 @@ name: Quick check
 # Runs some of demo.yml's checks on their own, for a quick rerun: push
 # .github/diagnostics/quick-check holding a build's run ID and the scripts in
 # .github/demo to run, like "40793741179 update-check.sh safety-checks.sh".
+# A second line naming a branch publishes demo-out there.
 
 on:
   push:
@@ -10,7 +11,7 @@ on:
       - '.github/diagnostics/quick-check'
 
 permissions:
-  contents: read
+  contents: write
   actions: read
 
 jobs:
@@ -50,3 +51,16 @@ jobs:
         with:
           name: quick-check
           path: demo-out/
+      - name: Publish to the branch on the second line
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          branch=$(sed -n 2p .github/diagnostics/quick-check | tr -d '[:space:]')
+          [ -n "$branch" ] || exit 0
+          cd demo-out
+          git init -q -b "$branch"
+          git add -A
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -qm "Quick check of build $(head -1 ../.github/diagnostics/quick-check)"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$branch"

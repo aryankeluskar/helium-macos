@@ -12,8 +12,25 @@ const keys = { 1: 18, 2: 19, 3: 20, 4: 21, 9: 25, t: 17, w: 13, a: 0, q: 12, ret
 const browserArgs = [
   `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0',
   `--load-extension=${extension}`, '--force-prefers-no-reduced-motion', '--window-position=0,25', '--window-size=1024,710',
+  '--autoplay-policy=no-user-gesture-required',
 ];
 const passed = [];
+const audioPage = `data:text/html,${encodeURIComponent(`<title>0 0</title><script>
+const rate = 8000;
+const samples = rate * 2;
+const wav = new DataView(new ArrayBuffer(44 + samples * 2));
+const text = (at, value) => [...value].forEach((c, i) => wav.setUint8(at + i, c.charCodeAt(0)));
+text(0, 'RIFF'); wav.setUint32(4, 36 + samples * 2, true); text(8, 'WAVEfmt ');
+wav.setUint32(16, 16, true); wav.setUint16(20, 1, true); wav.setUint16(22, 1, true);
+wav.setUint32(24, rate, true); wav.setUint32(28, rate * 2, true); wav.setUint16(32, 2, true); wav.setUint16(34, 16, true);
+text(36, 'data'); wav.setUint32(40, samples * 2, true);
+for (let i = 0; i < samples; i++) wav.setInt16(44 + i * 2, Math.sin(i / rate * 2 * Math.PI * 440) * 6000, true);
+const audio = new Audio(URL.createObjectURL(new Blob([wav], {type: 'audio/wav'})));
+audio.loop = true;
+audio.play();
+let ticks = 0;
+setInterval(() => { document.title = ++ticks + ' ' + audio.currentTime.toFixed(1); }, 250);
+</script>`)}`;
 
 function record(ok, text, detail) {
   passed.push(ok);
@@ -276,6 +293,35 @@ async function main() {
     await wait();
     seen.push((await browser.state()).space + 1);
     return { ok: seen.join() === '2,3,1,1', detail: `landed on spaces ${seen.join(', ')} (expected 2, 3, 1, 1)` };
+  });
+
+  await check('Audio keeps playing in a space you leave, as music in a Spotify tab should', async () => {
+    await goTo(0);
+    const tabId = await browser.inWorker(`(async () => {
+      const [active] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+      const tab = await chrome.tabs.create({url: ${JSON.stringify(audioPage)}, active: true, windowId: active.windowId});
+      await chrome.tabs.group({tabIds: [tab.id], groupId: active.groupId});
+      return tab.id;
+    })()`);
+    const read = () => browser.inWorker(`chrome.tabs.get(${tabId}).then((t) => ({
+      title: t.title, audible: t.audible, frozen: t.frozen, discarded: t.discarded}))`);
+    await sleep(4000);
+    const before = await read();
+    await goTo(1);
+    const away = (await browser.state()).space;
+    await sleep(12000);
+    const after = await read();
+    await browser.inWorker(`chrome.tabs.remove(${tabId})`);
+    await browser.activateTab('ycombinator');
+    await goTo(0);
+    const [ticksBefore, clockBefore] = before.title.split(' ').map(Number);
+    const [ticksAfter, clockAfter] = after.title.split(' ').map(Number);
+    return {
+      ok: away === 1 && clockAfter >= clockBefore + 8 && after.frozen !== true && after.discarded !== true,
+      detail: `after 12 s in space ${away + 1}, the left space's audio clock went from ${clockBefore} s to ${clockAfter} s `
+        + `and its timer from ${ticksBefore} to ${ticksAfter} ticks; audible ${after.audible}, frozen ${after.frozen}, `
+        + `discarded ${after.discarded}`,
+    };
   });
 
   await check('The sidebar lists only the current space\'s tabs (`spaces-current-only.png`)', async () => {
