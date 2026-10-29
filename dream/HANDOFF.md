@@ -269,6 +269,14 @@ DevTools protocol, auto-attaching to out-of-process frames. On build `4082008745
 ad and tracker requests answered, Hydrogen 12 of 84 and Brave 43 of 126; 62 MB against 66 MB; Hydrogen's load event
 came sooner on 11 of 12 pages (one tie). macOS runners have no `timeout` command, so the script keeps its own deadline.
 
+## Speed compared with Chrome and Brave
+
+`.github/demo/speedometer.sh` (quick check only, about 25 minutes) runs Speedometer 3.1 in Hydrogen, Brave and Chrome,
+three rounds interleaved, each on a fresh profile with its window in front (Hydrogen's marked as onboarded, or its
+setup page takes the front tab and Speedometer runs throttled in the background). On build `40820087458`
+(quick-check run `40834488088`): medians Hydrogen 22.5, Chrome 22.1, Brave 16.7. macOS ships bash 3.2, so no
+associative arrays in the demo scripts.
+
 ## CI facts that cost hours to learn
 
 - Free plan: **5 concurrent macOS jobs**. Every push starts "Sanity check" (2 macOS jobs): cancel it

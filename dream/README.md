@@ -39,6 +39,16 @@ On first launch, agree to Helium services in onboarding: Chrome Web Store instal
 
 Hydrogen.app ships `hydrogen`, a CLI, MCP server and JS REPL that let Claude Code drive your signed-in browser from outside it, with your approval each session. Setup is two commands; see `agent/README.md`.
 
+## Speed on Apple Silicon
+
+Hydrogen is an arm64-only official build (ThinLTO and profile-guided optimisation, like Chrome's). Speedometer 3.1, three interleaved rounds on a GitHub Apple Silicon Mac (Apple M1, virtual), quick-check run `40834488088` on build `40820087458` (`.github/demo/speedometer.sh`); median score, higher is better:
+
+| Browser | Rounds | Median |
+|---|---|---|
+| Hydrogen 0.20.1.1 (Chromium 156) | 22.1, 22.5, 24.6 | **22.5** |
+| Google Chrome 156.0.8078.73 | 19.6, 22.1, 25.1 | 22.1 |
+| Brave 1.97.56 (Chromium 155) | 16.7, 16.4, 19.8 | 16.7 |
+
 ## Staying safe
 
 Measured on build `40820087458` against Brave 1.97 (Chromium 155) on a GitHub Apple Silicon Mac, both on fresh profiles with default settings (`.github/demo/safety-checks.sh`, the "Safety compared with Brave" table in `verify.md` on the `demo-videos` branch):
