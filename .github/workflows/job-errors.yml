@@ -1,0 +1,36 @@
+name: Show a job's errors
+
+# Prints the error lines of one Actions job's log, for logs too long to read
+# whole: push .github/diagnostics/job-errors holding the job ID.
+
+on:
+  push:
+    paths:
+      - '.github/diagnostics/job-errors'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  errors:
+    name: Print the error lines
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/diagnostics
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          job=$(tr -d '[:space:]' < .github/diagnostics/job-errors)
+          gh api "repos/$GITHUB_REPOSITORY/actions/jobs/$job/logs" > job.log
+          wc -l job.log
+          grep -n -E 'FAILED|error:|Error:|fatal|undefined symbol|No such file' job.log | head -80 || true
+          line=$(grep -n -m1 -E 'FAILED' job.log | cut -d: -f1 || true)
+          if [ -n "$line" ]; then
+            sed -n "$((line > 5 ? line - 5 : 1)),$((line + 60))p" job.log
+          fi
