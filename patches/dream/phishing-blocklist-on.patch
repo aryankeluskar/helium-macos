@@ -1,0 +1,10 @@
+--- a/third_party/ublock/assets/assets.json
++++ b/third_party/ublock/assets/assets.json
+@@ -265,7 +265,6 @@
+ 	"curben-phishing": {
+ 		"content": "filters",
+ 		"group": "malware",
+-		"off": true,
+ 		"title": "Phishing URL Blocklist",
+ 		"contentURL": "https://malware-filter.gitlab.io/phishing-filter/phishing-filter.txt",
+ 		"cdnURLs": [
