@@ -68,7 +68,7 @@ playback='(async () => {
     await video.play();
     await new Promise((r) => setTimeout(r, 8000));
     const quality = video.getVideoPlaybackQuality();
-    return `played ${video.currentTime.toFixed(1)} s with ${player.getKeySystem() || "no key system"}, ` +
+    return `played ${video.currentTime.toFixed(1)} s with ${player.keySystem() || "no key system"}, ` +
       `${quality.totalVideoFrames} frames decoded, ${video.videoWidth}x${video.videoHeight}`;
   } catch (error) {
     return `${error.name || "Error"}: ${error.message || ("Shaka error " + error.code)}`;
