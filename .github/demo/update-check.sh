@@ -46,8 +46,8 @@ if ! installed=$("$updates/stamp-dmg.sh" "$dmg" "$work/installed.dmg" "$public_k
   finish
 fi
 offered=$("$updates/stamp-dmg.sh" "$dmg" "$feed/hydrogen-update.dmg" "$public_key" 2 2>> "$out/update-stamp.log")
-read -r installed_version short_version minimum_system <<< "$installed"
-read -r offered_version _ _ <<< "$offered"
+read -r installed_version short_version minimum_system _ <<< "$installed"
+read -r offered_version _ <<< "$offered"
 "$python" -I "$updates/appcast.py" write --dmg "$feed/hydrogen-update.dmg" \
   --url "http://127.0.0.1:$port/hydrogen-update.dmg" --version "$offered_version" \
   --short-version "$short_version" --minimum-system "$minimum_system" --out "$feed/appcast-arm64.xml"
@@ -58,8 +58,20 @@ hdiutil attach -quiet -nobrowse -mountpoint "$work/mount" "$work/installed.dmg"
 cp -R "$work/mount/Hydrogen.app" "$app"
 hdiutil detach -quiet "$work/mount"
 
+probe="$out/update-feed-probe.txt"
+{
+  echo "python3: $(command -v python3)"
+  echo "firewall before: $(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>&1)"
+  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off 2>&1
+  echo "firewall now: $(/usr/libexec/ApplicationFirewall/socketfilterfw --getglobalstate 2>&1)"
+} > "$probe"
 python3 -u -m http.server "$port" --bind 127.0.0.1 --directory "$feed" > "$out/update-feed.log" 2>&1 &
 server=$!
+for _ in $(seq 1 20); do
+  curl -s -m 3 -o /dev/null "http://127.0.0.1:$port/probe" && break
+  sleep 0.5
+done
+echo "probe from curl: $(curl -sS -m 5 -o /dev/null -w '%{http_code} in %{time_total}s' "http://127.0.0.1:$port/probe" 2>&1)" >> "$probe"
 
 cat > "$profile/Default/Preferences" <<'JSON'
 {"helium": {"completed_onboarding": true, "services": {"user_consented": true}}}
@@ -75,7 +87,8 @@ done
 if grep -q 'GET /appcast-arm64.xml' "$out/update-feed.log"; then
   pass "On launch Hydrogen checks its update feed, the fork's latest release (here served from this runner, \`update-feed.log\`)"
 else
-  fail "On launch Hydrogen checks its update feed (\`update-feed.log\`, \`update-hydrogen.log\`)"
+  fail "On launch Hydrogen checks its update feed (\`update-feed.log\`, \`update-feed-probe.txt\`, \`update-sparkle.log\`)"
+  echo "probe from curl after: $(curl -sS -m 5 -o /dev/null -w '%{http_code} in %{time_total}s' "http://127.0.0.1:$port/probe" 2>&1)" >> "$probe"
   finish
 fi
 if grep -q 'GET /hydrogen-update.dmg' "$out/update-feed.log"; then

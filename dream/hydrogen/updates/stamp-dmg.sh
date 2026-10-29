@@ -3,10 +3,10 @@
 #
 # Copies a Hydrogen DMG with the update signing key and a release number
 # stamped into the app: SUPublicEDKey is the key Sparkle checks updates
-# against, and the release number becomes a fifth part of CFBundleVersion, so
-# Hydrogen-only releases count as newer than the same Chromium version before
-# them. The app is ad-hoc signed again and the Finder layout kept. Prints
-# "<bundle version> <short version> <minimum macOS>".
+# against, and the release number becomes a fifth part of CFBundleVersion
+# (Helium's version, like 0.20.1.1), so Hydrogen-only releases count as newer
+# than the same Helium release before them. The app is ad-hoc signed again and the Finder layout kept. Prints
+# "<bundle version> <short version> <minimum macOS> <Chromium version>".
 set -euo pipefail
 
 in_dmg="$1"
@@ -34,8 +34,10 @@ if ! /usr/libexec/PlistBuddy -c 'Print :SUPublicEDKey' "$plist" > /dev/null 2>&1
   echo "$in_dmg has no SUPublicEDKey: it was built without Sparkle, so it can't update itself." >&2
   exit 1
 fi
-chromium_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist" | cut -d. -f1-4)
-bundle_version="$chromium_version.$release_number"
+base_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$plist" | cut -d. -f1-4)
+bundle_version="$base_version.$release_number"
+chromium_version=$(find "$app/Contents/Frameworks" -maxdepth 3 -path '*Framework.framework/Versions/*' -name '[0-9]*' | head -1)
+chromium_version="${chromium_version##*/}"
 /usr/libexec/PlistBuddy -c "Set :SUPublicEDKey $public_key" "$plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $bundle_version" "$plist"
 short_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")
@@ -48,4 +50,4 @@ codesign --verify --deep --strict "$app" >&2
 hdiutil detach -quiet "$work/mount"
 rm -f "$out_dmg"
 hdiutil convert -quiet "$work/rw.dmg" -format ULMO -o "$out_dmg"
-echo "$bundle_version $short_version $minimum_system"
+echo "$bundle_version $short_version $minimum_system $chromium_version"

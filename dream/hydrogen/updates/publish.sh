@@ -4,7 +4,8 @@
 # Publishes a build's Hydrogen DMG as the fork's latest GitHub release, where
 # every installed Hydrogen looks for updates
 # (releases/latest/download/appcast-arm64.xml): stamps the signing key and the
-# next release number into the app, signs the DMG with HYDROGEN_UPDATE_KEY
+# next release number into the app (CFBundleVersion is Helium's version plus
+# that number), signs the DMG with HYDROGEN_UPDATE_KEY
 # and uploads it with its appcast. Runs on a macOS runner (release.yml).
 set -euo pipefail
 
@@ -33,7 +34,7 @@ in_dmg=$(find "$work/build" -type f -name '*.dmg' | head -1)
 name=$(basename "$in_dmg")
 mkdir -p "$work/release"
 stamped=$("$updates/stamp-dmg.sh" "$in_dmg" "$work/release/$name" "$public_key" "$release_number")
-read -r version short_version minimum_system <<< "$stamped"
+read -r version short_version minimum_system chromium <<< "$stamped"
 
 tag="hydrogen-$short_version-r$release_number"
 "$python" -I "$updates/appcast.py" write --dmg "$work/release/$name" \
@@ -41,7 +42,6 @@ tag="hydrogen-$short_version-r$release_number"
   --version "$version" --short-version "$short_version" --minimum-system "$minimum_system" \
   --out "$work/release/appcast-arm64.xml"
 
-chromium=$(cut -d. -f1-4 <<< "$version")
 notes=$(cat <<NOTES
 Hydrogen $short_version on Chromium $chromium, from build run $server/actions/runs/$build_run (checks: $server/blob/demo-videos/verify.md).
 
