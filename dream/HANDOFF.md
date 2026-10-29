@@ -261,6 +261,10 @@ asset registry from Helium's server, and uBlock picks its lists on first launch,
 time `assetsBootstrapLocation` is set (Helium reloads uBlock when services change), records `hydrogenAddedPhishingList`
 so unticking it sticks, and invalidates the selfie so it compiles on that launch. Without services nothing changes.
 
+**Owner's decision (2026-10-29): no Google Safe Browsing.** Asked directly, the owner chose uBlock Origin's lists
+(phishing, malware, badware) over bringing back Safe Browsing, which would check visited URLs with Google. Don't
+reopen this unless they ask.
+
 ## Ads on real pages compared with Brave
 
 `.github/demo/real-sites.sh` (with `real-sites.mjs`, in every demo after the safety comparison) loads twelve ad-heavy
