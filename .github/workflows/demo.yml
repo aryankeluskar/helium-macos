@@ -30,7 +30,7 @@ jobs:
   record:
     name: Record two-finger swipes between spaces
     runs-on: macos-latest
-    timeout-minutes: 65
+    timeout-minutes: 100
     outputs:
       failed_checks: ${{ steps.result.outputs.failed_checks }}
     steps:
@@ -89,6 +89,11 @@ jobs:
         continue-on-error: true
         timeout-minutes: 12
         run: .github/demo/safety-checks.sh
+      - name: Compare ads on real pages with Brave
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        timeout-minutes: 32
+        run: .github/demo/real-sites.sh
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
