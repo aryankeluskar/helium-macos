@@ -281,6 +281,20 @@ setup page takes the front tab and Speedometer runs throttled in the background)
 (quick-check run `40834488088`): medians Hydrogen 22.5, Chrome 22.1, Brave 16.7. macOS ships bash 3.2, so no
 associative arrays in the demo scripts.
 
+## Protected media (Widevine)
+
+Spotify's web player failed with "No such device": Hydrogen had no Widevine CDM. Helium's component proxy
+(`services.helium.imput.net/com`, imputnet/helium-services `svc/extension-proxy/lib/helpers.ts`) allows only CRLSet
+and drops Widevine from every answer, and it sends Google a Windows x64 request anyway; official Helium 0.20.2.1 fails
+the same way. imput announced DRM support on 2026-10-26. Until it lands, `dream/hydrogen/widevine/install-widevine.sh`
+fetches the Mac arm64 package from Google's update server, verifies its SHA-256 and unpacks the CRX into
+`<profile>/WidevineCdm/<version>`, which the component installer registers at launch. `.github/demo/widevine-check.sh`
+(quick check only, about 2 minutes, since it depends on Google, jsDelivr and Shaka's license server) passes on build
+`40820087458` (run `40844757225`): installed, key session opened, Shaka's Widevine stream played 4.4 s. Builds are
+signed ad hoc without the hardened runtime, so macOS doesn't enforce library validation and Google's CDM loads; a
+build signed with a certificate and the hardened runtime needs Chromium's plugin helper entitlements
+(`disable-library-validation`) for the same.
+
 ## CI facts that cost hours to learn
 
 - Free plan: **5 concurrent macOS jobs**. Every push starts "Sanity check" (2 macOS jobs): cancel it
@@ -348,5 +362,7 @@ priority, only with the owner's OK.
    - an "agent is driving" indicator;
    - pairing instead of the per-session prompt (Keychain token, revocable, scoped to the agent space and a site list,
      with an audit log).
-6. If the owner hasn't run the setup, the default branch is still unset, so security updates don't rebuild by
+6. When the upstream sync brings Helium's DRM support, run `widevine-check.sh` on that build: if a fresh profile gets
+   Widevine by itself, retire `install-widevine.sh` from the README.
+7. If the owner hasn't run the setup, the default branch is still unset, so security updates don't rebuild by
    themselves; run "Follow upstream Helium" by hand meanwhile (or dispatch `build.yml` with `publish: true`).
