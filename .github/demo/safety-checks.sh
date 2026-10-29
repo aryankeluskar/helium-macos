@@ -47,8 +47,8 @@ canvas_hash='(async () => {
 })()'
 ublock_lists='vAPI.messaging.send("dashboard", {what: "getLists"}).then(lists => JSON.stringify(Object.fromEntries(
   ["ublock-badware", "urlhaus-1", "curben-phishing", "adguard-spyware-url"].map(key => [key, {
-    on: lists.current[key] !== undefined,
-    entries: (lists.current[key] || lists.available[key] || {}).entryCount || 0,
+    on: lists.current[key] !== undefined && lists.current[key].off !== true,
+    entries: (lists.current[key] || {}).entryCount || 0,
   }]))))'
 page_text='document.title + " | " + (document.body ? document.body.innerText.replace(/\s+/g, " ").slice(0, 200) : "")'
 

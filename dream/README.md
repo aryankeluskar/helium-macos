@@ -21,7 +21,6 @@ four Balmer lines at 410, 434, 486 and 656 nm. It installs as its own app (`Hydr
 | `patches/dream/spaces-in-the-menu-bar.patch` | New Space, Next Space and Previous Space in the Tabs menu, as Apple's guidelines ask for every command. The space editor says "space" instead of "group" (`dream/hydrogen/space_strings.py`). |
 | `patches/dream/hydrogen-updates-from-github.patch` | Hydrogen updates itself from this fork's GitHub releases with Helium's Sparkle updater, and accepts only updates signed with the fork's key. See "Staying safe". |
 | `patches/dream/global-privacy-control-on.patch` | Sends the Global Privacy Control signal (`Sec-GPC: 1` and `navigator.globalPrivacyControl`) by default, as Brave does; Helium has the setting but leaves it off. Turn it off in Settings › Privacy and security. |
-| `patches/dream/phishing-blocklist-on.patch` | uBlock Origin's Phishing URL Blocklist is on for new profiles, next to the malware and badware lists Helium already turns on. It stands in for Google Safe Browsing, which ungoogled Chromium removes, without sending your browsing to anyone. |
 
 Make a space with the `+` in the space bar at the foot of the sidebar; your existing tabs become the first space. Right-click a space's item, or click its header, to rename or recolour it; start the name with an emoji to give it an icon. Switch with two fingers on the sidebar, a click in the space bar, Ctrl+1…9, or Cmd+Ctrl+X and Cmd+Ctrl+Z.
 
