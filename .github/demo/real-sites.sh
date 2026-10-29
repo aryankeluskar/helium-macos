@@ -15,11 +15,11 @@ mkdir -p "$out" "$hydrogen_profile/Default"
 echo '{"helium": {"completed_onboarding": true, "services": {"user_consented": true}}}' > "$hydrogen_profile/Default/Preferences"
 
 pkill -x Hydrogen 2>/dev/null && sleep 3
-timeout 900 node "$demo_dir/real-sites.mjs" hydrogen /Applications/Hydrogen.app/Contents/MacOS/Hydrogen \
+node "$demo_dir/real-sites.mjs" hydrogen /Applications/Hydrogen.app/Contents/MacOS/Hydrogen \
   "$hydrogen_profile" "$out"
 if [ -x "$brave_app" ] || brew install --cask brave-browser >> "$out/brave-install.log" 2>&1; then
   pkill -f "Brave Browser" 2>/dev/null && sleep 3
-  timeout 900 node "$demo_dir/real-sites.mjs" brave "$brave_app" "$RUNNER_TEMP/real-sites-brave" "$out"
+  node "$demo_dir/real-sites.mjs" brave "$brave_app" "$RUNNER_TEMP/real-sites-brave" "$out"
 fi
 
 for label in hydrogen brave; do

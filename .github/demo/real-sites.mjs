@@ -166,6 +166,15 @@ async function measure(cdp, url) {
   };
 }
 
+const pages = [];
+let ready = null;
+const write = () =>
+  writeFileSync(`${out}/real-sites-${label}.json`, JSON.stringify({ label, blockerReadyAfterTries: ready, pages }, null, 2));
+setTimeout(() => {
+  write();
+  process.exit(0);
+}, 13 * 60_000).unref();
+
 mkdirSync(profile, { recursive: true });
 rmSync(`${profile}/DevToolsActivePort`, { force: true });
 const log = openSync(`${out}/real-sites-${label}.log`, 'a');
@@ -176,16 +185,15 @@ const browser = spawn(binary, [
 for (let i = 0; i < 60 && !existsSync(`${profile}/DevToolsActivePort`); i++) await sleep(1000);
 await sleep(15_000);
 const cdp = await connect();
-const ready = await blockerReady(cdp);
-const pages = [];
+ready = await blockerReady(cdp);
 for (const url of sites) {
   try {
     pages.push(await measure(cdp, url));
   } catch (error) {
     pages.push({ url, error: String(error) });
   }
+  write();
 }
-writeFileSync(`${out}/real-sites-${label}.json`, JSON.stringify({ label, blockerReadyAfterTries: ready, pages }, null, 2));
 await cdp.send('Browser.close').catch(() => {});
 await Promise.race([new Promise((resolve) => browser.on('exit', resolve)), sleep(20_000)]);
 browser.kill('SIGKILL');
