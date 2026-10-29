@@ -1,0 +1,35 @@
+--- a/third_party/ublock/js/storage.js
++++ b/third_party/ublock/js/storage.js
+@@ -451,16 +451,27 @@
+ /******************************************************************************/
+ 
+ µb.loadSelectedFilterLists = async function() {
+-    const bin = await vAPI.storage.get('selectedFilterLists');
++    const bin = await vAPI.storage.get([ 'selectedFilterLists', 'hydrogenAddedPhishingList' ]);
+     if ( bin instanceof Object && Array.isArray(bin.selectedFilterLists) ) {
+         this.selectedFilterLists = bin.selectedFilterLists;
+-        return;
++    } else {
++        // https://github.com/gorhill/uBlock/issues/747
++        //   Select default filter lists if first-time launch.
++        const lists = await io.metadata();
++        await this.saveSelectedFilterLists(this.autoSelectRegionalFilterLists(lists));
+     }
+ 
+-    // https://github.com/gorhill/uBlock/issues/747
+-    //   Select default filter lists if first-time launch.
++    // Hydrogen: phishing protection without Google Safe Browsing. Added once,
++    // the first time lists come through Helium's proxy, so unticking it sticks.
++    if ( this.assetsBootstrapLocation === undefined ) { return; }
++    if ( bin?.hydrogenAddedPhishingList === true ) { return; }
+     const lists = await io.metadata();
+-    this.saveSelectedFilterLists(this.autoSelectRegionalFilterLists(lists));
++    if ( lists['curben-phishing'] === undefined ) { return; }
++    await vAPI.storage.set({ hydrogenAddedPhishingList: true });
++    if ( this.selectedFilterLists.includes('curben-phishing') === false ) {
++        await this.saveSelectedFilterLists([ 'curben-phishing' ], true);
++        this.selfieManager.destroy();
++    }
+ };
+ 
+ µb.saveSelectedFilterLists = function(newKeys, append = false) {
