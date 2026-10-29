@@ -236,6 +236,18 @@ used to leave out for want of a signing key. The pieces are in `dream/hydrogen/u
 - Updates need Helium services consented (onboarding), Helium's own gate for its updater
   (`helium::ShouldAccessUpdateService`). Before the first release, the feed answers 404, which Sparkle logs and ignores.
 
+## Safety compared with Brave
+
+`.github/demo/safety-checks.sh` (in every demo, after the failed-check count since it compares rather than gates)
+runs Hydrogen and Brave on fresh profiles and tabulates HTTPS upgrades, tracking parameters, Global Privacy Control,
+WebRTC local IPs, per-site canvas fingerprints, Google's Safe Browsing test pages (retried for two minutes, since
+Brave's list downloads after launch), the debugging port on the default profile, and uBlock Origin's malware,
+phishing and tracking lists. On build `40807405351` Hydrogen matched or beat Brave on everything but Safe Browsing,
+which ungoogled Chromium removes (see the README's table). `global-privacy-control-on.patch` closed the GPC gap.
+A phishing-list default was tried and dropped: with Helium services on, uBlock bootstraps its asset registry from
+Helium's server, so a bundled `assets.json` default never applies, and without services it would fetch the list
+directly instead of through Helium's proxy.
+
 ## CI facts that cost hours to learn
 
 - Free plan: **5 concurrent macOS jobs**. Every push starts "Sanity check" (2 macOS jobs): cancel it
@@ -249,6 +261,10 @@ used to leave out for want of a signing key. The pieces are in `dream/hydrogen/u
 - Schedules (`upstream-sync.yml` every 6 h, merging Helium's security releases and rebuilding) and `workflow_run`
   (`build-failure-issue.yml`) only fire from the default branch: **set `claude/arc-spaces` as the fork's default branch**
   (`turn-on-updates.sh` does it) for security updates to flow automatically.
+- The compile check (`compile-check.sh`) must run `he hydrogen` like `prepare_sources` does, or files using
+  `space_strings.py`'s strings (`IDS_NEW_SPACE_MAC` in `main_menu_builder.mm`) fail there while real builds pass.
+- `job-errors.yml` prints the error lines of any job's log (push its ID to `.github/diagnostics/job-errors`), for
+  logs too long to read through the API.
 - A reusable workflow sees its caller's `github.run_number`, so release numbers come from the existing release tags,
   not the run number.
 - The compile check skips test sources: Helium's source tarball has no `chrome/test/data`.

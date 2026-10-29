@@ -40,6 +40,21 @@ Hydrogen.app ships `hydrogen`, a CLI, MCP server and JS REPL that let Claude Cod
 
 ## Staying safe
 
+Measured against Brave 1.97 (Chromium 155) on a GitHub Apple Silicon Mac, both on fresh profiles with default settings (`.github/demo/safety-checks.sh`, the "Safety compared with Brave" table in `verify.md` on the `demo-videos` branch):
+
+| Protection | Hydrogen | Brave |
+|---|---|---|
+| http:// upgraded to HTTPS | ✅ | ✅ |
+| Tracking parameters stripped from links (fbclid, gclid, msclkid, mc_eid, utm_source) | ✅ 5 of 5 | ◐ 4 of 5 (keeps utm_source) |
+| Global Privacy Control sent | ✅ (`global-privacy-control-on.patch`) | ✅ |
+| WebRTC hides local IP addresses | ✅ | ✅ |
+| Canvas fingerprint differs from site to site | ✅ | ✅ |
+| Third-party cookies blocked | ✅ | ✅ |
+| `--remote-debugging-port` stays shut on the default profile (how infostealers read cookies) | ✅ | ❌ opens |
+| Google Safe Browsing warnings (Google's phishing and malware test pages) | ❌ not built in | ✅ |
+
+The one gap is Safe Browsing: ungoogled Chromium removes it, since it means checking URLs with Google. Hydrogen blocks known-bad sites with uBlock Origin's lists instead (URLhaus malware, about 120,000 entries, and uBlock's badware list), which don't include Google's test pages. For phishing coverage too, tick "Phishing URL Blocklist" under uBlock Origin's dashboard › Filter lists › Malware protection, security.
+
 - **Chromium security fixes:** "Follow upstream Helium" merges imputnet/helium-macos into this branch every six hours and starts a build when anything new arrives. A merge that conflicts or can't be pushed, and any failed build, opens an issue in the fork ("Report failed builds"). GitHub only runs the schedule and the failure report when this branch is the fork's default branch.
 - **No cookie theft through the debugging port:** like Chrome, `--remote-debugging-port` no longer opens on the profile you browse with (`patches/dream/block-debug-port-on-default-profile.patch`), so malware can't relaunch the browser to read your cookies. Agents connect through `chrome://inspect/#remote-debugging` instead, where you approve each connection.
 - **From Helium:** uBlock Origin is built in as a component (always on, updated by Helium, with DNS uncloaking like Brave's), HTTPS-First mode is on, and nothing is sent to Google. Chrome Web Store extensions install natively.
