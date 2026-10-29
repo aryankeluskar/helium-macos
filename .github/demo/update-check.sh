@@ -58,6 +58,7 @@ hdiutil attach -quiet -nobrowse -mountpoint "$work/mount" "$work/installed.dmg"
 cp -R "$work/mount/Hydrogen.app" "$app"
 hdiutil detach -quiet "$work/mount"
 
+pkill -x Hydrogen 2>/dev/null && sleep 3
 probe="$out/update-feed-probe.txt"
 {
   echo "python3: $(command -v python3)"
