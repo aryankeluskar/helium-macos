@@ -30,6 +30,7 @@ python3 "$_main_repo/utils/helium_version.py" \
     --tree "$_main_repo" --platform-tree "$_root_dir" --chromium-tree "$_src_dir"
 he merge
 he push
+he hydrogen
 he configure
 
 _targets=()
