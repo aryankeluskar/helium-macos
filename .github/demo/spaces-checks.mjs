@@ -17,7 +17,7 @@ const browserArgs = [
 const passed = [];
 const audioPage = `data:text/html,${encodeURIComponent(`<title>0 0</title><script>
 const rate = 8000;
-const samples = rate * 2;
+const samples = rate * 60;
 const wav = new DataView(new ArrayBuffer(44 + samples * 2));
 const text = (at, value) => [...value].forEach((c, i) => wav.setUint8(at + i, c.charCodeAt(0)));
 text(0, 'RIFF'); wav.setUint32(4, 36 + samples * 2, true); text(8, 'WAVEfmt ');
@@ -317,7 +317,8 @@ async function main() {
     const [ticksBefore, clockBefore] = before.title.split(' ').map(Number);
     const [ticksAfter, clockAfter] = after.title.split(' ').map(Number);
     return {
-      ok: away === 1 && clockAfter >= clockBefore + 8 && after.frozen !== true && after.discarded !== true,
+      ok: away === 1 && clockAfter >= clockBefore + 8 && after.audible === true && after.frozen !== true
+        && after.discarded !== true,
       detail: `after 12 s in space ${away + 1}, the left space's audio clock went from ${clockBefore} s to ${clockAfter} s `
         + `and its timer from ${ticksBefore} to ${ticksAfter} ticks; audible ${after.audible}, frozen ${after.frozen}, `
         + `discarded ${after.discarded}`,
