@@ -1,0 +1,8 @@
+
+DevTools listening on ws://127.0.0.1:49168/devtools/browser/2df2e54f-446a-4f1e-8c00-435192e6881e
+[1610:8277:1029/073036.070766:ERROR:components/search_engines/template_url_bang_manager.cc:128] Fetching bangs failed: response code = -1
+[1640:8583:1029/073135.463406:ERROR:net/url_request/url_request.cc:677] Block URL in URLRequest: https://helium-services-are-disabled.qjz9zk/
+[1640:8583:1029/073135.464073:ERROR:net/url_request/trk_protocol_handler.cc:17] Blocked URL in TrkProtocolHandler: trk:https://helium-services-are-disabled.qjz9zk/
+
+DevTools listening on ws://127.0.0.1:49188/devtools/browser/9972bba0-8078-4d47-8a6c-4a35aaecbd7e
+[5226:20719:1029/073310.227999:ERROR:components/search_engines/template_url_bang_manager.cc:128] Fetching bangs failed: response code = -1

@@ -1,0 +1,118 @@
+window 
+  AXWindow [76,350 240x318] 
+    AXGroup [76,350 240x318] 
+      AXGroup [76,350 240x318] 
+        AXGroup [76,350 240x318] 
+          AXGroup [96,370 200x0] 
+          AXGroup [76,350 240x318] 
+            AXGroup [76,350 240x318] 
+              AXTextField [92,366 208x36] Space name | Space name | Work
+              AXGroup [88,410 216x24] 
+                AXRadioButton [88,410 24x24] Blue | Blue value=1
+                AXRadioButton [112,410 24x24] Purple | Purple value=0
+                AXRadioButton [136,410 24x24] Pink | Pink value=0
+                AXRadioButton [160,410 24x24] Red | Red value=0
+                AXRadioButton [184,410 24x24] Orange | Orange value=0
+                AXRadioButton [208,410 24x24] Yellow | Yellow value=0
+                AXRadioButton [232,410 24x24] Green | Green value=0
+                AXRadioButton [256,410 24x24] Cyan | Cyan value=0
+                AXRadioButton [280,410 24x24] Grey | Grey value=0
+              AXGroup [76,442 240x1] 
+              AXButton [76,451 240x32] New tab in space ⌃⌘C | New tab in space ⌃⌘C
+              AXButton [76,483 240x32] Move space to new window | Move space to new window
+              AXButton [76,515 240x32] Go to space | Go to space
+              AXButton [76,547 240x32] Close space ⌃⌘W | Close space ⌃⌘W
+              AXGroup [76,587 240x1] 
+              AXButton [76,596 240x32] Remove space, keep tabs | Remove space, keep tabs
+              AXButton [76,628 240x32] Delete space | Delete space
+            AXGroup [76,668 240x0] 
+window New Tab - Part of unnamed group - Hydrogen
+  AXWindow [0,31 1024x674] New Tab - Part of unnamed group - Hydrogen
+    AXGroup [0,31 1024x674] New Tab - Part of unnamed group - Hydrogen
+      AXGroup [0,31 1024x674] 
+        AXGroup [0,31 1024x674] 
+          AXGroup [0,31 1024x674] 
+            AXGroup [0,31 1024x65] 
+              AXToolbar [74,31 950x34] 
+                AXButton [74,34 34x28] Collapse Tabs | Collapse Tabs
+                AXButton [111,34 28x28] Back | Back
+                AXButton [142,34 28x28] Forward | Forward
+                AXButton [173,34 28x28] Reload | Reload
+                AXGroup [207,34 686x28] 
+                  AXImage [209,36 24x24] Search icon | Search icon
+                  AXTextField [238,36 645x24] Address and search bar | Address and search bar
+                  AXGroup [891,36 0x24] 
+                AXGroup [899,34 58x28] 
+                  AXPopUpButton [899,34 28x28] uBlock Origin (0) | uBlock Origin (0)
+                  AXPopUpButton [929,34 28x28] Extensions | Extensions
+                AXButton [960,34 28x28] You | You
+                AXPopUpButton [990,34 34x28] Hydrogen | Hydrogen
+              AXToolbar [200,65 824x31] Bookmarks | Bookmarks
+                AXToolbar [206,65 265x28] Saved Tab Groups | Saved Tab Groups
+                  AXButton [206,69 20x20]  unnamed group - Opened |  unnamed group - Opened
+                  AXButton [234,69 68x20]  Research group - Opened |  Research group - Opened
+                  AXButton [310,69 65x20]  Personal group - Opened |  Personal group - Opened
+                  AXButton [383,69 44x20]  Work group - Opened |  Work group - Opened
+                  AXButton [435,65 28x28] Tab groups | Tab groups
+            AXGroup [200,96 824x609] 
+              AXGroup [200,96 824x609] 
+              AXGroup [200,96 821x606] 
+                AXGroup [201,97 819x0] 
+            AXTabGroup [0,65 200x640] 
+              AXGroup [0,65 200x634] 
+                AXGroup [0,65 200x62] 
+                  AXScrollArea [6,65 194x0] 
+                    AXGroup [6,65 194x0] 
+                      AXGroup [6,65 0x0] 
+                    AXGroup [6,65 0x0] 
+                  AXScrollArea [0,95 200x32] 
+                    AXGroup [0,95 200x32] 
+                      AXGroup [0,95 200x32] 
+                        AXGroup [6,95 188x32] 
+                          AXRadioButton [6,95 188x30] New Tab - Part of unnamed group | New Tab - Part of unnamed group value=1
+                            AXButton [166,97 26x26] Close | Close
+                    AXGroup [0,95 200x0] 
+                  AXButton [0,65 200x30] Space | Space
+                AXGroup [6,129 188x529] 
+                  AXButton [6,129 188x30] New Tab | New Tab
+                AXTabGroup [0,658 200x41] Spaces | Spaces
+                  AXRadioButton [76,668 12x28] Work | Work value=0
+                  AXRadioButton [88,668 12x28] Personal | Personal value=0
+                  AXRadioButton [100,668 12x28] Research | Research value=0
+                  AXRadioButton [112,668 12x28] Space | Space value=1
+                  AXButton [169,668 28x28] New Space | New Space
+              AXSlider [195,65 5x640] Vertical Tab Strip Resize Handle (Draggable) | Vertical Tab Strip Resize Handle (Draggable)
+              AXGroup [0,65 200x640] 
+              AXGroup [0,65 200x640] 
+            AXGroup [0,31 0x0] 
+      AXGroup [76,350 240x318] 
+        AXGroup [76,350 240x318] 
+          AXGroup [76,350 240x318] 
+            AXGroup [96,370 200x0] 
+            AXGroup [76,350 240x318] 
+              AXGroup [76,350 240x318] 
+                AXTextField [92,366 208x36] Space name | Space name | Work
+                AXGroup [88,410 216x24] 
+                  AXRadioButton [88,410 24x24] Blue | Blue value=1
+                  AXRadioButton [112,410 24x24] Purple | Purple value=0
+                  AXRadioButton [136,410 24x24] Pink | Pink value=0
+                  AXRadioButton [160,410 24x24] Red | Red value=0
+                  AXRadioButton [184,410 24x24] Orange | Orange value=0
+                  AXRadioButton [208,410 24x24] Yellow | Yellow value=0
+                  AXRadioButton [232,410 24x24] Green | Green value=0
+                  AXRadioButton [256,410 24x24] Cyan | Cyan value=0
+                  AXRadioButton [280,410 24x24] Grey | Grey value=0
+                AXGroup [76,442 240x1] 
+                AXButton [76,451 240x32] New tab in space ⌃⌘C | New tab in space ⌃⌘C
+                AXButton [76,483 240x32] Move space to new window | Move space to new window
+                AXButton [76,515 240x32] Go to space | Go to space
+                AXButton [76,547 240x32] Close space ⌃⌘W | Close space ⌃⌘W
+                AXGroup [76,587 240x1] 
+                AXButton [76,596 240x32] Remove space, keep tabs | Remove space, keep tabs
+                AXButton [76,628 240x32] Delete space | Delete space
+              AXGroup [76,668 240x0] 
+    AXButton [9,40 16x16] 
+    AXButton [55,40 16x16] 
+      AXGroup [56,41 14x14] 
+        AXGroup [56,41 14x14] 
+    AXButton [32,40 16x16]

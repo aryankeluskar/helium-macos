@@ -1,0 +1,65 @@
+window 
+  AXHelpTag [82,700 43x18] 
+window arXiv.org e-Print archive - Part of group Research - Hydrogen
+  AXWindow [0,31 1024x674] arXiv.org e-Print archive - Part of group Research - Hydrogen
+    AXGroup [0,31 1024x674] arXiv.org e-Print archive - Part of group Research - Hydrogen
+      AXGroup [0,31 1024x674] 
+        AXGroup [0,31 1024x674] 
+          AXGroup [0,31 1024x674] 
+            AXGroup [0,31 1024x34] 
+              AXToolbar [74,31 950x34] 
+                AXButton [74,34 34x28] Collapse Tabs | Collapse Tabs
+                AXButton [111,34 28x28] Back | Back
+                AXButton [142,34 28x28] Forward | Forward
+                AXButton [173,34 28x28] Reload | Reload
+                AXGroup [207,34 686x28] 
+                  AXPopUpButton [209,36 24x24] View site information | View site information
+                  AXTextField [238,36 621x24] Address and search bar | Address and search bar | arxiv.org
+                  AXGroup [867,36 24x24] 
+                    AXButton [867,36 24x24] Bookmark this tab | Bookmark this tab
+                AXGroup [899,34 58x28] 
+                  AXPopUpButton [899,34 28x28] uBlock Origin (0)
+Has access to this site | uBlock Origin (0)
+Has access to this site
+                  AXPopUpButton [929,34 28x28] Extensions | Extensions
+                AXButton [960,34 28x28] You | You
+                AXPopUpButton [990,34 34x28] Hydrogen | Hydrogen
+            AXGroup [200,65 824x640] 
+              AXGroup [200,65 824x640] 
+              AXGroup [200,65 821x637] 
+                AXGroup [201,66 819x0] 
+            AXTabGroup [0,65 200x640] 
+              AXGroup [0,65 200x634] 
+                AXGroup [0,65 200x126] 
+                  AXScrollArea [6,65 194x0] 
+                    AXGroup [6,65 194x0] 
+                      AXGroup [6,65 0x0] 
+                    AXGroup [6,65 0x0] 
+                  AXScrollArea [0,95 200x96] 
+                    AXGroup [0,95 200x96] 
+                      AXGroup [0,95 200x96] 
+                        AXGroup [6,95 188x96] 
+                          AXRadioButton [6,95 188x30] arXiv.org e-Print archive - Part of group Research | arXiv.org e-Print archive - Part of group Research value=1
+                            AXButton [166,97 26x26] Close | Close
+                          AXRadioButton [6,127 188x30] Arc (web browser) - Wikipedia - Part of unnamed group | Arc (web browser) - Wikipedia - Part of unnamed group value=0
+                          AXRadioButton [6,159 188x30] Home - Part of group Research | Home - Part of group Research value=0
+                    AXGroup [0,95 200x0] 
+                  AXButton [0,65 200x30] Research | Research
+                AXGroup [6,193 188x465] 
+                  AXButton [6,193 188x30] New Tab | New Tab
+                AXTabGroup [0,658 200x41] Spaces | Spaces
+                  AXRadioButton [64,668 24x28] Home | Home value=0
+                  AXRadioButton [88,668 12x28] Personal | Personal value=0
+                  AXRadioButton [100,668 12x28] Research | Research value=1
+                  AXRadioButton [112,668 12x28] Space | Space value=0
+                  AXRadioButton [124,668 12x28] Space | Space value=0
+                  AXButton [169,668 28x28] New Space | New Space
+              AXSlider [195,65 5x640] Vertical Tab Strip Resize Handle (Draggable) | Vertical Tab Strip Resize Handle (Draggable)
+              AXGroup [0,65 200x640] 
+              AXGroup [0,65 200x640] 
+            AXGroup [0,31 0x0] 
+    AXButton [9,40 16x16] 
+    AXButton [55,40 16x16] 
+      AXGroup [56,41 14x14] 
+        AXGroup [56,41 14x14] 
+    AXButton [32,40 16x16]
