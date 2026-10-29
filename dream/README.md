@@ -23,7 +23,7 @@ four Balmer lines at 410, 434, 486 and 656 nm. It installs as its own app (`Hydr
 | `patches/dream/global-privacy-control-on.patch` | Sends the Global Privacy Control signal (`Sec-GPC: 1` and `navigator.globalPrivacyControl`) by default, as Brave does; Helium has the setting but leaves it off. Turn it off in Settings › Privacy and security. |
 | `patches/dream/phishing-list-through-helium-services.patch` | uBlock Origin adds its Phishing URL Blocklist once, the first time its lists come through Helium's privacy proxy (Helium services on), so you get phishing protection without Google Safe Browsing. Untick it in uBlock's dashboard and it stays off. |
 
-Make a space with the `+` in the space bar at the foot of the sidebar; your existing tabs become the first space. Right-click a space's item, or click its header, to rename or recolour it; start the name with an emoji to give it an icon. Switch with two fingers on the sidebar, a click in the space bar, Ctrl+1…9, or Cmd+Ctrl+X and Cmd+Ctrl+Z.
+Make a space with the `+` in the space bar at the foot of the sidebar; your existing tabs become the first space. Right-click a space's item, or click its header, to rename or recolour it; start the name with an emoji to give it an icon. Switch with two fingers on the sidebar, a click in the space bar, Ctrl+1…9, or Cmd+Ctrl+X and Cmd+Ctrl+Z. Music and calls keep playing in a space you leave: a spaces check plays audio in one space, switches to another for 12 seconds, and confirms the tab stayed audible and its playback kept advancing (13.5 s of audio in that time).
 
 ## Getting a build
 
