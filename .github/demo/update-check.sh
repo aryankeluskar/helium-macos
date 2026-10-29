@@ -48,6 +48,10 @@ fi
 offered=$("$updates/stamp-dmg.sh" "$dmg" "$feed/hydrogen-update.dmg" "$public_key" 2 2>> "$out/update-stamp.log")
 read -r installed_version short_version minimum_system _ <<< "$installed"
 read -r offered_version _ <<< "$offered"
+if [ -z "$offered_version" ]; then
+  fail "Stamping release 2 failed, so nothing was offered (\`update-stamp.log\`)"
+  finish
+fi
 "$python" -I "$updates/appcast.py" write --dmg "$feed/hydrogen-update.dmg" \
   --url "http://127.0.0.1:$port/hydrogen-update.dmg" --version "$offered_version" \
   --short-version "$short_version" --minimum-system "$minimum_system" --out "$feed/appcast-arm64.xml"

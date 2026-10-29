@@ -47,7 +47,14 @@ xattr -cr "$app"
 codesign --force --sign - "$app" >&2
 codesign --verify --deep --strict "$app" >&2
 
-hdiutil detach -quiet "$work/mount"
+for attempt in 1 2 3 4 5; do
+  hdiutil detach "$work/mount" >&2 && break
+  if [ "$attempt" -eq 5 ]; then
+    hdiutil detach -force "$work/mount" >&2
+  else
+    sleep 3
+  fi
+done
 rm -f "$out_dmg"
 hdiutil convert -quiet "$work/rw.dmg" -format ULMO -o "$out_dmg"
 echo "$bundle_version $short_version $minimum_system $chromium_version"
