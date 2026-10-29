@@ -41,6 +41,7 @@ bundle_version="$chromium_version.$release_number"
 short_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$plist")
 minimum_system=$(/usr/libexec/PlistBuddy -c 'Print :LSMinimumSystemVersion' "$plist")
 
+xattr -cr "$app"
 codesign --force --sign - "$app" >&2
 codesign --verify --deep --strict "$app" >&2
 
