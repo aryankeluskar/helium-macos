@@ -1,0 +1,16 @@
+# Settings - About Hydrogen
+chrome://settings/help
+
+# Settings
+
+![Hydrogen logo]
+
+Hydrogen
+
+Version 0.20.3.1 (Official Build, Chromium 156.0.8078.79) (arm64)
+
+## About Hydrogen
+
+Copyright 2026 The Hydrogen Authors. All rights reserved.
+
+Hydrogen is made possible by the [Chromium](https://www.chromium.org/) open source project and other [open source software](chrome://credits/).

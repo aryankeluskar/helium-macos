@@ -1,0 +1,14 @@
+# Hydrogen Setup
+chrome://setup/
+
+# Meet Hydrogen
+
+Configure Hydrogen to match your taste and import data from other browsers. Make it feel like home or jump straight to browsing.
+
+Use defaults
+
+Configure
+
+By continuing, you agree to the [privacy policy](https://helium.computer/privacy) and [terms of use](https://helium.computer/terms).
+
+If you use defaults, Helium services will be automatically enabled.

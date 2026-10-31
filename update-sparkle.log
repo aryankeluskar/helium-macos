@@ -1,0 +1,148 @@
+Timestamp               Ty Process[PID:TID]
+2026-10-31 06:50:25.186 E  Hydrogen[11188:91cb] [org.sparkle-project.Sparkle:Sparkle] Error: -checkForUpdatesInBackground called but .sessionInProgress == YES
+2026-10-31 06:57:00.633 E  Hydrogen[25878:11f63] [org.sparkle-project.Sparkle:Sparkle] Error: -checkForUpdatesInBackground called but .sessionInProgress == YES
+2026-10-31 06:57:02.251 A  Autoupdate[25930:12185] (libsystem_info.dylib) Retrieve User by ID
+2026-10-31 06:57:02.254 Df Autoupdate[25930:12185] [com.apple.xpc:connection] [0x1055b23d0] activating connection: mach=true listener=true peer=false name=com.aryankeluskar.hydrogen-spki
+2026-10-31 06:57:02.254 Df Autoupdate[25930:12185] [com.apple.xpc:connection] [0x1055b3330] activating connection: mach=true listener=true peer=false name=com.aryankeluskar.hydrogen-spkp
+2026-10-31 06:57:02.272 A  Autoupdate[25930:12186] (libsystem_info.dylib) Membership API: translate identifier
+2026-10-31 06:57:02.273 E  Autoupdate[25930:12186] [com.apple.libsqlite3:logging-persist] cannot open file at line 51044 of [f0ca7bba1c]
+2026-10-31 06:57:02.273 E  Autoupdate[25930:12186] [com.apple.libsqlite3:logging-persist] os_unix.c:51044: (2) open(/private/var/db/DetachedSignatures) - No such file or directory
+2026-10-31 06:57:02.275 Df Autoupdate[25930:12185] [com.apple.xpc:connection] [0x1055b4ee0] activating connection: mach=false listener=false peer=true name=com.aryankeluskar.hydrogen-spki.peer[25878].0x1055b4ee0
+2026-10-31 06:57:02.277 A  Autoupdate[25930:12185] (CoreServicesInternal) CFURLResolveBookmarkData
+2026-10-31 06:57:02.279 E  Autoupdate[25930:12185] [org.sparkle-project.Sparkle:Sparkle] Error: bookmark data for update download is stale.. but still continuing.
+2026-10-31 06:57:02.279 A  Autoupdate[25930:12185] (libsystem_info.dylib) Retrieve Group by ID
+2026-10-31 06:57:02.314 A  Updater[25931:12188] (libsystem_info.dylib) Retrieve User by ID
+2026-10-31 06:57:02.317 Df Updater[25931:12188] [com.apple.xpc:connection] [0x1013b6760] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+2026-10-31 06:57:02.317 Df Updater[25931:12189] [com.apple.xpc:connection] [0x1013b7870] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.agent
+2026-10-31 06:57:02.320 Df Updater[25931:12188] [com.apple.xpc:connection] [0x1013b99f0] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.launchservicesd
+2026-10-31 06:57:02.320 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c000] activating connection: mach=true listener=false peer=false name=com.apple.pasteboard.1
+2026-10-31 06:57:02.320 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c140] activating connection: mach=true listener=false peer=false name=com.apple.distributed_notifications@Uv3
+2026-10-31 06:57:02.321 Df Updater[25931:12188] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) No windows open yet
+2026-10-31 06:57:02.321 A  Updater[25931:12188] (TCC) TCCAccessRequest() IPC
+2026-10-31 06:57:02.321 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c280] activating connection: mach=true listener=false peer=false name=com.apple.tccd.system
+2026-10-31 06:57:02.340 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c280] invalidated after the last release of the connection object
+2026-10-31 06:57:02.340 Df Updater[25931:12188] [com.apple.SkyLight:default] server port 0x00002f0b, session port 0x00002f0b
+2026-10-31 06:57:02.345 Df Updater[25931:12188] [com.apple.SkyLight:default] New connection 0x54ff3 main
+2026-10-31 06:57:02.346 Df Updater[25931:12188] [com.apple.processmanager:front-35286506] CHECKIN: pid=25931
+2026-10-31 06:57:02.349 Df Updater[25931:12188] [com.apple.processmanager:front-35286506] CHECKEDIN: pid=25931 asn=0x0-0x6c06c foreground=0
+2026-10-31 06:57:02.350 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c3c0] activating connection: mach=true listener=false peer=false name=com.apple.lsd.modifydb
+2026-10-31 06:57:02.350 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c500] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-10-31 06:57:02.350 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c500] Connection returned listener port: 0x5103
+2026-10-31 06:57:02.363 Df Updater[25931:12189] [com.apple.xpc:connection] [0xc7acf8000] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0xc7ac8c500.peer[127].0xc7acf8000
+2026-10-31 06:57:02.367 Df Updater[25931:12188] [com.apple.processmanager:front-35286506] FRONTLOGGING: version 1
+2026-10-31 06:57:02.367 Df Updater[25931:12188] [com.apple.processmanager:front-35286506] Registered, pid=25931 ASN=0x0,0x6c06c
+2026-10-31 06:57:02.367 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c640] activating connection: mach=true listener=false peer=false name=com.apple.analyticsd
+2026-10-31 06:57:02.367 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c500] Connection returned listener port: 0x5103
+2026-10-31 06:57:02.368 Df Updater[25931:12188] [com.apple.processmanager:front-35286506] BringForward: pid=25931 asn=0x0-0x6c06c bringForward=0 foreground=0 uiElement=1 launchedByLS=0 modifiersCount=0 allDisabled=0
+2026-10-31 06:57:02.368 Df Updater[25931:12188] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-10-31 06:57:02.369 Df Updater[25931:12188] (libMobileGestalt.dylib) No persisted cache on this platform.
+2026-10-31 06:57:02.370 Df Updater[25931:12188] (libMobileGestalt.dylib) Could not get size of EAN data (IOConnectCallScalarMethod kAppleNVMeEANGetSize returned 0xE00002E2)
+2026-10-31 06:57:02.370 Df Updater[25931:12188] (libMobileGestalt.dylib) Failed to copy 'aptk' from EAN
+2026-10-31 06:57:02.370 Df Updater[25931:12188] (libMobileGestalt.dylib) Failed to copy APTicket properties. Falling back to default policy.
+2026-10-31 06:57:02.370 Df Updater[25931:12188] (libMobileGestalt.dylib) Creating default MGSysConfigPolicy
+2026-10-31 06:57:02.370 Df Updater[25931:12188] (libMobileGestalt.dylib) CFDictionaryRef copySyscfgDictionary(void) enumeration of <private> failed.
+2026-10-31 06:57:02.370 Df Updater[25931:12188] (libMobileGestalt.dylib) Failed to find key <private>
+2026-10-31 06:57:02.372 Df Updater[25931:12188] [com.apple.AppKit:Appearance] Current system appearance, (HLTB: 1), (SLS: 0)
+2026-10-31 06:57:02.372 Df Updater[25931:12188] [com.apple.AppKit:Appearance] Post-registration system appearance: (HLTB: 1)
+2026-10-31 06:57:02.375 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c8c0] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+2026-10-31 06:57:02.380 Df Updater[25931:12188] [com.apple.FrontBoard:Common] FBSWorkspace: endpoint monitoring is disabled.
+2026-10-31 06:57:02.380 Df Updater[25931:12188] [com.apple.FrontBoard:Common] FBSWorkspace: default shell endpoint is disabled.
+2026-10-31 06:57:02.380 Df Updater[25931:12188] [com.apple.runningboard:connection] Initializing connection
+2026-10-31 06:57:02.380 Df Updater[25931:12188] [com.apple.runningboard:process] Removing all cached process handles
+2026-10-31 06:57:02.381 Df Updater[25931:12189] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+2026-10-31 06:57:02.381 Df Updater[25931:12189] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+2026-10-31 06:57:02.381 Df Updater[25931:12189] [com.apple.xpc:connection] [0xc7ac8cb40] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+2026-10-31 06:57:02.381 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c500] Connection returned listener port: 0x5103
+2026-10-31 06:57:02.382 A  Updater[25931:1218b] (RunningBoardServices) didChangeInheritances
+2026-10-31 06:57:02.382 Df Updater[25931:12189] [com.apple.runningboard:connection] Handshake succeeded
+2026-10-31 06:57:02.382 Df Updater[25931:12189] [com.apple.runningboard:connection] Identity resolved as anon<Updater>(501)
+2026-10-31 06:57:02.383 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c500] Connection returned listener port: 0x5103
+2026-10-31 06:57:02.389 A  Updater[25931:12189] (AppIntents) appintents:register process
+2026-10-31 06:57:02.389 Df Updater[25931:12189] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-10-31 06:57:02.389 Df Updater[25931:12189] [com.apple.xpc:connection] [0xc7ac8cdc0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-10-31 06:57:02.389 Df Updater[25931:12189] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-10-31 06:57:02.389 Df Updater[25931:12189] [com.apple.xpc:connection] [0xc7ac8cf00] activating connection: mach=false listener=true peer=false name=(anonymous)
+2026-10-31 06:57:02.390 Df Updater[25931:12188] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+2026-10-31 06:57:02.390 Df Updater[25931:12188] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-10-31 06:57:02.390 Df Updater[25931:12188] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-10-31 06:57:02.390 Df Updater[25931:12188] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+2026-10-31 06:57:02.390 Df Updater[25931:12189] [com.apple.xpc:connection] [0xc7ac8cf00] Connection returned listener port: 0x6b03
+2026-10-31 06:57:02.392 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8d180] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.appleevents
+2026-10-31 06:57:02.393 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c500] Connection returned listener port: 0x5103
+2026-10-31 06:57:02.393 Df Updater[25931:12188] [com.apple.processmanager:front-35286506] SignalReady: pid=25931 asn=0x0-0x6c06c
+2026-10-31 06:57:02.393 Df Updater[25931:12188] [com.apple.processmanager:front-35286506] SIGNAL: pid=25931 asn=0x0x-0x6c06c
+2026-10-31 06:57:02.395 A  Updater[25931:12188] (CoreFoundation) Loading Preferences From User CFPrefsD
+2026-10-31 06:57:02.395 A  Updater[25931:12188] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-10-31 06:57:02.396 A  Updater[25931:12188] (libsystem_info.dylib) Membership API: translate identifier
+2026-10-31 06:57:02.398 Df Updater[25931:1218b] [com.apple.xpc:connection] [0xc7ac8cdc0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-10-31 06:57:02.398 Df Updater[25931:1218b] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-10-31 06:57:02.399 Df Updater[25931:1218b] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-10-31 06:57:02.399 A  Updater[25931:1218b] (AppIntents) appintents:register process
+2026-10-31 06:57:02.399 Df Updater[25931:1218b] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-10-31 06:57:02.399 Df Updater[25931:1218b] [com.apple.xpc:connection] [0xc7ac8d2c0] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-10-31 06:57:02.399 E  Updater[25931:12189] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-31 06:57:02.399 E  Updater[25931:12189] [com.apple.AppKit:Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 UserInfo={NSDebugDescription=<private>}
+2026-10-31 06:57:02.399 Df Updater[25931:1218b] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-10-31 06:57:02.399 Df Updater[25931:1218b] [com.apple.xpc:connection] [0xc7ac8cf00] Connection returned listener port: 0x6b03
+2026-10-31 06:57:02.400 Df Updater[25931:12188] [com.apple.AppKit:AutomaticTermination] void _NSDisableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-10-31 06:57:02.400 Df Updater[25931:12188] [com.apple.AppKit:StateRestoration] -[NSApplication _reopenWindowsAsNecessaryIncludingRestorableState:withFullFidelity:completionHandler:] shouldRestoreState=1 hasPersistentStateToRestore=0 shouldStillRestoreStateAfterPrompting=0
+2026-10-31 06:57:02.400 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8d540] activating connection: mach=true listener=false peer=false name=com.apple.window_proxies
+2026-10-31 06:57:02.400 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8d540] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-10-31 06:57:02.401 Df Updater[25931:12188] [com.apple.AppKit:AutomaticTermination] void _NSEnableAutomaticTerminationAndLog(NSString *) Restoring windows
+2026-10-31 06:57:02.401 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8ca00] activating connection: mach=true listener=true peer=false name=com.aryankeluskar.hydrogen-spks
+2026-10-31 06:57:02.401 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c780] activating connection: mach=true listener=false peer=false name=com.aryankeluskar.hydrogen-spkp
+2026-10-31 06:57:02.402 Df Autoupdate[25930:12186] [com.apple.xpc:connection] [0x1055bfa00] activating connection: mach=false listener=false peer=true name=com.aryankeluskar.hydrogen-spkp.peer[25931].0x1055bfa00
+2026-10-31 06:57:02.404 Df Updater[25931:1218a] [com.apple.BoardServices:XPCErrors] [C:1] Alloc <private>
+2026-10-31 06:57:02.404 Df Updater[25931:1218a] [com.apple.xpc:connection] [0xc7ac8d680] activating connection: mach=false listener=false peer=false name=(anonymous)
+2026-10-31 06:57:02.407 Df Updater[25931:1218e] [com.apple.xpc:connection] [0xc7ac8d2c0] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-10-31 06:57:02.407 Df Updater[25931:1218e] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-10-31 06:57:02.407 Df Updater[25931:1218e] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-10-31 06:57:02.407 A  Updater[25931:1218e] (AppIntents) appintents:register process
+2026-10-31 06:57:02.407 Df Updater[25931:1218e] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-10-31 06:57:02.407 Df Updater[25931:1218e] [com.apple.xpc:connection] [0xc7ac8d900] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-10-31 06:57:02.407 E  Updater[25931:1218b] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-31 06:57:02.407 E  Updater[25931:1218b] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-31 06:57:02.407 Df Updater[25931:1218e] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-10-31 06:57:02.407 Df Updater[25931:1218e] [com.apple.xpc:connection] [0xc7ac8cf00] Connection returned listener port: 0x6b03
+2026-10-31 06:57:02.413 Df Updater[25931:1218b] [com.apple.xpc:connection] [0xc7ac8d900] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-10-31 06:57:02.413 Df Updater[25931:1218b] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-10-31 06:57:02.413 Df Updater[25931:1218b] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-10-31 06:57:02.413 A  Updater[25931:1218b] (AppIntents) appintents:register process
+2026-10-31 06:57:02.413 Df Updater[25931:1218b] [com.apple.appintents:Connection] Created a new Process Instance Registry XPC connection (inactive)
+2026-10-31 06:57:02.413 Df Updater[25931:1218b] [com.apple.xpc:connection] [0xc7ac8db80] activating connection: mach=true listener=false peer=false name=com.apple.linkd.autoShortcut
+2026-10-31 06:57:02.413 E  Updater[25931:1218e] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-31 06:57:02.413 E  Updater[25931:1218e] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-31 06:57:02.413 Df Updater[25931:1218b] [com.apple.appintents:Connection] Activated connection to linkd (ApplicationService)
+2026-10-31 06:57:02.413 Df Updater[25931:1218b] [com.apple.xpc:connection] [0xc7ac8cf00] Connection returned listener port: 0x6b03
+2026-10-31 06:57:02.419 Df Updater[25931:1218e] [com.apple.xpc:connection] [0xc7ac8db80] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-10-31 06:57:02.419 Df Updater[25931:1218e] [com.apple.appintents:Connection] Process Instance Registry XPC connection has been interrupted
+2026-10-31 06:57:02.419 E  Updater[25931:1218e] [com.apple.appintents:Connection] Will NOT re-try to establish the connection
+2026-10-31 06:57:02.420 E  Updater[25931:1218b] [com.apple.appintents:Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-31 06:57:02.420 E  Updater[25931:1218b] [com.apple.appintents:Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-31 06:57:02.423 Df Updater[25931:1218f] [com.apple.xpc:connection] [0xc7acf8600] activating connection: mach=false listener=false peer=true name=com.aryankeluskar.hydrogen-spks.peer[25878].0xc7acf8600
+2026-10-31 06:57:02.441 Df Updater[25931:1218f] [com.apple.xpc:connection] [0xc7acf8600] invalidated because the client process (pid 25878) either cancelled the connection or exited
+2026-10-31 06:57:02.471 A  Updater[25931:1218f] (RunningBoardServices) didChangeInheritances
+2026-10-31 06:57:02.751 Df Autoupdate[25930:12185] [org.sparkle-project.Sparkle:Sparkle] OK: EdDSA signature is correct for update
+2026-10-31 06:57:02.777 Df Updater[25931:1218a] [com.apple.CoreAnalytics:client] Received configuration update from daemon (initial)
+2026-10-31 06:57:03.719 E  Hydrogen[25878:11f63] [org.sparkle-project.Sparkle:Sparkle] Error: -checkForUpdatesInBackground called but .sessionInProgress == YES
+2026-10-31 06:57:03.720 E  Hydrogen[25878:11f63] [org.sparkle-project.Sparkle:Sparkle] Error: -checkForUpdatesInBackground called but .sessionInProgress == YES
+2026-10-31 06:57:04.066 Df Autoupdate[25930:12186] [com.apple.xpc:connection] [0x98f0f0000] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+2026-10-31 06:57:04.066 A  Autoupdate[25930:12186] (CoreFoundation) Loading Preferences From System CFPrefsD
+2026-10-31 06:57:09.391 Df Updater[25931:12442] [com.apple.launchservices:db] NotifyToken::RegisterDispatch(user.uid.501.com.apple.LaunchServices.database) fired for session key <private>
+2026-10-31 06:57:11.158 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c500] Connection returned listener port: 0x5103
+2026-10-31 06:57:13.686 Df Updater[25931:12442] [com.apple.launchservices:default] LSExceptions shared instance invalidated for timeout.
+2026-10-31 06:57:30.657 Df Autoupdate[25930:1221d] [com.apple.xpc:connection] [0x1055b4ee0] invalidated because the client process (pid 25878) either cancelled the connection or exited
+2026-10-31 06:57:30.758 Df Autoupdate[25930:12185] [com.apple.xpc:connection] [0x1055b23d0] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-10-31 06:57:30.758 Df Autoupdate[25930:12185] [com.apple.xpc:connection] [0x1055bfa00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-10-31 06:57:30.758 Df Autoupdate[25930:12185] [com.apple.xpc:connection] [0x1055b3330] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-10-31 06:57:30.759 Df Updater[25931:1218b] [com.apple.xpc:connection] [0xc7ac8c780] Re-initialization successful; calling out to event handler with XPC_ERROR_CONNECTION_INTERRUPTED
+2026-10-31 06:57:30.759 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8ca00] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-10-31 06:57:30.761 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8ca00] activating connection: mach=true listener=false peer=false name=com.apple.coreservices.quarantine-resolver
+2026-10-31 06:57:30.772 A  Updater[25931:12188] (LaunchServices) LaunchServices.launchViaCSUA
+2026-10-31 06:57:30.772 Df Updater[25931:12188] [com.apple.launchservices:open] LAUNCH: Asking CSUI to launch 1 items
+2026-10-31 06:57:31.026 Df Updater[25931:12188] [com.apple.xpc:connection] [0xc7ac8c780] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-10-31 06:57:31.345 Df Updater[25931:12188] [com.apple.CoreAnalytics:client] Entering exit handler.
+2026-10-31 06:57:31.345 Df Updater[25931:12188] [com.apple.CoreAnalytics:client] Queueing exit procedure onto XPC queue. Any further messages sent will be discarded. activeSendTransactions=0
+2026-10-31 06:57:31.346 Df Updater[25931:128d8] [com.apple.CoreAnalytics:client] Cancelling XPC connection. Any further reply handler invocations will not retry messages
+2026-10-31 06:57:31.346 Df Updater[25931:128d8] [com.apple.xpc:connection] [0xc7ac8c640] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+2026-10-31 06:57:31.346 Df Updater[25931:12188] [com.apple.CoreAnalytics:client] Exiting exit handler.

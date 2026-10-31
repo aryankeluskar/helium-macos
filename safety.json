@@ -1,0 +1,31 @@
+{
+  "hydrogen": {
+    "https": "https://example.com/",
+    "params": "?keep=1",
+    "gpc": "true",
+    "webrtc": "[]",
+    "canvas_a": "aa0920ffa8d9",
+    "canvas_a_again": "aa0920ffa8d9",
+    "canvas_b": "23536e730a78",
+    "phishing": " | Phishing Page Example. This is an example of a phishing page. Username: Password: Social engineering content example. This image claims that your software is out-of-date to trick you into clicking \"up",
+    "phishing_attempts": "5",
+    "malware": " | Malware Page Example. Malware download",
+    "malware_attempts": "5",
+    "lists": "{\"ublock-badware\":{\"on\":true,\"entries\":10557},\"urlhaus-1\":{\"on\":true,\"entries\":122620},\"curben-phishing\":{\"on\":true,\"entries\":167552},\"adguard-spyware-url\":{\"on\":true,\"entries\":2728}}",
+    "debug_port": "refused"
+  },
+  "brave": {
+    "https": "https://example.com/",
+    "params": "?utm_source=probe&keep=1",
+    "gpc": "true",
+    "webrtc": "[\"candidate:1002567901 1 udp 2113937151 c7760eba-d42f-4abe-a151-dab5c03f56da.local 58529 typ host generation 0 ufrag dRZG network-cost 999\"]",
+    "canvas_a": "f9c3b0c7113a",
+    "canvas_a_again": "f9c3b0c7113a",
+    "canvas_b": "525c344a9687",
+    "phishing": " | Phishing Page Example. This is an example of a phishing page. Username: Password: Social engineering content example. This image claims that your software is out-of-date to trick you into clicking \"up",
+    "phishing_attempts": "5",
+    "malware": "Security error | Dangerous site Attackers on the site you tried visiting might install harmful software that steals or deletes things like your passwords, photos, messages, or credit card numbers. Brave strongly recom",
+    "malware_attempts": "5",
+    "debug_port": "open"
+  }
+}

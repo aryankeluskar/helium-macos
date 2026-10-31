@@ -1,0 +1,4 @@
+python3: /opt/homebrew/bin/python3
+firewall before: Firewall is disabled. (State = 0)
+firewall now: Firewall is disabled. (State = 0)
+probe from curl: 404 in 0.000844s

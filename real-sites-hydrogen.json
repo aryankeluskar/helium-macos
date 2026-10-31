@@ -1,0 +1,151 @@
+{
+  "label": "hydrogen",
+  "blockerReadyAfterTries": null,
+  "pages": [
+    {
+      "url": "https://www.cnn.com/",
+      "requests": 132,
+      "answered": 127,
+      "megabytes": 8.38,
+      "loadSeconds": 3,
+      "adRequests": 2,
+      "adAnswered": 0,
+      "adBlocked": 2,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.dailymail.co.uk/home/index.html",
+      "requests": 214,
+      "answered": 199,
+      "megabytes": 5.13,
+      "loadSeconds": 0.7,
+      "adRequests": 2,
+      "adAnswered": 0,
+      "adBlocked": 2,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://weather.com/",
+      "requests": 176,
+      "answered": 146,
+      "megabytes": 5.31,
+      "loadSeconds": 1,
+      "adRequests": 25,
+      "adAnswered": 7,
+      "adBlocked": 18,
+      "adHostsAnswered": [
+        "micro.rubiconproject.com",
+        "config.aps.amazon-adsystem.com",
+        "client.aps.amazon-adsystem.com",
+        "securepubads.g.doubleclick.net",
+        "imasdk.googleapis.com"
+      ]
+    },
+    {
+      "url": "https://www.speedtest.net/",
+      "requests": 30,
+      "answered": 24,
+      "megabytes": 1.43,
+      "loadSeconds": 1,
+      "adRequests": 0,
+      "adAnswered": 0,
+      "adBlocked": 0,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.theverge.com/",
+      "requests": 169,
+      "answered": 158,
+      "megabytes": 2.79,
+      "loadSeconds": 2,
+      "adRequests": 1,
+      "adAnswered": 0,
+      "adBlocked": 1,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.foxnews.com/",
+      "requests": 278,
+      "answered": 241,
+      "megabytes": 5.24,
+      "loadSeconds": 3.4,
+      "adRequests": 14,
+      "adAnswered": 4,
+      "adBlocked": 10,
+      "adHostsAnswered": [
+        "client.aps.amazon-adsystem.com",
+        "cdn.optimizely.com",
+        "cdn.segment.com",
+        "a5728063363743744.cdn.optimizely.com"
+      ]
+    },
+    {
+      "url": "https://www.businessinsider.com/",
+      "requests": 31,
+      "answered": 28,
+      "megabytes": 0.48,
+      "loadSeconds": 0.7,
+      "adRequests": 1,
+      "adAnswered": 0,
+      "adBlocked": 1,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.cnet.com/",
+      "requests": 96,
+      "answered": 87,
+      "megabytes": 2.76,
+      "loadSeconds": 0.9,
+      "adRequests": 2,
+      "adAnswered": 0,
+      "adBlocked": 2,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.yahoo.com/",
+      "requests": 218,
+      "answered": 200,
+      "megabytes": 3.19,
+      "loadSeconds": 1.2,
+      "adRequests": 1,
+      "adAnswered": 0,
+      "adBlocked": 1,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.wired.com/",
+      "requests": 134,
+      "answered": 127,
+      "megabytes": 6.74,
+      "loadSeconds": 2.6,
+      "adRequests": 0,
+      "adAnswered": 0,
+      "adBlocked": 0,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.huffpost.com/",
+      "requests": 149,
+      "answered": 106,
+      "megabytes": 6.16,
+      "loadSeconds": 1.3,
+      "adRequests": 22,
+      "adAnswered": 0,
+      "adBlocked": 22,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.independent.co.uk/",
+      "requests": 94,
+      "answered": 59,
+      "megabytes": 4.97,
+      "loadSeconds": 1.9,
+      "adRequests": 19,
+      "adAnswered": 1,
+      "adBlocked": 18,
+      "adHostsAnswered": [
+        "www.googletagmanager.com"
+      ]
+    }
+  ]
+}

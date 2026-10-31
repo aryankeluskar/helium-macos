@@ -1,0 +1,7 @@
+Serving HTTP on 127.0.0.1 port 8765 (http://127.0.0.1:8765/) ...
+127.0.0.1 - - [31/Oct/2026 06:56:58] code 404, message File not found
+127.0.0.1 - - [31/Oct/2026 06:56:58] "GET /probe HTTP/1.1" 404 -
+127.0.0.1 - - [31/Oct/2026 06:56:58] code 404, message File not found
+127.0.0.1 - - [31/Oct/2026 06:56:58] "GET /probe HTTP/1.1" 404 -
+127.0.0.1 - - [31/Oct/2026 06:57:01] "GET /appcast-arm64.xml HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 06:57:01] "GET /hydrogen-update.dmg HTTP/1.1" 200 -

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Hydrogen</title>
+    <item>
+      <title>Hydrogen 0.20.3.1</title>
+      <pubDate>Sat, 31 Oct 2026 06:56:11 GMT</pubDate>
+      <sparkle:version>0.20.3.1.2</sparkle:version>
+      <sparkle:shortVersionString>0.20.3.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+      <enclosure url="http://127.0.0.1:8765/hydrogen-update.dmg" length="122354985" type="application/octet-stream" sparkle:edSignature="fSRsLCkXGgUSymYIcnxWSrdDT2CeQHEvMDlxrhX3rq6yjwcuqv/tlFuL5cvi/sQOaIxE/VRPtJ6ML615RsWaBQ=="/>
+    </item>
+  </channel>
+</rss>

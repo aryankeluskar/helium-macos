@@ -1,0 +1,6 @@
+
+DevTools listening on ws://127.0.0.1:49283/devtools/browser/d37d693f-7a44-4b74-ac3d-93b73ebb2858
+[13628:43782:1031/065226.436087:ERROR:net/url_request/url_request.cc:677] Block URL in URLRequest: https://helium-services-are-disabled.qjz9zk/
+[13628:43782:1031/065226.450033:ERROR:net/url_request/trk_protocol_handler.cc:17] Blocked URL in TrkProtocolHandler: trk:https://helium-services-are-disabled.qjz9zk/
+
+DevTools listening on ws://127.0.0.1:49305/devtools/browser/d36f0a40-eba9-4979-a5ce-3b34851ebef3

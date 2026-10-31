@@ -1,0 +1,187 @@
+{
+  "label": "brave",
+  "blockerReadyAfterTries": null,
+  "pages": [
+    {
+      "url": "https://www.cnn.com/",
+      "requests": 177,
+      "answered": 160,
+      "megabytes": 8.94,
+      "loadSeconds": 4.5,
+      "adRequests": 13,
+      "adAnswered": 4,
+      "adBlocked": 9,
+      "adHostsAnswered": [
+        "static.chartbeat.com",
+        "securepubads.g.doubleclick.net",
+        "pagead2.googlesyndication.com",
+        "pubads.g.doubleclick.net"
+      ]
+    },
+    {
+      "url": "https://www.dailymail.co.uk/home/index.html",
+      "requests": 239,
+      "answered": 220,
+      "megabytes": 6.36,
+      "loadSeconds": 0.8,
+      "adRequests": 5,
+      "adAnswered": 2,
+      "adBlocked": 3,
+      "adHostsAnswered": [
+        "www.googletagmanager.com",
+        "securepubads.g.doubleclick.net"
+      ]
+    },
+    {
+      "url": "https://weather.com/",
+      "requests": 223,
+      "answered": 156,
+      "megabytes": 5.23,
+      "loadSeconds": 2,
+      "adRequests": 25,
+      "adAnswered": 7,
+      "adBlocked": 18,
+      "adHostsAnswered": [
+        "micro.rubiconproject.com",
+        "config.aps.amazon-adsystem.com",
+        "client.aps.amazon-adsystem.com",
+        "securepubads.g.doubleclick.net",
+        "imasdk.googleapis.com"
+      ]
+    },
+    {
+      "url": "https://www.speedtest.net/",
+      "requests": 39,
+      "answered": 33,
+      "megabytes": 1.7,
+      "loadSeconds": 2.3,
+      "adRequests": 2,
+      "adAnswered": 2,
+      "adBlocked": 0,
+      "adHostsAnswered": [
+        "securepubads.g.doubleclick.net",
+        "www.googletagmanager.com"
+      ]
+    },
+    {
+      "url": "https://www.theverge.com/",
+      "requests": 192,
+      "answered": 174,
+      "megabytes": 4.47,
+      "loadSeconds": 2.8,
+      "adRequests": 11,
+      "adAnswered": 5,
+      "adBlocked": 6,
+      "adHostsAnswered": [
+        "securepubads.g.doubleclick.net",
+        "c.amazon-adsystem.com",
+        "www.googletagservices.com",
+        "www.googletagmanager.com",
+        "ad.doubleclick.net"
+      ]
+    },
+    {
+      "url": "https://www.foxnews.com/",
+      "requests": 296,
+      "answered": 261,
+      "megabytes": 5.58,
+      "loadSeconds": 5.2,
+      "adRequests": 22,
+      "adAnswered": 12,
+      "adBlocked": 10,
+      "adHostsAnswered": [
+        "c.amazon-adsystem.com",
+        "config.aps.amazon-adsystem.com",
+        "client.aps.amazon-adsystem.com",
+        "securepubads.g.doubleclick.net",
+        "static.chartbeat.com",
+        "www.googletagmanager.com",
+        "cdn.optimizely.com",
+        "sb.scorecardresearch.com",
+        "cdn.segment.com",
+        "a5728063363743744.cdn.optimizely.com"
+      ]
+    },
+    {
+      "url": "https://www.businessinsider.com/",
+      "requests": 34,
+      "answered": 31,
+      "megabytes": 0.6,
+      "loadSeconds": 0.5,
+      "adRequests": 1,
+      "adAnswered": 0,
+      "adBlocked": 1,
+      "adHostsAnswered": []
+    },
+    {
+      "url": "https://www.cnet.com/",
+      "requests": 94,
+      "answered": 87,
+      "megabytes": 2.44,
+      "loadSeconds": 0.8,
+      "adRequests": 3,
+      "adAnswered": 1,
+      "adBlocked": 2,
+      "adHostsAnswered": [
+        "securepubads.g.doubleclick.net"
+      ]
+    },
+    {
+      "url": "https://www.yahoo.com/",
+      "requests": 272,
+      "answered": 210,
+      "megabytes": 3.43,
+      "loadSeconds": 0.9,
+      "adRequests": 2,
+      "adAnswered": 1,
+      "adBlocked": 1,
+      "adHostsAnswered": [
+        "pagead2.googlesyndication.com"
+      ]
+    },
+    {
+      "url": "https://www.wired.com/",
+      "requests": 134,
+      "answered": 130,
+      "megabytes": 6.77,
+      "loadSeconds": 3,
+      "adRequests": 2,
+      "adAnswered": 2,
+      "adBlocked": 0,
+      "adHostsAnswered": [
+        "securepubads.g.doubleclick.net",
+        "www.googletagmanager.com"
+      ]
+    },
+    {
+      "url": "https://www.huffpost.com/",
+      "requests": 160,
+      "answered": 115,
+      "megabytes": 6.25,
+      "loadSeconds": 2.1,
+      "adRequests": 25,
+      "adAnswered": 3,
+      "adBlocked": 22,
+      "adHostsAnswered": [
+        "config.aps.amazon-adsystem.com",
+        "client.aps.amazon-adsystem.com",
+        "widgets.outbrain.com"
+      ]
+    },
+    {
+      "url": "https://www.independent.co.uk/",
+      "requests": 87,
+      "answered": 57,
+      "megabytes": 4.81,
+      "loadSeconds": 2.7,
+      "adRequests": 20,
+      "adAnswered": 5,
+      "adBlocked": 15,
+      "adHostsAnswered": [
+        "securepubads.g.doubleclick.net",
+        "www.googletagmanager.com",
+        "static.chartbeat.com"
+      ]
+    }
+  ]
+}

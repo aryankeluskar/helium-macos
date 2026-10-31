@@ -1,0 +1,141 @@
+Tab 730EF97B  Dark Reader - Chrome Web Store  https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh
+- banner [ref=e1]:
+  - link "Skip to main content" [ref=e2]
+  - link "Chrome Web Store logo chrome web store" [url=/] [ref=e3]:
+    - image "Chrome Web Store logo" [ref=e4]
+    - text [ref=e5]: chrome web store
+  - search "Sitewide" [ref=e6]:
+    - combobox "Search Chrome Web Store" [active] [ref=e7]
+  - button "More options menu" [ref=e8]
+  - button "Google apps" [collapsed] [ref=e9]
+  - link "Sign in" [url=https://accounts.google.com/ServiceLogin?passive=1209600&osid=1&continue=https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh&followup=https://chromewebstore.google.com/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh&ec=GAZApQM] [ref=e10]
+  - tablist [ref=e11]:
+    - tab "Discover" [ref=e12]
+    - tab "Extensions" [selected] [ref=e13]
+    - tab "Themes" [ref=e14]
+- main [ref=e15]:
+  - image "Item logo image for Dark Reader" [ref=e16]
+  - heading "Dark Reader" [level=1] [ref=e17]
+  - link "The publisher has a good record with no history of violations. Learn more." [url=https://support.google.com/chrome_webstore/?hl=en-US&p=cws_badges] [ref=e18]
+  - link "Dark Reader Ltd" [url=/publisher/dark-reader-ltd/u98cf52c4498e6ec420afdeb6bfdb56db] [ref=e19]
+  - link "Follows recommended practices for Chrome extensions. Learn more." [url=https://support.google.com/chrome_webstore/?hl=en-US&p=cws_badges] [ref=e20]
+  - text [ref=e21]: Featured
+  - image "Average rating 4.3 out of 5 stars." [ref=e22]
+  - text [ref=e23]: (
+  - link "13.3K ratings" [url=/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh/reviews] [ref=e24]
+  - text [ref=e25]: )
+  - button "Ratings are updated daily and may not reflect the most recent reviews." [ref=e26]
+  - button "Share" [ref=e27]
+  - link "Extension" [url=/category/extensions] [ref=e28]
+  - link "Accessibility" [url=/category/extensions/make_chrome_yours/accessibility] [ref=e29]
+  - text [ref=e30]: 7,000,000 users
+  - button "Add to Hydrogen" [ref=e31]
+  - region "Media carousel" [ref=e32]:
+    - button "Previous slide" [ref=e33]
+    - button "Item media 1 (video) for Dark Reader" [ref=e34]
+    - image "Item video thumbnail" [ref=e35]
+    - button "Item media 2 (screenshot) for Dark Reader" [ref=e36]:
+      - image "Item media 2 (screenshot) for Dark Reader" [ref=e37]
+    - button "Next slide" [ref=e38]
+  - button "Preview slide 1 for Dark Reader" [ref=e39]:
+    - image "Item video thumbnail" [ref=e40]
+  - button "Preview slide 2 for Dark Reader" [ref=e41]
+  - button "Preview slide 3 for Dark Reader" [ref=e42]
+  - button "Preview slide 4 for Dark Reader" [ref=e43]
+  - button "Preview slide 5 for Dark Reader" [ref=e44]
+  - heading "Overview" [level=2] [ref=e45]
+  - paragraph [ref=e46]: Dark mode for every website. Take care of your eyes, use dark theme for night and daily browsing.
+  - paragraph [ref=e47]: This eye-care extension enables night mode by creating dark themes for websites on the fly. Dark Reader inverts bright colors to make web pages high contrast and easier to read. Adjust brightness, contrast, the sepia filter, font preferences. Enable dark mode on every web page or give websites a se…
+  - button "See more" [collapsed] [ref=e48]
+  - heading "4.3 out of 5 4.3 out of 5 stars 13.3K ratings• Learn more about results and reviews." [level=2] [ref=e49]:
+    - text [ref=e50]: 4.3 out of 5
+    - image "4.3 out of 5 stars" [ref=e51]
+    - text [ref=e52]: 13.3K ratings
+    - text [ref=e53]: •
+    - paragraph [ref=e54]:
+      - link "Learn more about results and reviews." [url=https://support.google.com/chrome_webstore/answer/12225786?p=cws_reviews_results] [ref=e55]
+  - link "See all reviews" [url=/detail/dark-reader/eimadpbcbfnmbkopoojfekhnkhdbieeh/reviews] [ref=e56]
+  - heading "Details" [level=2] [ref=e57]
+  - list [ref=e58]:
+    - listitem [ref=e59]:
+      - text [ref=e60]: Version
+      - text [ref=e61]: 4.9.134
+    - listitem [ref=e62]:
+      - text [ref=e63]: Updated
+      - text [ref=e64]: October 27, 2026
+    - listitem [ref=e65]:
+      - link "Flag concern" [url=/detail/eimadpbcbfnmbkopoojfekhnkhdbieeh/report] [ref=e66]
+    - listitem [ref=e67]:
+      - text [ref=e68]: Size
+      - text [ref=e69]: 836KiB
+    - listitem [ref=e70]:
+      - text [ref=e71]: Languages
+      - text [ref=e72]: 39 languages
+      - button "Show more languages" [ref=e73]
+    - listitem [ref=e74]:
+      - text [ref=e75]: Developer
+      - text [ref=e76]: Dark Reader Ltd Office 40 Unit 5 399-405 Oxford Street London W1C 2BU GB
+      - link "Website" [url=https://darkreader.org/] [ref=e77]
+      - disclosureTriangle "Email" [collapsed] [ref=e78]
+      - disclosureTriangle "Phone" [collapsed] [ref=e79]
+    - listitem [ref=e80]:
+      - text [ref=e81]: Trader
+      - text [ref=e82]: This developer has identified itself as a trader per the definition from the European Union and committed to only offer products or services that comply with EU laws.
+    - listitem [ref=e83]:
+      - text [ref=e84]: D-U-N-S
+      - button "Learn more about results and reviews" [ref=e85]
+      - text [ref=e86]: 227992692
+  - heading "Privacy" [level=2] [ref=e87]
+  - text [ref=e88]: The developer has disclosed that it will not collect or use your data. To learn more, see the developer’s
+  - link "privacy policy" [url=https://darkreader.org/privacy/] [ref=e89]
+  - text [ref=e90]: .
+  - heading "This developer declares that your data is" [level=2] [ref=e91]
+  - list [ref=e92]:
+    - listitem [ref=e93]:
+      - text: Not being sold to third parties, outside of the
+      - link "approved use cases" [url=https://developer.chrome.com/docs/webstore/program-policies/limited-use/] [ref=e94]
+    - listitem [ref=e95]: Not being used or transferred for purposes that are unrelated to the item's core functionality
+    - listitem [ref=e96]: Not being used or transferred to determine creditworthiness or for lending purposes
+  - heading "Support" [level=2] [ref=e97]
+  - link "Visit support hub" [url=/detail/eimadpbcbfnmbkopoojfekhnkhdbieeh/support] [ref=e98]
+  - heading "Related" [level=2] [ref=e99]
+  - region "Related items carousel" [ref=e100]:
+    - button "Previous slide" [ref=e101]
+    - region "Related item slides" [ref=e102]:
+      - link "Dark Mode" [url=/detail/dark-mode/dmghijelimhndkbmpgbldicpogfkceaj] [ref=e103]
+      - heading "Dark Mode" [level=3] [ref=e104]
+      - image "Average rating 3.6 out of 5 stars." [ref=e105]
+      - link "Learn more about results and reviews \"Dark Mode\"." [url=https://support.google.com/chrome_webstore/answer/12225786?p=cws_reviews_results&hl=en-US] [ref=e106]
+      - paragraph [ref=e107]: A global dark theme for the web.
+      - link "Lunar Reader: Dark Theme & Night Shift Mode" [url=/detail/lunar-reader-dark-theme-n/pifalnbglchfojkfmechjalgbjoodlpg] [ref=e108]
+      - heading "Lunar Reader: Dark Theme & Night Shift Mode" [level=3] [ref=e109]
+      - image "Average rating 4.6 out of 5 stars." [ref=e110]
+      - link "Learn more about results and reviews \"Lunar Reader: Dark Theme & Night Shift Mode\"." [url=https://support.google.com/chrome_webstore/answer/12225786?p=cws_reviews_results&hl=en-US] [ref=e111]
+      - paragraph [ref=e112]: Dark theme and night shift mode for every website. Care your eyes, use Lunar Dark Reader for night and daily web browsing.
+      - link "Night Shift" [url=/detail/night-shift/ocginjipilabheemhfbedijlhajbcabh] [ref=e113]
+      - heading "Night Shift" [level=3] [ref=e114]
+      - image "Average rating 4.0 out of 5 stars." [ref=e115]
+      - link "Learn more about results and reviews \"Night Shift\"." [url=https://support.google.com/chrome_webstore/answer/12225786?p=cws_reviews_results&hl=en-US] [ref=e116]
+      - paragraph [ref=e117]: Night Shift automatically shifts the colors of your browser content to the warmer end of the color spectrum after dark.
+      - link "Shade Dark Mode" [url=/detail/shade-dark-mode/mkeimkkbcndbdlfkbfhhlfgkilcfniic] [ref=e118]
+      - heading "Shade Dark Mode" [level=3] [ref=e119]
+      - image "Average rating 4.1 out of 5 stars." [ref=e120]
+      - link "Learn more about results and reviews \"Shade Dark Mode\"." [url=https://support.google.com/chrome_webstore/answer/12225786?p=cws_reviews_results&hl=en-US] [ref=e121]
+      - paragraph [ref=e122]: Shade Dark Mode: Seamlessly embrace dark mode on all websites with personalized controls
+    - button "Next slide" [ref=e123]
+- contentinfo [ref=e124]:
+  - list [ref=e125]:
+    - listitem [ref=e126]:
+      - link "About Chrome Web Store" [url=https://support.google.com/chrome_webstore/answer/1047776?hl=en-US] [ref=e127]
+      - text [ref=e128]: •
+    - listitem [ref=e129]:
+      - link "Developer Dashboard" [url=https://chrome.google.com/webstore/devconsole/] [ref=e130]
+      - text [ref=e131]: •
+    - listitem [ref=e132]:
+      - link "Privacy Policy" [url=https://myaccount.google.com/privacypolicy?hl=en-US] [ref=e133]
+      - text [ref=e134]: •
+    - listitem [ref=e135]:
+      - link "Terms of Service" [url=https://ssl.gstatic.com/chrome/webstore/intl/en-US/gallery_tos.html] [ref=e136]
+      - text [ref=e137]: •
+    - listitem [ref=e138]:
+      - link "Help" [url=https://support.google.com/chrome_webstore?hl=en-US] [ref=e139]
